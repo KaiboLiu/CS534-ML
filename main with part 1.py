@@ -56,6 +56,7 @@ def HW1_part_1(trainX,trainY,grad_epsilon=0.01,max_iterations=100000):
     
     bestloss_Part1 = np.min(lossCont)
     lr = 0.05 #According to the convergence and figure results above
+    print 'According to the convergence and figure results from Part1, we decide learning rate as %s' % str(lr)
     return lr,bestloss,wght_hist,lossCont
 
 def run():
