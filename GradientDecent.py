@@ -32,7 +32,8 @@ def GradientDescent(x, y, lr, ep, max_iter, lmd = 0, rcdNum = 50):
 
 	# initial weight
 	smp_num, dim_num  = x.shape  # sample numbers, and feature dimensions	
-	wght              = np.random.random(dim_num)
+	#wght              = np.random.random(dim_num)
+	wght		  = np.zeros(dim_num)
 
 	# Iteration loop, converge by gradient decend
 	for i in range (max_iter):
@@ -49,7 +50,7 @@ def GradientDescent(x, y, lr, ep, max_iter, lmd = 0, rcdNum = 50):
 		wght = wght - lr * grad
 		wght_hist.append(wght)
 
-		if grad.max() < ep:
+		if sum(abs(grad)) < ep:
 			print "gradient convergence to a small value, stop optimization"
 			break
 
@@ -59,5 +60,3 @@ def LossFunctions(x, y, w, lmd):
 	predict = np.dot(x, w)  # predict value
 	error   = predict - y
 	return np.sum(error**2) + lmd * np.sum((w)**2)
-		
-

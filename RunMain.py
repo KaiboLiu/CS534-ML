@@ -29,7 +29,7 @@ def run_part2(trainX, trainY, testX, testY, lmd_reg, lr, eps, max_iter):
         #  Output2File(weight_hist, lossCont, learning_rate, lmd)
 
 
-def run_part3(trainX, trainY, testX, testY, lmd_reg, lr, eps, max_iter, k=1):
+def run_part3(trainX, trainY, testX, testY, lr, eps, max_iter, lmd_reg, k=1):
 	valid_loss     = []
 	for lmd in lmd_reg:		
 		loss = cv.CrossValidation(trainX, trainY, lr, eps, max_iter, lmd, k)
@@ -72,7 +72,7 @@ def run():
     	# part3: fixed lr, using 10-fold cross-validation
 	# split training data into k parts
 	k = 10
-	run_part3(trainX, trainY, testX, testY, lmd_reg, best_lr, eps, max_iter, k)	
+	run_part3(trainX, trainY, testX, testY, best_lr, eps, max_iter, lmd_reg, k)	
 
 	
     # figure show.
