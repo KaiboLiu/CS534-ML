@@ -35,7 +35,7 @@ def HW1_part_1(trainX,trainY,grad_epsilon=0.01,max_iterations=100000):
     color = 0
     plt.figure(1)
     for lr in learning_rate:
-        [step,wght_hist, lossCont, predictCont] = gd1.GradientDescent(trainX,trainY,lr,grad_epsilon,max_iterations,0,50)
+        [wght_hist, lossCont, predictCont] = gd1.GradientDescent(trainX,trainY,lr,grad_epsilon,max_iterations,0,50)
         plt.figure(1)
 #        plt.plot(range(1,step+2),lossCont, get_colour(color),label="learning_rate %s" % str(lr))
         plt.plot(lossCont, get_colour(color),label="learning_rate %s" % str(lr))

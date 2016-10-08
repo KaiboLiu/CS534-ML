@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
+"""
+Created on Mon Oct 03 22:05:52 2016
+@author: Kaibo Liu
+Gradient Decent for Machine Learning Assignment
+"""
 
-#-*- coding:utf8 -*-
-#---- 20161001, YJL, Gradient Decent for Machine Learning Assignment
-
+import matplotlib.pyplot as plt
+import pylab
+from pylab import *
 import numpy as np  #vector & matrix
 import math
 import random       # random
-import sklearn      #scikit-learn, machine learning in Python
-from sklearn.datasets.samples_generator import make_regression
-import pylab
+#import sklearn      #scikit-learn, machine learning in Python
+#from sklearn.datasets.samples_generator import make_regression
+#import pylab #to add label?
 from scipy import stats
 import matplotlib.pyplot as plt
 
@@ -24,49 +29,53 @@ import matplotlib.pyplot as plt
 # weight w : model parameter.
 ###############################
 
-
-
-def GradientDescent(x, y, lr, ep, max_iter,rcdNum = 100):
-    # loop control variables
+def GradientDescent(x, y, lr, ep, max_iter, lmd = 0, rcdNum = 50):
+	# loop control variables
     converged   = False
 #    iter        = 0
-    rcdStep     = max_iter/rcdNum
-
+    rcdStep     = max_iter/rcdNum;
     # prepare output data container
     lossCont    = []
     predictCont = []
     wght_hist   = []
+    
+    	# initial weight
+    smp_num, dim_num  = x.shape  # sample numbers, and feature dimensions,n*d	
+    wght              = np.zeros(dim_num)  #d*1
 
-    # initial weight
-#    print(x)
-#    print(x.shape)
-    smp_num, dim_num  = x.shape  # sample numbers, and feature dimensions   
-#    smp_num, dim_num  = np.shape(x)  # sample numbers, and feature dimensions    
-    wght              = np.random.random(dim_num)
     # Iteration loop, converge by gradient decend
-    for i in range (rcdStep):
+    for i in range (max_iter):
         predict = np.dot(x, wght)  # predict value
-#        print predict
         error   = predict - y
-        loss    = np.sum(error**2)
-        
-#        if i < rcdStep:
+        loss    = np.sum(error**2) + lmd * np.sum((wght)**2)
+        '''		
+        if i%rcdStep == 0:
+            lossCont.append(loss)
+            predictCont.append(predict)
+'''
         lossCont.append(loss)
-#        predictCont.append(predict)
+        predictCont.append(predict)
 
-        #for each training sample, calc its gradient
-#        grad = np.dot(x.T,error)*(2/smp_num)
-        grad = np.dot(x.T,error)
+        if loss > 1.1e100:
+            lossCont[-1] = 1.1e100;
+            print "Not Converged, lrearning rate %s, #iter %d, loss MAX" % (str(lr),i)
+            break
+        
+        
+        #for each training sample, calc its gradient 2*lmd*wght
+        grad = (np.dot(x.T,error)*2)/smp_num + 2*lmd*wght
         wght = wght - lr * grad
         wght_hist.append(wght)
-#        print grad
-#        print grad.shape
-#        print np.dot(grad,grad)
-#        print np.sqrt(np.dot(grad,grad))
-#        if np.linalg.norm(grad,order=1) < ep:
-        if np.sqrt(np.dot(grad,grad)) < ep:
-            print "gradient convergence to a small value, stop optimization, #iter=%d, SSE=%.6f." % (i,lossCont[-1])
-#            print "gradient convergence to a small value, stop optimization"
+        if np.sqrt(np.sum(grad**2)) < ep:
+            print "Converged, lrearning rate %s, #iter %d, loss %.4f" % (str(lr),i,loss)
             break
 
-    return [i,wght_hist, lossCont]
+            #np.sum(abs(grad)) < ep
+           
+#    print 'grad',grad
+#    print i,np.sqrt(np.sum(grad**2)),loss
+#    plt.figure(2)
+#    plt.plot(g)
+#    show()
+    return [wght_hist, lossCont, predictCont]
+
