@@ -7,12 +7,9 @@ import random
 
 import GradientDecent as gd
 
-def CrossValidation(x, y, lr, ep, max_iter, lmd, k):
+def CrossValidation(x, y, lr, ep, max_iter, lmd, k, test_num, random_index):
 	SSE = []
 	#kf = KFold(n_splits=k, shuffle=True)
-	smp_num, dim_num  = x.shape
-        test_num = smp_num/k
-        random_index = random.sample(xrange(0,smp_num), smp_num)
 
 	#for train_index, test_index in kf.split(x):
 	for i in range(k):

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pylab
 import pdb
 import time
+import random
 
 import LoadData as ld
 import Normalization as nor
@@ -73,8 +74,13 @@ def run_part2(trainX, trainY, testX, testY, lmd_reg, lr, eps, max_iter):
 
 def run_part3(trainX, trainY, testX, testY, lr, eps, max_iter, lmd_reg, k=1):
 	valid_loss     = []
+
+	smp_num, dim_num  = trainX.shape
+        test_num = smp_num/k # sample number of a validation set
+        random_index = random.sample(xrange(0,smp_num), smp_num) # for randomized split
+
 	for lmd in lmd_reg:		
-		loss = cv.CrossValidation(trainX, trainY, lr, eps, max_iter, lmd, k)
+		loss = cv.CrossValidation(trainX, trainY, lr, eps, max_iter, lmd, k, test_num, random_index)
 		valid_loss.append(loss)
 
 	print "for diff lambda, their final validation loss are:", valid_loss	
@@ -97,7 +103,7 @@ def run():
 	lr_reg   = [0.001, 0.01, 0.1, 1, 10, 100] #learning rate
 	max_iter =  1000 # max iteration
 	eps      =  0.001 # gradient comparing epsilon
-	lmd_reg  = [0, 0.0001, 0.001, 0.01, 0.05, 0.1, 0.5, 1, 10, 50, 100] # regularization lambda
+	lmd_reg  = [0, 0.0001, 0.001, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 100] # regularization lambda
 
 	# part 1, lamda = 0, different learning rate
 	best_lr = run_part1(trainX,trainY) #default lr,grad_epsilon and max_iterations
