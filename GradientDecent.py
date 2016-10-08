@@ -1,9 +1,9 @@
 #-*- coding:utf8 -*-
-#---- 20161001, YJL, Gradient Decent for Machine Learning Assignment
+#---- 10/07/2016, YJL, Gradient Decent for Machine Learning Assignment
 
-import numpy as np  #vector & matrix
+import numpy as np  # vector & matrix
 import random       # random
-import sklearn      #scikit-learn, machine learning in Python
+import sklearn      # scikit-learn, machine learning in Python
 from sklearn.datasets.samples_generator import make_regression
 import pylab
 from scipy import stats
@@ -22,7 +22,6 @@ from scipy import stats
 def GradientDescent(x, y, lr, ep, max_iter, lmd = 0, rcdNum = 50):
 	# loop control variables
 	converged   = False
-	iter        = 0
 	rcdStep     = max_iter/rcdNum;
 
 	# prepare output data container
@@ -32,21 +31,19 @@ def GradientDescent(x, y, lr, ep, max_iter, lmd = 0, rcdNum = 50):
 
 	# initial weight
 	smp_num, dim_num  = x.shape  # sample numbers, and feature dimensions	
-	#wght              = np.random.random(dim_num)
 	wght		  = np.zeros(dim_num)
 
 	# Iteration loop, converge by gradient decend
 	for i in range (max_iter):
 		predict = np.dot(x, wght)  # predict value
 		error   = predict - y
-		loss    = np.sum(error**2) + lmd * np.sum((wght)**2)
-		
+		loss = np.sum(error**2) + lmd * np.sum((wght)**2)
+
 		lossCont.append(loss)
-		predictCont.append(predict)
 
 		if loss > 1.1e100:
 			lossCont[-1] = 1.1e100;
-			print "Not Converged, lrearning rate %s, #iter %d, loss MAX" % (str(lr),i)
+			print "Not Converged, lrearning rate %s, lamda %s, #iter %d, loss MAX" % (str(lr),str(lmd),i)
 			break
 
 		#for each training sample, calc its gradient
@@ -55,10 +52,11 @@ def GradientDescent(x, y, lr, ep, max_iter, lmd = 0, rcdNum = 50):
 		wght_hist.append(wght)
 
 		if sum(abs(grad)) < ep:
-			print "gradient convergence to a small value, stop optimization"
+			print "Converged, lrearning rate %s, lamda %s, #iter %d, loss %.4f" % (str(lr),str(lmd),i,loss)
 			break
 
-	return [wght_hist, lossCont, predictCont]
+	return [wght_hist, lossCont]
+
 
 def LossFunctions(x, y, w, lmd):
 	predict = np.dot(x, w)  # predict value

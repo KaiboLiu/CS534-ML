@@ -11,12 +11,11 @@ def CrossValidation(x, y, lr, ep, max_iter, lmd, k):
 	kf = KFold(n_splits=k, shuffle=True)
 
 	for train_index, test_index in kf.split(x):
-
 		# train on k-1 parts
-		[weight_hist, lossCont, predictCont] = gd.GradientDescent(np.take(x, train_index,axis=0), np.take(y,train_index,axis=0), lr, ep, max_iter, lmd)
+		[weight_hist, lossCont] = gd.GradientDescent(np.take(x, train_index,axis=0), np.take(y,train_index,axis=0), lr, ep, max_iter, lmd)
 
 		# test on the validation set and measure its SSE
 		loss = gd.LossFunctions(np.take(x, test_index,axis=0), np.take(y,test_index,axis=0), weight_hist[-1], lmd)
-		SSE.append(loss)				
+		SSE.append(loss)		
 
 	return np.sum(SSE)

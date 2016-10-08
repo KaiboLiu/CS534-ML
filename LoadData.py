@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
 import time
+
 def LoadData():
     # read input data for training & testing
     dataDir    = "./"
@@ -10,7 +11,6 @@ def LoadData():
     testData   = np.genfromtxt(dataDir+testName,   delimiter=",")
 
     # extract data as Matrix / vector
-    #pdb.set_trace()
     (dataNum, dataLen) = trainData.shape
     trainX = trainData[:,0:dataLen-1]
     trainY = trainData[:,dataLen-1]
