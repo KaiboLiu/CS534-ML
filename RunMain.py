@@ -101,7 +101,7 @@ def run():
 
 	# implementation assignments
 	lr_reg   = [0.001, 0.01, 0.1, 1, 10, 100] #learning rate
-	max_iter =  1000 # max iteration
+	max_iter =  1000000 # max iteration
 	eps      =  0.001 # gradient comparing epsilon
 	lmd_reg  = [0, 0.0001, 0.001, 0.01, 0.05, 0.1, 0.5, 1, 5, 10, 100] # regularization lambda
 
@@ -112,12 +112,14 @@ def run():
 	print 'Part 1, lamda = 0, changing lr, using time %.4f s, \n' %(t3-t2)
 
 	# part2: fixed learning rate, different lamda
+	max_iter = 10000
 	run_part2(trainX, trainY, testX, testY, lmd_reg, best_lr, eps, max_iter)
 	t4 = float(time.clock())
 	print 'Part 2, lr = 0.05, changing lmd, using time %.4f s, \n' %(t4-t3)
 
     	# part3: fixed lr, using 10-fold cross-validation
 	# split training data into k parts
+	max_iter = 1000
 	k = 10
 	run_part3(trainX, trainY, testX, testY, best_lr, eps, max_iter, lmd_reg, k)	
 	t5 = float(time.clock())
