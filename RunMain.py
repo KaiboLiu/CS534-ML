@@ -2,6 +2,7 @@
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
+import pylab
 import pdb
 import time
 
@@ -16,17 +17,66 @@ def Output2File(wght_hist, lossCont, lr, lmd):
     np.savetxt("weght_lmd"+str(lmd)+"lr"+str(lr)+".csv",    wght_hist,   delimiter = ',')
     np.savetxt("loss_lmd"+str(lmd)+"lr"+str(lr)+".csv",     lossCont,      delimiter = ',')
 
+def get_colour(color):
+    '''
+    b---blue   c---cyan  g---green    k----black
+    m---magenta r---red  w---white    y----yellow
+'''
+    color_set = ['r--','b--','m--','g--','c--','k--','y--']
+    return color_set[color % 7]
+
+
+def HW1_part_1(trainX,trainY,grad_epsilon=0.01,max_iterations=100000):
+    learning_rate  = [0.01,0.03,0.05,0.06]
+    color = 0
+    plt.figure(1)
+    for lr in learning_rate:
+        [wght_hist, lossCont, predictCont] = gd.GradientDescent(trainX,trainY,lr,grad_epsilon,max_iterations,0,50)
+        plt.figure(1)
+#        plt.plot(range(1,step+2),lossCont, get_colour(color),label="learning_rate %s" % str(lr))
+        plt.plot(lossCont, get_colour(color),label="learning_rate %s" % str(lr))
+        color += 1
+#        title("learning_rate %s" % str(lr))
+        plt.xlim(0, 2000)
+        plt.ylim(200, 2000)
+        plt.xlabel('iteration')
+        plt.ylabel('loss J(w)')  
+        plt.legend(loc='upper right')
+        plt.grid(True)  
+   # pdb.set_trace()
+    plt.savefig("Part1_converged Loss with learning rate_scaled-Para")
+    print 'para:MaxIter=%d,Normalization=ZscoreNorm,L1-Norm<epsilon=%s,LossThreshold=1e100,grad/n' % (max_iterations,str(grad_epsilon))
+#        savefig("Part1_unconverged Loss-Para")
+
+        #    savefig("Part1_Loss-iter with learning_rate")  
+   # plt.show()
+    
+   # pdb.set_trace()
+
+    bestloss_Part1 = np.min(lossCont)
+    lr = 0.05 #According to the convergence and figure results above
+    print 'According to the convergence and figure results from Part1, we decide learning rate as %s' % str(lr)
+    return lr
 
 def run_part2(trainX, trainY, testX, testY, lmd_reg, lr, eps, max_iter):
-	final_loss     = []
+	#pdb.set_trace()
+	finalWeight       = []
+	trainLoss    = []
+	testLoss     = []
 	for lmd in lmd_reg:
+		# training
 		[weight_hist, lossCont, predictCont] = gd.GradientDescent(trainX, trainY, lr, eps, max_iter, lmd)
-        	loss = lossCont[-1] #record the final loss.
-        	final_loss.append(loss)
+		finalWeight.append(weight_hist[-1])
+		trainLoss.append(lossCont[-1]) #record the final loss.
+		#print "lambda = "+str(lmd)+" converge loss are: \n", lossCont
+		#print "final weight is: \n", weight_hist[-1]
 
-        print "for diff lambda, their final loss are:\n", final_loss
-     	# print("Loss convergence history is: \n", lossCont)
-        #  Output2File(weight_hist, lossCont, learning_rate, lmd)
+		# test with trained w.
+		teloss = gd.LossFunctions(testX, testY, weight_hist[-1], lmd)
+		testLoss.append(teloss)
+
+	print "for diff lambda, traning loss are:\n", trainLoss
+	print "                 test loss are: \n", testLoss
 
 
 def run_part3(trainX, trainY, testX, testY, lr, eps, max_iter, lmd_reg, k=1):
@@ -59,12 +109,12 @@ def run():
 	lmd_reg  = [0, 0.0001, 0.001, 0.01, 1, 10, 50] # regularization lambda
 
 	# part 1, lamda = 0, different learning rate
+	best_lr = HW1_part_1(trainX,trainY) #default lr,grad_epsilon and max_iterations
 	# [lr,bestloss,weight,lossCont] = HW1_part_1(trainX,trainY) #default lr,grad_epsilon and max_iterations
 	t3 = float(time.clock())
 	print 'Part 1, lamda = 0, changing lr, using time %.4f s, \n' %(t3-t2)
 
 	# part2: fixed learning rate, different lamda
-	best_lr = lr_reg[1]
 	run_part2(trainX, trainY, testX, testY, lmd_reg, best_lr, eps, max_iter)
 	t4 = float(time.clock())
 	print 'Part 2, lamda = 0, changing lr, using time %.4f s, \n' %(t4-t3)

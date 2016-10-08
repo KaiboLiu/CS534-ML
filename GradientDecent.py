@@ -41,9 +41,13 @@ def GradientDescent(x, y, lr, ep, max_iter, lmd = 0, rcdNum = 50):
 		error   = predict - y
 		loss    = np.sum(error**2) + lmd * np.sum((wght)**2)
 		
-		if i%rcdStep == 0:
-			lossCont.append(loss)
-			predictCont.append(predict)
+		lossCont.append(loss)
+		predictCont.append(predict)
+
+		if loss > 1.1e100:
+			lossCont[-1] = 1.1e100;
+			print "Not Converged, lrearning rate %s, #iter %d, loss MAX" % (str(lr),i)
+			break
 
 		#for each training sample, calc its gradient
 		grad = (np.dot(x.T,error)*2)/smp_num + 2*lmd*wght
