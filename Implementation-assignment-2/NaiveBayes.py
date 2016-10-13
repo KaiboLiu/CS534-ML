@@ -20,9 +20,10 @@ class NAIVE_BAYES_MODEL:
 		self.featureNum    = self.trainX.shape(2)
 
 		# prior distribution of y, And the distribution of X given y.
-		self.Pxy_c      = []  # Pxy[i,k] = statistics count of x_i given y_k. interger
-		self.PxyNorm_p  = []  # normalized probability of x_i given y_k. float
-		self.Py_p       = []  # Py[i] = probability of specific y_i, float
+		self.Pwy_c      = []  # Pwy[i,k] = statistics count of word (w_i) given class (y_k). interger
+		self.Py_c       = []  # Py[k]  = statistics sample count of class (y_k)
+		self.PwyNorm_p  = []  # normalized probability of w_i given y_k, based on model & normalize method float
+		self.Py_p       = []  # Py[i] = probability of specific class y_i, float
 
 	def setTrainData(trainX, trainY):
 		self.trainX     = trainX
@@ -30,57 +31,59 @@ class NAIVE_BAYES_MODEL:
 		self.sampleNum  = self.trainX.shape(1)
 		self.featureNum = self.trainX.shape(2)
 
-	# estimate Py using MLE (Maximum Likelihood Estimation). 	
+	# estimate Py(the prior probability) using MLE (Maximum Likelihood Estimation). 	
 	def estimatePy_MLE():
 		# empty Py first, then estimate Py.
 		del self.Py_p[:]
 		for i in range(self.classNum):
 			yi_cnt  = self.trainY.count(i)
-			Py_p.append(yi_cnt/self.sampleNum)
+			self.Py_c.append(yi_cnt)
+			self.Py_p.append(yi_cnt/self.sampleNum)
 
+	# convert a document record under multinomial model to that in bernoulli model.
 	def vecXtranform_bernoulli(vecX):
 		vecX_bool = vecX > 0 # bernoulli only consider if the word appear.
 		vecX_01   = vecX_bool.astype(float) # boolean to float
 
 		return vecX_01
 
-	# based on training dataset, learn Pxy using MLE or MAP(Maximum A Posteiror.)
-	def estimatePxy_bernoulli():
-		# empty Pxy first, then estimate Pxy.
-		del self.Pxy_c[:]
+	# based on training dataset, learn Pwy (count the number of word (w_i) appears given class (y_k))
+	def estimatePwy_bernoulli():
+		# empty Pwy first, then estimate Pwy.
+		del self.Pwy_c[:]
 		for k in range(self.classNum):
 			y_idx = np.where(np.array(self.trainY) == k) # find all samples y_k
 
-			Px_yk = np.zeros(self.featureNum)
+			Pw_yk = np.zeros(self.featureNum)
 			for sj in y_idx:   #sj means sample j
 				trainX_sj     = vecXtranform_bernoulli(trainX[sj,:])
-				Px_yk         = Px_yk + bnl_trainX_sj
+				Pw_yk         = Pw_yk + bnl_trainX_sj
 
-			self.Pxy_c.append(Px_yk)
+			self.Pwy_c.append(Pw_yk)
 
-	# laplace smooth of Pxy, in order to avoid running into underflow issues.
-	def laplSmoothPxy_bernouli(lapAlpha = 1):
+	# in order to avoid running into underflow issues,
+	# laplace smooth of Pwy ( probability of word (w_i) appears given class (y_k)).
+	def laplSmoothPwy_bernouli(lapAlpha = 1):
 		denomi_lap = self.classNum * lapAlpha
 		numer_lap  = np.ones(slef.featureNum)*lapAlpha
 		for k in range(self.classNum):
-			Px_yk    = (self.Pxy[k,:] + numer_lap) / (self.Pxy[k,:].sum() + denomi_lap)
-			logPx_yk = np.log(Px_yk)
-			self.PxyNorm_p.append(logPx_yk)
+			Pw_yk    = (self.Pwy_c[k,:] + numer_lap) / (self.Py_c[k] + denomi_lap)
+			logPw_yk = np.log(Pw_yk)
+			self.PwyNorm_p.append(logPw_yk)
 
-	# vecX is the input Feature Vector,
-	# lapAlpha is the factor for Laplace smoothing
-	def calculatePx_bernoulli(vecX)
+	# vecX is the document record under bernoulli model,
+	def calculatePx_bernoulli(vecX) 
 		fea_one    = np.ones(self.featureNum)
 		PvecX_y    = []
 		for k in range(self.classNum):
-			PvecX_pos = np.sum(self.PxyNorm_p[k,:]*vecX)
-			PvecX_neg = np.sum((fea_one-self.PxyNorm_p[k,:])*(fea_one-vecX))
+			PvecX_pos = np.sum(self.PwyNorm_p[k,:]*vecX)
+			PvecX_neg = np.sum((fea_one-self.PwyNorm_p[k,:])*(fea_one-vecX))
 			PvecX_yk  = (PvecX_pos + PvecX_neg) * self.Py_p[k]
 			PvecX_y.append(PvecX_yk)
 
 		return np.array(PvecX_y)
 
-	# predict class y give x, return class Y that has the maximum probability
+	# predict class y give document vecX, return class Y that has the maximum probability
 	def predictY_bernoulli(vecX):
 		vecX     = vecXtranform_bernoulli(vecX)
 		PvecX_y  = calculatePx_bernoulli(vecX)
@@ -89,41 +92,40 @@ class NAIVE_BAYES_MODEL:
 		return maxClass
 	
 
-	# based on training dataset, learn Pxy using MLE or MAP.
+	# based on training dataset, learn Pwy (count the number of word (w_i) appears given class (y_k))
 	def estimatePxy_multinomial():
-		# empty Pxy first, then estimate Pxy.
-		del self.Pxy[:]
+		# empty Pwy first, then estimate Pwy.
+		del self.Pwy_c[:]
 		for k in range(self.classNum):
 			y_idx = np.where(np.array(self.trainY) == k) # find all samples y_k
 
-			Px_yk = np.zeros(self.featureNum)
+			Pw_yk = np.zeros(self.featureNum)
 			for sj in y_idx:   #sj means sample j
 				trainX_sj     = trainX[sj,:]
-				Px_yk         = Px_yk + np.array(trainX_sj)
+				Pw_yk         = Pw_yk + np.array(trainX_sj)
 
-			self.Pxy.append(Px_yk)
+			self.Pwy_c.append(Pw_yk)
 
-	######
-	# laplace smooth of Pxy, in order to avoid running into underflow issues.
+	# in order to avoid running into underflow issues,
+	# laplace smooth of Pwy ( probability of word (w_i) appears given class (y_k)).
 	def laplSmoothPxy_multinomial(lapAlpha = 1):
 		denomi_lap = self.featureNum * lapAlpha
 		numer_lap  = np.ones(slef.featureNum)*lapAlpha
 		for k in range(self.classNum):
-			Px_yk    = (self.Pxy[k,:] + numer_lap) / (self.Pxy[k,:].sum() + denomi_lap)
-			logPx_yk = np.log(Px_yk)
-			self.PxyNorm_p.append(logPx_yk)
+			Pw_yk    = (self.Pwy_c[k,:] + numer_lap) / (self.featureNum + denomi_lap)
+			logPw_yk = np.log(Pw_yk)
+			self.PwyNorm_p.append(logPw_yk)
 
-	# vecX is the input Feature Vector,
-	# lapAlpha is the factor for Laplace smoothing
+	# vecX is the document record under multinomial model
 	def calculatePx_multinomial(vecX):
 		PvecX_y    = []
 		for k in range(self.classNum):
-			PvecX_yk = np.dot(Px_yk^T, vecX) * Pyk
+			PvecX_yk = np.dot(self.PwyNorm_p^T, vecX) * self.Py_p[k]
 			PvecX_y.append(PvecX_yk)
 
 		return np.array(PvecX_y)
 
-	# predict class y give x, return class Y that has the maximum probability
+	# predict class y give document x, return class Y that has the maximum probability
 	def predictY_multinomial(vecX):
 		PvecX_y  = calculatePx_multinomial(vecX)
 		maxClass = np.where(PvecX_y == PvecX_y.max())
