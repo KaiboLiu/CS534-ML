@@ -123,10 +123,10 @@ class NAIVE_BAYES_MODEL:
 	def estimatePwy_multinomial(self):
 		# empty Pwy first, then estimate Pwy.
 		del self.Pwy_c[:]
-		for k in range(self.classNum):
+		for yk in range(self.classNum):
 			Pw_yk = np.zeros(self.featureNum)
 			for sj, classY in enumerate(self.trainY):
-				if(classY != classY):
+				if(yk != classY):
 					continue
 				trainX_sj  = self.createVecX(self.trainX[sj])
 				Pw_yk      = Pw_yk + np.array(trainX_sj)
