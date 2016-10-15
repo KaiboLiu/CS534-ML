@@ -1,5 +1,6 @@
 import numpy as np
 from math import log
+import pdb
 
 class NAIVE_BAYES_MODEL:
 	""" class NAIVE_BAYES_MODEL, 
@@ -11,124 +12,151 @@ class NAIVE_BAYES_MODEL:
 
 		Functions: 
 	"""
-	def __init__(self, trainX = [], trainY = [], classNum = 2):
+	def __init__(self, wordNum, docNum, trainX = [], trainY = [], classNum = 2):
 		self.trainX     = trainX
 		self.trainY     = trainY
 
 		self.classNum      = classNum
-		self.sampleNum     = self.trainX.shape(1)
-		self.featureNum    = self.trainX.shape(2)
+		self.sampleNum     = docNum
+		self.featureNum    = wordNum
+		self.featureLabel  = np.ones(self.featureNum)
 
 		# prior distribution of y, And the distribution of X given y.
-		self.Pwy_c      = []  # Pwy[i,k] = statistics count of word (w_i) given class (y_k). interger
-		self.Py_c       = []  # Py[k]  = statistics sample count of class (y_k)
-		self.PwyNorm_p  = []  # normalized probability of w_i given y_k, based on model & normalize method float
-		self.Py_p       = []  # Py[i] = probability of specific class y_i, float
+		self.Pwy_c        = []  # Pwy[i,k] = statistics count of word (w_i) given class (y_k). interger
+		self.Py_c         = []  # Py[k]  = statistics sample count of class (y_k)
+		self.PwyNorm_p    = []  # PwyNorm_p = log normalized probability of w_i given y_k, based on model & normalize method float
+		self.PwyNorm_negP = []  # for Bernoulli model, the log normalized probability of no w_i given y_k
+		self.Py_p         = []  # Py[i] = log probability of specific class y_i, float
 
-	def setTrainData(trainX, trainY):
+	def setTrainData(self, trainX, trainY, wordNum, docNUm):
 		self.trainX     = trainX
 		self.trainY     = trainY
-		self.sampleNum  = self.trainX.shape(1)
-		self.featureNum = self.trainX.shape(2)
+		self.sampleNum  = docNum
+		self.featureNum = wordNum
+		self.featureLabel = np.ones(self.featureNum)
+
+	# after feature reduction, call this function to adjust Bayes dataset.
+	def setFeatureLabel(labelVec, redFeatureNum):
+		self.featureLabel = labelVec
+		self.featureNum   = redFeatureNum
 
 	# estimate Py(the prior probability) using MLE (Maximum Likelihood Estimation). 	
-	def estimatePy_MLE():
+	def estimatePy_MLE(self):
 		# empty Py first, then estimate Py.
 		del self.Py_p[:]
 		for i in range(self.classNum):
 			yi_cnt  = self.trainY.count(i)
 			self.Py_c.append(yi_cnt)
-			self.Py_p.append(yi_cnt/self.sampleNum)
+			self.Py_p.append(np.log(float(yi_cnt)/float(self.sampleNum)))
+
+	# create a vector of X, contains information of all words.
+	# input is a sparse vector, it's a document in a form of word index in vocabulary.
+	def createVecX(self, sparseX):
+		vecX  = np.zeros(self.featureNum)
+		count = 0
+		for idx, label in enumerate(self.featureLabel):
+			if label == 1:
+				vecX[count] = sparseX.count(idx)
+				count = count + 1
+
+		return vecX
 
 	# convert a document record under multinomial model to that in bernoulli model.
-	def vecXtranform_bernoulli(vecX):
+	def vecXtranform_bernoulli(self, vecX):
 		vecX_bool = vecX > 0 # bernoulli only consider if the word appear.
 		vecX_01   = vecX_bool.astype(float) # boolean to float
 
 		return vecX_01
 
 	# based on training dataset, learn Pwy (count the number of word (w_i) appears given class (y_k))
-	def estimatePwy_bernoulli():
+	def estimatePwy_bernoulli(self):
 		# empty Pwy first, then estimate Pwy.
 		del self.Pwy_c[:]
-		for k in range(self.classNum):
-			y_idx = np.where(np.array(self.trainY) == k) # find all samples y_k
-
+		for yk in range(self.classNum):
+			# yk_idx = np.where(np.array(self.trainY) == yk)
+			Pw_yk  = np.zeros(self.featureNum)
 			Pw_yk = np.zeros(self.featureNum)
-			for sj in y_idx:   #sj means sample j
-				trainX_sj     = vecXtranform_bernoulli(trainX[sj,:])
-				Pw_yk         = Pw_yk + bnl_trainX_sj
+			for sj, classY in enumerate(self.trainY):
+				if(classY != yk):
+					continue
+				trainX_vec    = self.createVecX(self.trainX[sj])
+				trainX_sj     = self.vecXtranform_bernoulli(trainX_vec)
+				Pw_yk         = Pw_yk + trainX_sj
 
 			self.Pwy_c.append(Pw_yk)
 
 	# in order to avoid running into underflow issues,
 	# laplace smooth of Pwy ( probability of word (w_i) appears given class (y_k)).
-	def laplSmoothPwy_bernouli(lapAlpha = 1):
+	def laplSmoothPwy_bernouli(self, lapAlpha = 1):
 		denomi_lap = self.classNum * lapAlpha
-		numer_lap  = np.ones(slef.featureNum)*lapAlpha
+		numer_lap  = np.ones(self.featureNum)*lapAlpha
 		for k in range(self.classNum):
-			Pw_yk    = (self.Pwy_c[k,:] + numer_lap) / (self.Py_c[k] + denomi_lap)
+			Pw_yk    = (np.array(self.Pwy_c[k]) + numer_lap) / float(self.Py_c[k] + denomi_lap)
 			logPw_yk = np.log(Pw_yk)
-			self.PwyNorm_p.append(logPw_yk)
+			logPnw_yk = np.log(1 - Pw_yk)
+			self.PwyNorm_p.append(logPw_yk.tolist())
+			self.PwyNorm_negP.append(logPnw_yk.tolist())
 
 	# vecX is the document record under bernoulli model,
-	def calculatePx_bernoulli(vecX) 
+	def calculatePx_bernoulli(self, vecX):
 		fea_one    = np.ones(self.featureNum)
 		PvecX_y    = []
 		for k in range(self.classNum):
-			PvecX_pos = np.sum(self.PwyNorm_p[k,:]*vecX)
-			PvecX_neg = np.sum((fea_one-self.PwyNorm_p[k,:])*(fea_one-vecX))
-			PvecX_yk  = (PvecX_pos + PvecX_neg) * self.Py_p[k]
+			PvecX_pos = np.sum(self.PwyNorm_p[k]*vecX)
+			PvecX_neg = np.sum(self.PwyNorm_negP[k]*(fea_one-vecX))
+			PvecX_yk  = (PvecX_pos + PvecX_neg) + self.Py_p[k]
 			PvecX_y.append(PvecX_yk)
 
 		return np.array(PvecX_y)
 
 	# predict class y give document vecX, return class Y that has the maximum probability
-	def predictY_bernoulli(vecX):
-		vecX     = vecXtranform_bernoulli(vecX)
-		PvecX_y  = calculatePx_bernoulli(vecX)
-		maxClass = np.where(PvecX_y == PvecX_y.max())
+	def predictY_bernoulli(self, docX):
+		vecX     = self.createVecX(docX)
+		vecX     = self.vecXtranform_bernoulli(vecX)
+		PvecX_y  = self.calculatePx_bernoulli(vecX)
+		maxClass = np.argmax(PvecX_y)
 
 		return maxClass
 	
 
 	# based on training dataset, learn Pwy (count the number of word (w_i) appears given class (y_k))
-	def estimatePxy_multinomial():
+	def estimatePwy_multinomial(self):
 		# empty Pwy first, then estimate Pwy.
 		del self.Pwy_c[:]
 		for k in range(self.classNum):
-			y_idx = np.where(np.array(self.trainY) == k) # find all samples y_k
-
 			Pw_yk = np.zeros(self.featureNum)
-			for sj in y_idx:   #sj means sample j
-				trainX_sj     = trainX[sj,:]
-				Pw_yk         = Pw_yk + np.array(trainX_sj)
+			for sj, classY in enumerate(self.trainY):
+				if(classY != classY):
+					continue
+				trainX_sj  = self.createVecX(self.trainX[sj])
+				Pw_yk      = Pw_yk + np.array(trainX_sj)
 
 			self.Pwy_c.append(Pw_yk)
 
 	# in order to avoid running into underflow issues,
 	# laplace smooth of Pwy ( probability of word (w_i) appears given class (y_k)).
-	def laplSmoothPxy_multinomial(lapAlpha = 1):
+	def laplSmoothPwy_multinomial(self, lapAlpha = 1):
 		denomi_lap = self.featureNum * lapAlpha
-		numer_lap  = np.ones(slef.featureNum)*lapAlpha
+		numer_lap  = np.ones(self.featureNum)*lapAlpha
 		for k in range(self.classNum):
-			Pw_yk    = (self.Pwy_c[k,:] + numer_lap) / (self.featureNum + denomi_lap)
+			Pw_yk    = (np.array(self.Pwy_c[k]) + numer_lap) / float(self.featureNum + denomi_lap)
 			logPw_yk = np.log(Pw_yk)
-			self.PwyNorm_p.append(logPw_yk)
+			self.PwyNorm_p.append(logPw_yk.tolist())
 
 	# vecX is the document record under multinomial model
-	def calculatePx_multinomial(vecX):
+	def calculatePx_multinomial(self, vecX):
 		PvecX_y    = []
 		for k in range(self.classNum):
-			PvecX_yk = np.dot(self.PwyNorm_p^T, vecX) * self.Py_p[k]
+			PvecX_yk = np.sum(self.PwyNorm_p*vecX) + self.Py_p[k]
 			PvecX_y.append(PvecX_yk)
 
 		return np.array(PvecX_y)
 
 	# predict class y give document x, return class Y that has the maximum probability
-	def predictY_multinomial(vecX):
-		PvecX_y  = calculatePx_multinomial(vecX)
-		maxClass = np.where(PvecX_y == PvecX_y.max())
+	def predictY_multinomial(self, docX):
+		vecX     = self.createVecX(docX)
+		PvecX_y  = self.calculatePx_multinomial(vecX)
+		maxClass = np.argmax(PvecX_y)
 
 		return maxClass
 				
