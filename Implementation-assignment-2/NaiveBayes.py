@@ -36,13 +36,14 @@ class NAIVE_BAYES_MODEL:
 		self.featureLabel = np.ones(self.featureNum)
 
 	# after feature reduction, call this function to adjust Bayes dataset.
-	def setFeatureLabel(labelVec, redFeatureNum):
+	def setFeatureLabel(self, labelVec, redFeatureNum):
 		self.featureLabel = labelVec
 		self.featureNum   = redFeatureNum
 
 	# estimate Py(the prior probability) using MLE (Maximum Likelihood Estimation). 	
 	def estimatePy_MLE(self):
 		# empty Py first, then estimate Py.
+		del self.Py_c[:]
 		del self.Py_p[:]
 		for i in range(self.classNum):
 			yi_cnt  = self.trainY.count(i)
@@ -88,6 +89,8 @@ class NAIVE_BAYES_MODEL:
 	# in order to avoid running into underflow issues,
 	# laplace smooth of Pwy ( probability of word (w_i) appears given class (y_k)).
 	def laplSmoothPwy_bernouli(self, lapAlpha = 1):
+		del self.PwyNorm_p[:]
+		del self.PwyNorm_negP[:]
 		denomi_lap = self.classNum * lapAlpha
 		numer_lap  = np.ones(self.featureNum)*lapAlpha
 		for k in range(self.classNum):
@@ -136,18 +139,22 @@ class NAIVE_BAYES_MODEL:
 	# in order to avoid running into underflow issues,
 	# laplace smooth of Pwy ( probability of word (w_i) appears given class (y_k)).
 	def laplSmoothPwy_multinomial(self, lapAlpha = 1):
+		del self.PwyNorm_p[:]
+		del self.PwyNorm_negP[:]
 		denomi_lap = self.featureNum * lapAlpha
 		numer_lap  = np.ones(self.featureNum)*lapAlpha
+		#pdb.set_trace()
 		for k in range(self.classNum):
 			Pw_yk    = (np.array(self.Pwy_c[k]) + numer_lap) / float(self.featureNum + denomi_lap)
 			logPw_yk = np.log(Pw_yk)
 			self.PwyNorm_p.append(logPw_yk.tolist())
+		#pdb.set_trace()
 
 	# vecX is the document record under multinomial model
 	def calculatePx_multinomial(self, vecX):
 		PvecX_y    = []
 		for k in range(self.classNum):
-			PvecX_yk = np.sum(self.PwyNorm_p*vecX) + self.Py_p[k]
+			PvecX_yk = np.sum(self.PwyNorm_p[k]*vecX) + self.Py_p[k]
 			PvecX_y.append(PvecX_yk)
 
 		return np.array(PvecX_y)

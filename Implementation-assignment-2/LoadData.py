@@ -2,7 +2,7 @@
 import numpy as np
 import sys
 import operator
-#import pdb
+import pdb
 
 '''
 # for machine learning assignment2,
@@ -28,9 +28,8 @@ def LoadData_bagOfWords(filename):
             intW = int(w)
             wordList_int.append(intW)
 
-        wordList_int.sort()
+       # wordList_int.sort()
         docList_int.append(wordList_int)
-
     del(docList)
     return docList_int, docNum
 

@@ -4,6 +4,7 @@ import time
 import pdb
 
 import LoadData   as ld
+import OutputData as od
 import NaiveBayes as nb
 
 def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
@@ -32,7 +33,16 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 				testAccuracy = testAccuracy + 1
 
 	return testAccuracy, testY_hat
+'''
+def PriorAndFitting_diffLaplace(naiveBayesModel, , testX, testY, modelStr):
+	testY_alpha = []
+	if(modelStr == "Multinomial"):
+		
+	else: # learn Pwy based on Multinomial model
+		print "No different alpha test for Bernoulli\n"
 
+	return testAlpha, testAccuracy
+'''
 def RunMain():
 	print '************Welcome to the World of Bayes!***********\n'
 	time.clock()
@@ -59,12 +69,15 @@ def RunMain():
 	# *******part 1: basic implementation
 	###### Bernoulli model
 	[berAccuracy, berTestHist] = LearnAndTest(nbModel, testX, testY, "Bernoulli")
+	od.WritenFile_dev(DIR+"Predict.Bernoulli_0.dev", berTestHist, str0, str1)
 	print 'Bernoulli accuracy is %.4f \n' %(float(berAccuracy)/float(testDocNum))
 	t2 = float(time.clock())
 	print 'Bernoulli Model learn & test, using time %.4f s, \n' % (t2-t1)
 
 	###### Multinomial will go through the similar process.
-	[mulAccuracy, mulTestHist] = LearnAndTest(nbModel, testX, testY, "Multinomial")
+	#pdb.set_trace()
+	[mulAccuracy, mulTestHist] = LearnAndTest(nbModel, testX, testY, "Multinomial", 0.01)
+	od.WritenFile_dev(DIR+"Predict.Multinomial_0.dev", mulTestHist, str0, str1)
 	print 'Multinomial accuracy is %.4f \n' %(float(mulAccuracy)/float(testDocNum))
 	
 	t3 = float(time.clock())
