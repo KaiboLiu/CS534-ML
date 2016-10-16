@@ -49,7 +49,7 @@ def PriorAndFitting_diffLaplace(naiveBayesModel, testX, testY, dir, str0, str1):
 		[accuracy, testHist, confuseMat] = LearnAndTest(naiveBayesModel, testX, testY, "Multinomial", alpha)
 		od.WritenFile_dev(filename, testHist, str0, str1)
 
-	return testAlpha, testAccuracy
+	return testY_alpha, testAccuracy
 
 def RunMain():
 	print '************Welcome to the World of Bayes!***********\n'
