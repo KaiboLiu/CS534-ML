@@ -8,6 +8,10 @@ import OutputData as od
 import NaiveBayes as nb
 
 def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
+	confuseMat   = []
+	confuseMat.append([0,0])
+	confuseMat.append([0,0])
+
 	testY_hat    = []
 	testAccuracy = 0
 	if(modelStr == "Bernoulli"):
@@ -19,8 +23,9 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 		for idx, doc in enumerate(testX):
 			y_hat = naiveBayesModel.predictY_bernoulli(doc)
 			testY_hat.append(y_hat)
-			if (y_hat == testY[idx]):
-				testAccuracy = testAccuracy + 1
+			confuseMat[y_hat][testY[idx]] = confuseMat[y_hat][testY[idx]] + 1
+			#if (y_hat == testY[idx]):
+				#testAccuracy = testAccuracy + 1
 	else: # learn Pwy based on Multinomial model
 		naiveBayesModel.estimatePwy_multinomial()
 		naiveBayesModel.laplSmoothPwy_multinomial(lapAlpha)
@@ -29,17 +34,20 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 		for idx, doc in enumerate(testX):
 			y_hat = naiveBayesModel.predictY_multinomial(doc)
 			testY_hat.append(y_hat)
-			if (y_hat == testY[idx]):
-				testAccuracy = testAccuracy + 1
-
-	return testAccuracy, testY_hat
+			confuseMat[y_hat][testY[idx]] = confuseMat[y_hat][testY[idx]] + 1
+			#if (y_hat == testY[idx]):
+				#testAccuracy = testAccuracy + 1
+	testAccuracy = confuseMat[0][0]+confuseMat[1][1]
+	return testAccuracy, testY_hat, confuseMat
 '''
-def PriorAndFitting_diffLaplace(naiveBayesModel, , testX, testY, modelStr):
+def PriorAndFitting_diffLaplace(naiveBayesModel, , testX, testY):
 	testY_alpha = []
-	if(modelStr == "Multinomial"):
-		
-	else: # learn Pwy based on Multinomial model
-		print "No different alpha test for Bernoulli\n"
+	for alpha in testY_alpha:
+		[accuracy, testHist, confuseMat] = LearnAndTest(nbModel, testX, testY, "Multinomial", alpha)
+		od.WritenFile_dev(DIR+"Predict.Multinomial"+str(alpha)=".dev", berTestHist, str0, str1)
+		print 'Multinomial accuracy is %.4f confuseMatrix is:\n' %(float(berAccuracy)/float(testDocNum)), berConfuseMat
+	
+
 
 	return testAlpha, testAccuracy
 '''
@@ -68,18 +76,17 @@ def RunMain():
 
 	# *******part 1: basic implementation
 	###### Bernoulli model
-	[berAccuracy, berTestHist] = LearnAndTest(nbModel, testX, testY, "Bernoulli")
+	[berAccuracy, berTestHist, berConfuseMat] = LearnAndTest(nbModel, testX, testY, "Bernoulli")
 	od.WritenFile_dev(DIR+"Predict.Bernoulli_0.dev", berTestHist, str0, str1)
-	print 'Bernoulli accuracy is %.4f \n' %(float(berAccuracy)/float(testDocNum))
+	print 'Bernoulli accuracy is %.4f confuseMatrix is:\n' %(float(berAccuracy)/float(testDocNum)), berConfuseMat
 	t2 = float(time.clock())
 	print 'Bernoulli Model learn & test, using time %.4f s, \n' % (t2-t1)
 
 	###### Multinomial will go through the similar process.
 	#pdb.set_trace()
-	[mulAccuracy, mulTestHist] = LearnAndTest(nbModel, testX, testY, "Multinomial", 0.01)
+	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, testX, testY, "Multinomial", 1)
 	od.WritenFile_dev(DIR+"Predict.Multinomial_0.dev", mulTestHist, str0, str1)
-	print 'Multinomial accuracy is %.4f \n' %(float(mulAccuracy)/float(testDocNum))
-	
+	print 'Multinomial accuracy is %.4f \n confuse matrix is:\n' %(float(mulAccuracy)/float(testDocNum)), mulConfuseMat
 	t3 = float(time.clock())
 	print 'multinomial Model learn & test, using time %.4f s, \n' % (t3-t2)
 
