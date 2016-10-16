@@ -39,18 +39,18 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 				#testAccuracy = testAccuracy + 1
 	testAccuracy = confuseMat[0][0]+confuseMat[1][1]
 	return testAccuracy, testY_hat, confuseMat
-'''
-def PriorAndFitting_diffLaplace(naiveBayesModel, , testX, testY):
-	testY_alpha = []
-	for alpha in testY_alpha:
-		[accuracy, testHist, confuseMat] = LearnAndTest(nbModel, testX, testY, "Multinomial", alpha)
-		od.WritenFile_dev(DIR+"Predict.Multinomial"+str(alpha)=".dev", berTestHist, str0, str1)
-		print 'Multinomial accuracy is %.4f confuseMatrix is:\n' %(float(berAccuracy)/float(testDocNum)), berConfuseMat
-	
 
+def PriorAndFitting_diffLaplace(naiveBayesModel, testX, testY, dir, str0, str1):
+	testY_alpha = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10]
+	testAccuracy = []
+	for alpha in testY_alpha:
+		#pdb.set_trace()
+		filename = dir+"Predict.Mul.diffLaps."+str(alpha)+".dev"
+		[accuracy, testHist, confuseMat] = LearnAndTest(naiveBayesModel, testX, testY, "Multinomial", alpha)
+		od.WritenFile_dev(filename, testHist, str0, str1)
 
 	return testAlpha, testAccuracy
-'''
+
 def RunMain():
 	print '************Welcome to the World of Bayes!***********\n'
 	time.clock()
@@ -84,7 +84,7 @@ def RunMain():
 
 	###### Multinomial will go through the similar process.
 	#pdb.set_trace()
-	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, testX, testY, "Multinomial", 1)
+	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, testX, testY, "Multinomial")
 	od.WritenFile_dev(DIR+"Predict.Multinomial_0.dev", mulTestHist, str0, str1)
 	print 'Multinomial accuracy is %.4f \n confuse matrix is:\n' %(float(mulAccuracy)/float(testDocNum)), mulConfuseMat
 	t3 = float(time.clock())
@@ -96,11 +96,11 @@ def RunMain():
 	# nbModel.setFeatureLabel(labelVec, redFeaNum)
 	# [berA, berHist] = LearnAndTest(nbModel, testX, testY, "Bernoulli")
 
-
 	# ******** part 2: Priors and overfittings
-	#  testAlpha = [...]
-	# for each Alpha
-	#     ...go through the similar process.
+	## different Laplace Smoothing Alpha
+	[testAlpha, testAccuracy] = PriorAndFitting_diffLaplace(nbModel, testX, testY, DIR, str0, str1)
+	print testAlpha
+	print float(testAccuracy)/float(testDocNum)
 
 
 	# ******* part 3: bonus
