@@ -3,14 +3,14 @@ from math import log
 import pdb
 
 class NAIVE_BAYES_MODEL:
-	""" class NAIVE_BAYES_MODEL, 
-			1. this model is used for classification 
+	""" class NAIVE_BAYES_MODEL,
+			1. this model is used for classification
 	        2. learn P(y_k) and P(x_i|y_k) for given model.
 	        3. predict class for input X based on learning result.
 	        4. support Bernoulli & Multinomial model
 	        5. set Laplassian smooth for MAP estimation
 
-		Functions: 
+		Functions:
 	"""
 	def __init__(self, wordNum, docNum, trainX = [], trainY = [], classNum = 2):
 		self.trainX     = trainX
@@ -19,6 +19,7 @@ class NAIVE_BAYES_MODEL:
 		self.classNum      = classNum
 		self.sampleNum     = docNum
 		self.featureNum    = wordNum
+		print "featureNum:", wordNum
 		self.featureLabel  = np.ones(self.featureNum)
 
 		# prior distribution of y, And the distribution of X given y.
@@ -37,10 +38,11 @@ class NAIVE_BAYES_MODEL:
 
 	# after feature reduction, call this function to adjust Bayes dataset.
 	def setFeatureLabel(self, labelVec, redFeatureNum):
+		print "redFeatureNum:", redFeatureNum
 		self.featureLabel = labelVec
 		self.featureNum   = redFeatureNum
 
-	# estimate Py(the prior probability) using MLE (Maximum Likelihood Estimation). 	
+	# estimate Py(the prior probability) using MLE (Maximum Likelihood Estimation).
 	def estimatePy_MLE(self):
 		# empty Py first, then estimate Py.
 		del self.Py_c[:]
@@ -59,7 +61,6 @@ class NAIVE_BAYES_MODEL:
 			if label == 1:
 				vecX[count] = sparseX.count(idx)
 				count = count + 1
-
 		return vecX
 
 	# convert a document record under multinomial model to that in bernoulli model.
@@ -120,7 +121,7 @@ class NAIVE_BAYES_MODEL:
 		maxClass = np.argmax(PvecX_y)
 
 		return maxClass
-	
+
 
 	# based on training dataset, learn Pwy (count the number of word (w_i) appears given class (y_k))
 	def estimatePwy_multinomial(self):
@@ -143,13 +144,10 @@ class NAIVE_BAYES_MODEL:
 		del self.PwyNorm_negP[:]
 		denomi_lap = self.featureNum * lapAlpha
 		numer_lap  = np.ones(self.featureNum)*lapAlpha
-		#pdb.set_trace()
 		for k in range(self.classNum):
 			Pw_yk    = (np.array(self.Pwy_c[k]) + numer_lap) / float(self.featureNum + denomi_lap)
 			logPw_yk = np.log(Pw_yk)
 			self.PwyNorm_p.append(logPw_yk.tolist())
-		#pdb.set_trace()
-
 	# vecX is the document record under multinomial model
 	def calculatePx_multinomial(self, vecX):
 		PvecX_y    = []
@@ -166,13 +164,3 @@ class NAIVE_BAYES_MODEL:
 		maxClass = np.argmax(PvecX_y)
 
 		return maxClass
-				
-	
-
-
-
-
-
-
-
-

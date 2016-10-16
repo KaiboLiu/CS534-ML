@@ -2,10 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import pdb
+import copy
 
 import LoadData   as ld
 import OutputData as od
 import NaiveBayes as nb
+import Improvement as im
 
 def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 	confuseMat   = []
@@ -14,6 +16,7 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 
 	testY_hat    = []
 	testAccuracy = 0
+	devDocNum = len(testY)
 	if(modelStr == "Bernoulli"):
 		# learn Pwy based on Bernoulli model
 		naiveBayesModel.estimatePwy_bernoulli()
@@ -26,6 +29,11 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 			confuseMat[y_hat][testY[idx]] = confuseMat[y_hat][testY[idx]] + 1
 			#if (y_hat == testY[idx]):
 				#testAccuracy = testAccuracy + 1
+		#print 'Bernoulli accuracy: ', testAccuracy, " total doc#: ", devDocNum
+		#print 'Bernoulli accuracy is %.4f' %(float(testAccuracy)/float(devDocNum))
+		testAccuracy = confuseMat[0][0]+confuseMat[1][1]
+		print 'Bernoulli accuracy is %.4f \nconfuseMatrix is:\n' %(float(testAccuracy)/float(devDocNum)), confuseMat
+
 	else: # learn Pwy based on Multinomial model
 		naiveBayesModel.estimatePwy_multinomial()
 		naiveBayesModel.laplSmoothPwy_multinomial(lapAlpha)
@@ -37,19 +45,32 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 			confuseMat[y_hat][testY[idx]] = confuseMat[y_hat][testY[idx]] + 1
 			#if (y_hat == testY[idx]):
 				#testAccuracy = testAccuracy + 1
-	testAccuracy = confuseMat[0][0]+confuseMat[1][1]
+		#print 'Multinomial accuracy: ', testAccuracy, " Total Doc: ", devDocNum
+		#print 'Multinomial accuracy is %.4f \n' %(float(testAccuracy)/float(devDocNum))
+		testAccuracy = confuseMat[0][0]+confuseMat[1][1]
+		print 'Multinomial accuracy is %.4f \nconfuseMatrix is:\n' %(float(testAccuracy)/float(devDocNum)), confuseMat
+
+	#testAccuracy = confuseMat[0][0]+confuseMat[1][1]
 	return testAccuracy, testY_hat, confuseMat
 
 def PriorAndFitting_diffLaplace(naiveBayesModel, testX, testY, dir, str0, str1):
 	testY_alpha = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10]
 	testAccuracy = []
 	for alpha in testY_alpha:
-		#pdb.set_trace()
 		filename = dir+"Predict.Mul.diffLaps."+str(alpha)+".dev"
 		[accuracy, testHist, confuseMat] = LearnAndTest(naiveBayesModel, testX, testY, "Multinomial", alpha)
 		od.WritenFile_dev(filename, testHist, str0, str1)
 
 	return testY_alpha, testAccuracy
+
+def showWords(vocList, idx_list):
+	if type(idx_list[0]) is list:
+		for k in range(len(idx_list)):
+			print "idx: ", idx_list[k]
+			print "Words: ", vocList[idx_list[k]]
+	else:
+		print "idx: ", idx_list
+		print "Words: ", vocList[idx_list]
 
 def RunMain():
 	print '************Welcome to the World of Bayes!***********\n'
@@ -59,14 +80,15 @@ def RunMain():
 	# # load data, and save as the format under NaiveBayes.
 	DIR                   = "./clintontrump-data/"
 	FILENAME_BASIC        = "clintontrump."
-	wordNum               = ld.LoadData_vocabulary(DIR+FILENAME_BASIC+"vocabulary")
+	[vocList, wordNum]    = ld.LoadData_vocabulary(DIR+FILENAME_BASIC+"vocabulary")
 	[trainX, trainDocNum] = ld.LoadData_bagOfWords(DIR+FILENAME_BASIC+"bagofwords.train")
-	[testX,  testDocNum]  = ld.LoadData_bagOfWords(DIR+FILENAME_BASIC+"bagofwords.dev")
+	[devX,  devDocNum]  = ld.LoadData_bagOfWords(DIR+FILENAME_BASIC+"bagofwords.dev")
+	[testX,  testDocNum]  = ld.LoadData_bagOfWords(DIR+FILENAME_BASIC+"bagofwords.test")
 
 	str0    = "realDonaldTrump"
 	str1    = "HillaryClinton"
 	trainY  = ld.LoadData_labels(DIR+FILENAME_BASIC+"labels.train", str0)
-	testY   = ld.LoadData_labels(DIR+FILENAME_BASIC+"labels.dev", str0)
+	devY   = ld.LoadData_labels(DIR+FILENAME_BASIC+"labels.dev", str0)
 	t1 = float(time.clock())
 	print 'Loading data File. using time %.4f s, \n' % (t1-t0)
 
@@ -76,36 +98,63 @@ def RunMain():
 
 	# *******part 1: basic implementation
 	###### Bernoulli model
-	[berAccuracy, berTestHist, berConfuseMat] = LearnAndTest(nbModel, testX, testY, "Bernoulli")
+	[berAccuracy, berTestHist, berConfuseMat] = LearnAndTest(nbModel, devX, devY, "Bernoulli")
 	od.WritenFile_dev(DIR+"Predict.Bernoulli_0.dev", berTestHist, str0, str1)
-	print 'Bernoulli accuracy is %.4f confuseMatrix is:\n' %(float(berAccuracy)/float(testDocNum)), berConfuseMat
+	Pwy_b = copy.deepcopy(nbModel.Pwy_c)
+	#print 'Bernoulli accuracy is %.4f \nconfuseMatrix is:\n' %(float(berAccuracy)/float(testDocNum)), berConfuseMat
 	t2 = float(time.clock())
 	print 'Bernoulli Model learn & test, using time %.4f s, \n' % (t2-t1)
 
 	###### Multinomial will go through the similar process.
-	#pdb.set_trace()
-	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, testX, testY, "Multinomial")
+	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
 	od.WritenFile_dev(DIR+"Predict.Multinomial_0.dev", mulTestHist, str0, str1)
-	print 'Multinomial accuracy is %.4f \n confuse matrix is:\n' %(float(mulAccuracy)/float(testDocNum)), mulConfuseMat
+	Pwy_m = copy.deepcopy(nbModel.Pwy_c)
+	#print 'Multinomial accuracy is %.4f \nconfuse matrix is:\n' %(float(mulAccuracy)/float(testDocNum)), mulConfuseMat
 	t3 = float(time.clock())
 	print 'multinomial Model learn & test, using time %.4f s, \n' % (t3-t2)
 
 	##### Ranking Top ten features
-	# labelVec = [1, 0, 0, 1, ..., 0, 0, 1] 
-	# redFeaNum = 10
-	# nbModel.setFeatureLabel(labelVec, redFeaNum)
-	# [berA, berHist] = LearnAndTest(nbModel, testX, testY, "Bernoulli")
+	topWord_num = 1000 #[10, 100, 1000, 5000]
+	std_threshold = 0.5 #[0, 0.5, 1, 2]
+	tfidf_threshold = 2 #[1, 2, 3, 4]
+	print '\n * Remove top words'
+	[removedIdx, labelVec, redFeaNum] = im.find_top_words(nbModel.classNum, wordNum, topWord_num, Pwy_b)
+	showWords(vocList, removedIdx)
+	nbModel.setFeatureLabel(labelVec, redFeaNum)
+	[berAccuracy, berTestHist, berConfuseMat] = LearnAndTest(nbModel, devX, devY, "Bernoulli")
+	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
 
+	# Find stop words based on STD and doc#
+	print '\n * Remove STD words for Bernoulli'
+	[removedIdx, labelVec, redFeaNum] = im.find_std_zero_words(wordNum, std_threshold, Pwy_b)
+	nbModel.setFeatureLabel(labelVec, redFeaNum)
+	[berAccuracy, berTestHist, berConfuseMat]  = LearnAndTest(nbModel, devX, devY, "Bernoulli")
+	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+
+	# Find stop words based on STD and word#
+	print '\n * Remove STD words for Multinomial'
+	[removedIdx, labelVec, redFeaNum] = im.find_std_zero_words(wordNum, std_threshold, Pwy_m)
+	nbModel.setFeatureLabel(labelVec, redFeaNum)
+	[berAccuracy, berTestHist, berConfuseMat]  = LearnAndTest(nbModel, devX, devY, "Bernoulli")
+	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+
+	# Find stop words based on TF/IDF
+	print '\n * Remove low TF/IDF words'
+	[removedIdx, labelVec, redFeaNum] = im.find_low_tfidf_words(wordNum, tfidf_threshold, Pwy_b, Pwy_m)
+	nbModel.setFeatureLabel(labelVec, redFeaNum)
+	[berAccuracy, berTestHist, berConfuseMat]  = LearnAndTest(nbModel, devX, devY, "Bernoulli")
+	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+
+	'''
 	# ******** part 2: Priors and overfittings
 	## different Laplace Smoothing Alpha
-	[testAlpha, testAccuracy] = PriorAndFitting_diffLaplace(nbModel, testX, testY, DIR, str0, str1)
+	[testAlpha, testAccuracy] = PriorAndFitting_diffLaplace(nbModel, devX, devY, DIR, str0, str1)
 	print testAlpha
 	print float(testAccuracy)/float(testDocNum)
-
+	'''
 
 	# ******* part 3: bonus
 
-	
 
 if __name__ == "__main__":
 	RunMain()

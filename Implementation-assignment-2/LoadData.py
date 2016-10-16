@@ -10,11 +10,15 @@ import pdb
 # there would be different number of words in each line
 '''
 def LoadData_vocabulary(filename):
-    vocList = [x.strip() for x in open(filename, "r").readlines()]
-    wordNum = len(vocList)
+	vocList = []
+	with open(filename,'rb') as source:
+		for line in source:
+			[idx, word] = line.rstrip("\n").split("\t")
+			vocList.append(word)
 
-    del(vocList)
-    return wordNum
+	wordNum = len(vocList)
+	vocList = np.array(vocList)
+	return vocList, wordNum
 
 def LoadData_bagOfWords(filename):
     # string list to integer list
@@ -28,11 +32,9 @@ def LoadData_bagOfWords(filename):
             intW = int(w)
             wordList_int.append(intW)
 
-       # wordList_int.sort()
         docList_int.append(wordList_int)
     del(docList)
     return docList_int, docNum
-
 
 '''
 # for machine learning assignment2,
@@ -73,4 +75,3 @@ def LoadData_csv():
     testX = testData[:,0:dataLen-1]
     testY = testData[:,dataLen-1]
     return [trainX, trainY, testX, testY]
-
