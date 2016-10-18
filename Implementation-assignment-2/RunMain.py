@@ -27,10 +27,7 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 			y_hat = naiveBayesModel.predictY_bernoulli(doc)
 			testY_hat.append(y_hat)
 			confuseMat[y_hat][testY[idx]] = confuseMat[y_hat][testY[idx]] + 1
-			#if (y_hat == testY[idx]):
-				#testAccuracy = testAccuracy + 1
-		#print 'Bernoulli accuracy: ', testAccuracy, " total doc#: ", devDocNum
-		#print 'Bernoulli accuracy is %.4f' %(float(testAccuracy)/float(devDocNum))
+		
 		testAccuracy = confuseMat[0][0]+confuseMat[1][1]
 		print 'Bernoulli accuracy is %.4f \nconfuseMatrix is:\n' %(float(testAccuracy)/float(devDocNum)), confuseMat
 
@@ -43,10 +40,7 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 			y_hat = naiveBayesModel.predictY_multinomial(doc)
 			testY_hat.append(y_hat)
 			confuseMat[y_hat][testY[idx]] = confuseMat[y_hat][testY[idx]] + 1
-			#if (y_hat == testY[idx]):
-				#testAccuracy = testAccuracy + 1
-		#print 'Multinomial accuracy: ', testAccuracy, " Total Doc: ", devDocNum
-		#print 'Multinomial accuracy is %.4f \n' %(float(testAccuracy)/float(devDocNum))
+		
 		testAccuracy = confuseMat[0][0]+confuseMat[1][1]
 		print 'Multinomial accuracy is %.4f \nconfuseMatrix is:\n' %(float(testAccuracy)/float(devDocNum)), confuseMat
 
@@ -54,11 +48,13 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 	return testAccuracy, testY_hat, confuseMat
 
 def PriorAndFitting_diffLaplace(naiveBayesModel, testX, testY, dir, str0, str1):
-	testY_alpha = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10]
+	print '\n\n****** Now we are checking different laplace smooth alpha\n'
+	testY_alpha  = [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1, 10, 100, 1000, 10000]
 	testAccuracy = []
 	for alpha in testY_alpha:
 		filename = dir+"Predict.Mul.diffLaps."+str(alpha)+".dev"
 		[accuracy, testHist, confuseMat] = LearnAndTest(naiveBayesModel, testX, testY, "Multinomial", alpha)
+		testAccuracy.append(accuracy)
 		od.WritenFile_dev(filename, testHist, str0, str1)
 
 	return testY_alpha, testAccuracy
@@ -78,11 +74,12 @@ def RunMain():
 	t0 = float(time.clock())
 
 	# # load data, and save as the format under NaiveBayes.
+	DIR_RESULT            = "./Result/"
 	DIR                   = "./clintontrump-data/"
 	FILENAME_BASIC        = "clintontrump."
 	[vocList, wordNum]    = ld.LoadData_vocabulary(DIR+FILENAME_BASIC+"vocabulary")
 	[trainX, trainDocNum] = ld.LoadData_bagOfWords(DIR+FILENAME_BASIC+"bagofwords.train")
-	[devX,  devDocNum]  = ld.LoadData_bagOfWords(DIR+FILENAME_BASIC+"bagofwords.dev")
+	[devX,  devDocNum]    = ld.LoadData_bagOfWords(DIR+FILENAME_BASIC+"bagofwords.dev")
 	[testX,  testDocNum]  = ld.LoadData_bagOfWords(DIR+FILENAME_BASIC+"bagofwords.test")
 
 	str0    = "realDonaldTrump"
@@ -99,7 +96,7 @@ def RunMain():
 	# *******part 1: basic implementation
 	###### Bernoulli model
 	[berAccuracy, berTestHist, berConfuseMat] = LearnAndTest(nbModel, devX, devY, "Bernoulli")
-	od.WritenFile_dev(DIR+"Predict.Bernoulli_0.dev", berTestHist, str0, str1)
+	od.WritenFile_dev(DIR_RESULT+"Predict.Bernoulli_basic.dev", berTestHist, str0, str1)
 	Pwy_b = copy.deepcopy(nbModel.Pwy_c)
 	#print 'Bernoulli accuracy is %.4f \nconfuseMatrix is:\n' %(float(berAccuracy)/float(testDocNum)), berConfuseMat
 	t2 = float(time.clock())
@@ -107,12 +104,13 @@ def RunMain():
 
 	###### Multinomial will go through the similar process.
 	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
-	od.WritenFile_dev(DIR+"Predict.Multinomial_0.dev", mulTestHist, str0, str1)
+	od.WritenFile_dev(DIR_RESULT+"Predict.Multinomial_basic.dev", mulTestHist, str0, str1)
 	Pwy_m = copy.deepcopy(nbModel.Pwy_c)
 	#print 'Multinomial accuracy is %.4f \nconfuse matrix is:\n' %(float(mulAccuracy)/float(testDocNum)), mulConfuseMat
 	t3 = float(time.clock())
 	print 'multinomial Model learn & test, using time %.4f s, \n' % (t3-t2)
 
+	'''
 	##### Ranking Top ten features
 	topWord_num = 1000 #[10, 100, 1000, 5000]
 	std_threshold = 0.5 #[0, 0.5, 1, 2]
@@ -144,14 +142,17 @@ def RunMain():
 	nbModel.setFeatureLabel(labelVec, redFeaNum)
 	[berAccuracy, berTestHist, berConfuseMat]  = LearnAndTest(nbModel, devX, devY, "Bernoulli")
 	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
-
 	'''
+	
 	# ******** part 2: Priors and overfittings
 	## different Laplace Smoothing Alpha
-	[testAlpha, testAccuracy] = PriorAndFitting_diffLaplace(nbModel, devX, devY, DIR, str0, str1)
+	[testAlpha, testAccuracy] = PriorAndFitting_diffLaplace(nbModel, devX, devY, DIR_RESULT, str0, str1)
+	testAccuracy = np.array(testAccuracy)/float(testDocNum)
 	print testAlpha
-	print float(testAccuracy)/float(testDocNum)
-	'''
+	print testAccuracy
+	od.Save2Figure_semilogs(DIR_RESULT+'laplaceAlpha', 1, testAlpha, [testAccuracy],['log(laplace_alpha)','accuracy'], [1e-5, 10000,0, 1], 1)
+	
+	
 
 	# ******* part 3: bonus
 

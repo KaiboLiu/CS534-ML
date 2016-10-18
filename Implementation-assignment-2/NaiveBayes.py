@@ -93,7 +93,7 @@ class NAIVE_BAYES_MODEL:
 		del self.PwyNorm_p[:]
 		del self.PwyNorm_negP[:]
 		denomi_lap = self.classNum * lapAlpha
-		numer_lap  = np.ones(self.featureNum)*lapAlpha
+		numer_lap  = lapAlpha
 		for k in range(self.classNum):
 			Pw_yk    = (np.array(self.Pwy_c[k]) + numer_lap) / float(self.Py_c[k] + denomi_lap)
 			logPw_yk = np.log(Pw_yk)
@@ -143,7 +143,7 @@ class NAIVE_BAYES_MODEL:
 		del self.PwyNorm_p[:]
 		del self.PwyNorm_negP[:]
 		denomi_lap = self.featureNum * lapAlpha
-		numer_lap  = np.ones(self.featureNum)*lapAlpha
+		numer_lap  = lapAlpha
 		for k in range(self.classNum):
 			Pw_yk    = (np.array(self.Pwy_c[k]) + numer_lap) / float(self.featureNum + denomi_lap)
 			logPw_yk = np.log(Pw_yk)
