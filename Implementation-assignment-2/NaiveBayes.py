@@ -61,6 +61,7 @@ class NAIVE_BAYES_MODEL:
 			if label == 1:
 				vecX[count] = sparseX.count(idx)
 				count = count + 1
+
 		return vecX
 
 	# convert a document record under multinomial model to that in bernoulli model.
@@ -121,7 +122,6 @@ class NAIVE_BAYES_MODEL:
 		maxClass = np.argmax(PvecX_y)
 
 		return maxClass
-
 
 	# based on training dataset, learn Pwy (count the number of word (w_i) appears given class (y_k))
 	def estimatePwy_multinomial(self):

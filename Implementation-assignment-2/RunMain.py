@@ -27,7 +27,7 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 			y_hat = naiveBayesModel.predictY_bernoulli(doc)
 			testY_hat.append(y_hat)
 			confuseMat[y_hat][testY[idx]] = confuseMat[y_hat][testY[idx]] + 1
-		
+
 		testAccuracy = confuseMat[0][0]+confuseMat[1][1]
 		print 'Bernoulli accuracy is %.4f \nconfuseMatrix is:\n' %(float(testAccuracy)/float(devDocNum)), confuseMat
 
@@ -40,12 +40,13 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 			y_hat = naiveBayesModel.predictY_multinomial(doc)
 			testY_hat.append(y_hat)
 			confuseMat[y_hat][testY[idx]] = confuseMat[y_hat][testY[idx]] + 1
-		
+
 		testAccuracy = confuseMat[0][0]+confuseMat[1][1]
 		print 'Multinomial accuracy is %.4f \nconfuseMatrix is:\n' %(float(testAccuracy)/float(devDocNum)), confuseMat
 
 	#testAccuracy = confuseMat[0][0]+confuseMat[1][1]
 	return testAccuracy, testY_hat, confuseMat
+
 
 def PriorAndFitting_diffLaplace(naiveBayesModel, testX, testY, dir, str0, str1):
 	print '\n\n****** Now we are checking different laplace smooth alpha\n'
@@ -110,40 +111,89 @@ def RunMain():
 	t3 = float(time.clock())
 	print 'multinomial Model learn & test, using time %.4f s, \n' % (t3-t2)
 
-	'''
+
 	##### Ranking Top ten features
-	topWord_num = 1000 #[10, 100, 1000, 5000]
-	std_threshold = 0.5 #[0, 0.5, 1, 2]
-	tfidf_threshold = 2 #[1, 2, 3, 4]
-	print '\n * Remove top words'
-	[removedIdx, labelVec, redFeaNum] = im.find_top_words(nbModel.classNum, wordNum, topWord_num, Pwy_b)
-	showWords(vocList, removedIdx)
-	nbModel.setFeatureLabel(labelVec, redFeaNum)
-	[berAccuracy, berTestHist, berConfuseMat] = LearnAndTest(nbModel, devX, devY, "Bernoulli")
-	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+	topWord_list = [10, 100, 1000, 5000]
+	std_threshold = [0.1, 0.3, 0.5, 0.7, 0.9]
+	tfidf_threshold = [1, 2, 3, 4, 5]
 
-	# Find stop words based on STD and doc#
-	print '\n * Remove STD words for Bernoulli'
-	[removedIdx, labelVec, redFeaNum] = im.find_std_zero_words(wordNum, std_threshold, Pwy_b)
-	nbModel.setFeatureLabel(labelVec, redFeaNum)
-	[berAccuracy, berTestHist, berConfuseMat]  = LearnAndTest(nbModel, devX, devY, "Bernoulli")
-	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+	for word_num in topWord_list:
+		print '\n * Remove top words based on Bernoulli', word_num
+		[removedIdx, labelVec, redFeaNum] = im.find_top_words(nbModel.classNum, wordNum, word_num, Pwy_b)
+		nbModel.setFeatureLabel(labelVec, redFeaNum)
 
-	# Find stop words based on STD and word#
-	print '\n * Remove STD words for Multinomial'
-	[removedIdx, labelVec, redFeaNum] = im.find_std_zero_words(wordNum, std_threshold, Pwy_m)
-	nbModel.setFeatureLabel(labelVec, redFeaNum)
-	[berAccuracy, berTestHist, berConfuseMat]  = LearnAndTest(nbModel, devX, devY, "Bernoulli")
-	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+		t1 = float(time.clock())
+		[berAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Bernoulli")
+		t2 = float(time.clock())
+		print 'Bernoulli Model learn & test, using time %.4f s, \n' % (t2-t1)
 
-	# Find stop words based on TF/IDF
-	print '\n * Remove low TF/IDF words'
-	[removedIdx, labelVec, redFeaNum] = im.find_low_tfidf_words(wordNum, tfidf_threshold, Pwy_b, Pwy_m)
-	nbModel.setFeatureLabel(labelVec, redFeaNum)
-	[berAccuracy, berTestHist, berConfuseMat]  = LearnAndTest(nbModel, devX, devY, "Bernoulli")
-	[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
-	'''
-	
+		t1 = float(time.clock())
+		[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+		t2 = float(time.clock())
+		print 'Multinomial Model learn & test, using time %.4f s, \n' % (t2-t1)
+
+		print '\n * Remove top words based on Mulinomial', word_num
+		[removedIdx, labelVec, redFeaNum] = im.find_top_words(nbModel.classNum, wordNum, word_num, Pwy_m)
+		nbModel.setFeatureLabel(labelVec, redFeaNum)
+
+		t1 = float(time.clock())
+		[berAccuracy, berTestHist, berConfuseMat] = LearnAndTest(nbModel, devX, devY, "Bernoulli")
+		t2 = float(time.clock())
+		print 'Bernoulli Model learn & test, using time %.4f s, \n' % (t2-t1)
+
+		t1 = float(time.clock())
+		[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+		t2 = float(time.clock())
+		print 'Multinomial Model learn & test, using time %.4f s, \n' % (t2-t1)
+
+	for std_thre in std_threshold:
+		# Find stop words based on STD and doc#
+		print '\n * Remove STD words for Bernoulli', std_thre
+		[removedIdx, labelVec, redFeaNum] = im.find_std_zero_words(wordNum, std_thre, Pwy_b)
+		#showWords(vocList, removedIdx)
+		nbModel.setFeatureLabel(labelVec, redFeaNum)
+		t1 = float(time.clock())
+		[berAccuracy, berTestHist, berConfuseMat]  = LearnAndTest(nbModel, devX, devY, "Bernoulli")
+		t2 = float(time.clock())
+		print 'Bernoulli Model learn & test, using time %.4f s, \n' % (t2-t1)
+
+		t1 = float(time.clock())
+		[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+		t2 = float(time.clock())
+		print 'Multinomial Model learn & test, using time %.4f s, \n' % (t2-t1)
+
+		# Find stop words based on STD and word#
+		print '\n * Remove STD words for Multinomial', std_thre
+		[removedIdx, labelVec, redFeaNum] = im.find_std_zero_words(wordNum, std_thre, Pwy_m)
+		nbModel.setFeatureLabel(labelVec, redFeaNum)
+
+		t1 = float(time.clock())
+		[berAccuracy, berTestHist, berConfuseMat]  = LearnAndTest(nbModel, devX, devY, "Bernoulli")
+		t2 = float(time.clock())
+		print 'Bernoulli Model learn & test, using time %.4f s, \n' % (t2-t1)
+
+		t1 = float(time.clock())
+		[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+		t2 = float(time.clock())
+		print 'Multinomial Model learn & test, using time %.4f s, \n' % (t2-t1)
+
+	for tfidf_thre in tfidf_threshold:
+		# Find stop words based on TF/IDF
+		print '\n * Remove low TF/IDF words', tfidf_thre
+		[removedIdx, labelVec, redFeaNum] = im.find_low_tfidf_words(wordNum, tfidf_thre, Pwy_b, Pwy_m)
+		nbModel.setFeatureLabel(labelVec, redFeaNum)
+		t1 = float(time.clock())
+		[berAccuracy, berTestHist, berConfuseMat]  = LearnAndTest(nbModel, devX, devY, "Bernoulli")
+		t2 = float(time.clock())
+		print 'berAccuracy Model learn & test, using time %.4f s, \n' % (t2-t1)
+
+		t1 = float(time.clock())
+		[mulAccuracy, mulTestHist, mulConfuseMat] = LearnAndTest(nbModel, devX, devY, "Multinomial")
+		t2 = float(time.clock())
+		print 'Multinomial Model learn & test, using time %.4f s, \n' % (t2-t1)
+
+
+
 	# ******** part 2: Priors and overfittings
 	## different Laplace Smoothing Alpha
 	[testAlpha, testAccuracy] = PriorAndFitting_diffLaplace(nbModel, devX, devY, DIR_RESULT, str0, str1)
@@ -151,8 +201,8 @@ def RunMain():
 	print testAlpha
 	print testAccuracy
 	od.Save2Figure_semilogs(DIR_RESULT+'laplaceAlpha', 1, testAlpha, [testAccuracy],['log(laplace_alpha)','accuracy'], [1e-5, 10000,0, 1], 1)
-	
-	
+
+
 
 	# ******* part 3: bonus
 
