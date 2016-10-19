@@ -133,6 +133,26 @@ def RunMain():
 	t2 = float(time.clock())
 	print 'multinomial Model learn & test, using time %.4f s, \n' % (t2-t1)	 
  
+ 
+ 
+	#Predict the final
+	###### Bernoulli model
+	t1 = float(time.clock())
+	berTestHist = bo.LearnAndPredict(nbModel, testX, "Bernoulli")
+	od.WritenFile_dev(DIR_RESULT+"Predict.Bernoulli_basic_with_tag.test", berTestHist, str0, str1)
+	#Pwy_b = copy.deepcopy(nbModel.Pwy_c)
+	#print 'Bernoulli accuracy is %.4f \nconfuseMatrix is:\n' %(float(berAccuracy)/float(testDocNum)), berConfuseMat
+	t2 = float(time.clock())
+	print 'Bernoulli Model learn & test, using time %.4f s, \n' % (t2-t1)
+
+	###### Multinomial will go through the similar process.
+	t1 = float(time.clock())
+	mulTestHist = bo.LearnAndPredict(nbModel, testX, "Multinomial")
+	od.WritenFile_dev(DIR_RESULT+"Predict.Multinomial_basic_with_tag.test", mulTestHist, str0, str1)
+	#Pwy_m = copy.deepcopy(nbModel.Pwy_c)
+	#print 'Multinomial accuracy is %.4f \nconfuse matrix is:\n' %(float(mulAccuracy)/float(testDocNum)), mulConfuseMat
+	t2 = float(time.clock())
+	print 'multinomial Model learn & test, using time %.4f s, \n' % (t2-t1)	 
 	
 	##### Ranking Top ten features
 	topWord_list = [10, 100, 1000, 5000]

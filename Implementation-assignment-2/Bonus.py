@@ -7,7 +7,7 @@ Created on Tue Oct 16 18:13:15 2016
 import NaiveBayes as nb
 
 
-def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
+def LearnAndTest(naiveBayesModel, testX, testY, modelStr,lapAlpha = 1):
 	confuseMat   = []
 	confuseMat.append([0,0])
 	confuseMat.append([0,0])
@@ -46,3 +46,27 @@ def LearnAndTest(naiveBayesModel, testX, testY, modelStr, lapAlpha = 1):
 
 	#testAccuracy = confuseMat[0][0]+confuseMat[1][1]
 	return testAccuracy, testY_hat, confuseMat
+ 
+ 
+def LearnAndPredict(naiveBayesModel, testX, modelStr,lapAlpha = 1):
+
+	testY_hat    = []
+	if(modelStr == "Bernoulli"):
+		# learn Pwy based on Bernoulli model
+		naiveBayesModel.estimatePwy_bernoulli()
+		naiveBayesModel.laplSmoothPwy_bernouli(lapAlpha)
+
+		# test on based on Py & Pwy
+		for idx, doc in enumerate(testX):
+			y_hat = naiveBayesModel.predictY_bernoulli_withtag(doc)
+			testY_hat.append(y_hat)
+
+	else: # learn Pwy based on Multinomial model
+		naiveBayesModel.estimatePwy_multinomial()
+		naiveBayesModel.laplSmoothPwy_multinomial(lapAlpha)
+
+		# test on based on Py & Pwy
+		for idx, doc in enumerate(testX):
+			y_hat = naiveBayesModel.predictY_multinomial_withtag(doc)
+			testY_hat.append(y_hat)
+	return testY_hat
