@@ -164,3 +164,29 @@ class NAIVE_BAYES_MODEL:
 		maxClass = np.argmax(PvecX_y)
 
 		return maxClass
+  
+	'''
+	the codes below is for tag marked optimazation for predictions
+ 	'''
+	# predict class y give document vecX, return class Y that has the maximum probability
+	def predictY_bernoulli_withtag(self, docX):
+		tag = set([5222,9171,12567,7295,8186,10438,11428,])
+		if (len(set(docX).intersection(tag)) > 0):
+			return 0
+		vecX     = self.createVecX(docX)
+		vecX     = self.vecXtranform_bernoulli(vecX)
+		PvecX_y  = self.calculatePx_bernoulli(vecX)
+		maxClass = np.argmax(PvecX_y)
+
+		return maxClass
+  
+	# predict class y give document x, return class Y that has the maximum probability
+	def predictY_multinomial_withtag(self, docX):
+		tag = set([5222,9171,12567,7295,8186,10438,11428,])
+		if (len(set(docX).intersection(tag)) > 0):
+			return 0
+		vecX     = self.createVecX(docX)
+		PvecX_y  = self.calculatePx_multinomial(vecX)
+		maxClass = np.argmax(PvecX_y)
+
+		return maxClass
