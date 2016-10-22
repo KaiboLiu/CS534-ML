@@ -1,0 +1,15 @@
+Plan A: language classification (for English and Chinese or ...)
+
+Plan B: music label classification. (Application for music recommendation)
+
+Milestone:
+
+Oct. 25th, # Week5--Tuesday, Searching for dataset, Plan A comes first, if failed, then PPlan B. Hand in Proposal.
+
+Nov. 1st,  # Week6--Tuesday, searching for existed method, and decide what kind of featurre to use.
+
+Nov. 15th, # Week8--Tuesday, Basic implementation of Plan A (or B), have a basic result.
+Nov. 25th, # Week9--Friday, performance Improvement based on basic implementation.
+
+Nov. 29th, # Week10--Tuesday, Report & Presentation document ready. And do presentation.
+NOv. 30th, # Week10--Wednesday, Hand in Report.

@@ -1,0 +1,23 @@
+1. **** has vowls, single words, sentences.
+   **** no chinese mandeline. has (english, japanese, korean, Cantonese...)
+https://www.internationalphoneticassociation.org/content/ipa-handbook-downloads
+
+2. **** including existed algorithms,lots of dataset
+https://community.topcoder.com/longcontest/?module=ViewProblemStatement&rd=16555&pm=13978
+
+3. ×××× python programming for audio processing.
+https://github.com/tyiannak/pyAudioAnalysis
+
+4. **** music emotion recognition
+   **** a book for introduction.
+   https://books.google.com/books?id=qnjRBQAAQBAJ&pg=PA229&lpg=PA229&dq=language+classification,+audio+database&source=bl&ots=0HYy1XBi0P&sig=EBRTXPSeeMoIiuykkRjmgTQq6qM&hl=en&sa=X&ved=0ahUKEwiw_66q7u7PAhVUzWMKHdquCMMQ6AEIQjAG#v=onepage&q&f=false
+
+
+5.**** different kind of  datasets for machine learninig
+https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research#Sound_data
+
+
+
+
+
+
