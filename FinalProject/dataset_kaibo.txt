@@ -1,0 +1,45 @@
+[Dataset]-language
+1.http://tatoeba.org/cmn/
+: Tatoeba website which has full sentences and translations in text and audio with ALL Languages.
+http://tatoeba.org/cmn/downloads
+:we can find 'sentences_with_audio'
+
+2.https://www.internationalphoneticassociation.org/content/ipa-handbook-downloads
+:IPA Handbook downloads,  a large set of .WAV files including English, Cantonese, Korean, Japanese and so on.
+:May require contacting for permission
+
+3.http://archive.phonetics.ucla.edu/
+:UCLA Phonetics Lab Archive offers many audio files of spoken word in many languagesaudio files of spoken word in many languages
+
+4.https://www.nist.gov/itl/iad/mig/2015-language-recognition-evaluation
+:2015 NIST Language Recognition Evaluation (LRE15)
+
+5.https://catalog.ldc.upenn.edu/LDC2010T14
+:NIST 2005 Open Machine Translation (OpenMT) Evaluation from Linguistic Data Consortium (LDC), Arabic+Chinese
+https://catalog.ldc.upenn.edu/license/ldc-non-members-agreement.pdf
+:NonMember agreement
+
+6.http://www.voxforge.org/
+:Speech audio and corpus in English, Albanian, Bulgarian, Catalan, Croatian, Dutch, French, German, Greek, Hebrew, Italian, Latin, Persian, Portuguese, Russian, Spanish, Turkish, Ukrainian
+
+7.http://www.speech.cs.cmu.edu/databases/an4/
+:The CMU AN4 Audio Databases(English)
+
+8.https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research#Speech
+
+
+[Dataset]-music
+https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research#Music
+:Geographical Original of Music Data Set from UCI
+:Million Song Dataset
+:Bach Choral Harmony Dataset
+
+
+[Method]
+1.http://www.ee.iisc.ac.in/people/faculty/prasantg/downloads/asr03-hmmgmm-4up.pdf
+GMM(Gaussian Mixture Model) HMM(Hidden Markov Models) speech recognition
+
+
+[Samples]
+http://cs229.stanford.edu/projects2012.html
+:Spoken Language Classification/Music Preference Prediction, two of Stanford CS 229 Machine Learning Final Projects
