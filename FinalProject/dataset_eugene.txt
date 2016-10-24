@@ -14,3 +14,6 @@
 
 2. http://labrosa.ee.columbia.edu/millionsong/
 : collection of audio features and metadata for a million contemporary popular music tracks
+
+3. http://www.cs.cornell.edu/~shuochen/lme/data_page.html
+: radio playlists from hundreds of radio stations in the United States
