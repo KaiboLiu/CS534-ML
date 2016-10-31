@@ -1,0 +1,50 @@
+##### supplement for dataset
+1. voice record could have diff frequence, so maybe need to check data from different dataset.
+2. voice example could have different length in diff level (how complicated), and it may influence model running time.
+3. http://www.voxforge.org/home/listen , normalized dataset, but no Chinese.
+
+
+1##### feature & toolbox
+1. Spoken Language Classification (cs229 MachinegLearning)
+	http://cs229.stanford.edu/proj2012/DeMoriFaizullahKhanHoltPruisken-SpokenLanguageClassification.pdf
+**feature: mel-frequency cepstral coefficients
+           delta-features (1st/2nd derivative of mel-freq ceptral coeff).
+
+**method: SVM, Gaussian Mixture Model, Neural Network
+**toolbox: VOICEBOX, speech processing toolbox for Matlab. http://www.ee.ic.ac.uk/hp/staff/dmb/voicebox/voicebox.html
+
+2.A Review of Audio Features and Statistical Models Exploited for Voice Pattern Design  https://arxiv.org/pdf/1502.06811v1.pdf
+**preprocessing: audio signal digitalized
+				re-sample, bandpass filter, amplitude normalization
+				segment signal to overlapped time frames
+				linear transformation (FFT, DCT, Wavelet) applied to each frame to extract feature vectors.
+**feature: Mel-Frequency Cepstral Coefficients, 
+	       1st and 2nd derivation of feature vectors, 
+		   time localized frequency peak, 
+		   time-frequency energy peak location.
+**postProcessing: feature normalization ~ N(0, 1).
+**method/model: Gaussian Mixture Model, Hidden Markov Model, 
+	            Non-negative Matrix Factorization (to decrase data dimension, which means to reduce the local statistical redundancy of the feature vectors)
+**tools:MFCC feature extract: http://www.ee.ic.ac.uk/hp/staff/dmb/voicebox/voicebox.html
+                              https://engineering.purdue.edu/malcolm/interval/1998-010/.
+
+
+
+3. An Introduction to Application-Independent Evaluation of Speaker Recognition Systems
+**evaluations
+**cost function
+
+4. python audio processing: 
+** read & MFCC, https://www.idiap.ch/software/bob/docs/releases/last/sphinx/html/TutorialsAP.html#simple-audio-processing
+** https://github.com/tyiannak/pyAudioAnalysis
+
+5. scoring tools:
+** http://www.itl.nist.gov/iad/mig/tools/
+
+6. wikipedia: https://en.wikipedia.org/wiki/Speech_recognition
+7. Language Recognition with Support Vector Machines, 2003,
+
+8. Spoken Language Recognition: From Fundamentals to Practice (2012)
+** features: shifted-delta-cepstral (SDC) coefficients
+             MFCC, 1st & 2nd derivation
+** model: GMM, 
