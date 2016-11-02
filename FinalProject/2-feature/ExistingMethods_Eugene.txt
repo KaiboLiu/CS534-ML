@@ -22,13 +22,61 @@
 6. delta log energy
 
 * other features from audio files
-1. sample frequency: Hz, Mel, Erb, MIDI
-2. sample width
-3. sampe channels
-4. # of audio frame
-5. spectrogram
-6. chromagram
-...
+mel frequency cepstral coefficients (MFCC)
+1, 2 order delta cepstral coefficients
+linear frequency cepstral coefficients (LFCC)
+linear prediction coefficients (LPC)
+perceptual linear prediction coefficients (PLP)
+PerceptualSharpness
+PerceptualSpread
+bottleneck
+n-gram phnotactic
+chromagram
+Energy
+delta log energy
+Envelope
+EnvelopeShapeStatistics
+Frames
+# of audio frame
+beat and tempo tracking
+beat-synchronous features
+Locate beat events
+pitch
+pitch tracking (several methods)
+duration
+Loudness
+AmplitudeModulation
+MagnitudeSpectrum
+AutoCorrelation
+AutoCorrelationPeaksIntegrator
+ComplexDomainOnsetDetection
+onset detection (several methods)
+spectrogram
+spectrum
+SpectralCrestFactorPerBand
+SpectralDecrease
+SpectralFlatness
+SpectralFlatnessPerBand
+SpectralFlux
+SpectralRolloff
+SpectralShapeStatistics
+SpectralSlope
+SpectralVariation
+digital filters
+bag-of-sounds
+LSF
+OBSIR
+phase vocoder
+sampe channels
+sample frequency: Hz, Mel, Erb, MIDI
+sample width
+HistogramIntegrator
+SlopeIntegrator
+StatisticalIntegrator
+TemporalShapeStatistics
+transient / steady-state separation
+ZCR
+
 
 [Toolboxs]
 - https://github.com/jamiebullock/LibXtract/
