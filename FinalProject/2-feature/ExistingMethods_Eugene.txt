@@ -1,23 +1,42 @@
-Challenges
-- One of the challenges of speech recognition is the wide range of variability in speech and acoustics. [1]
+[Summary of Features]
+* higher level
+- tones
+- vowel sound
+- l,r, n
+- words
 
-How to recognize (features)
-- recognize words [1]
-- tonal features: Chinese language is a tonal language.  Tone classification plays an important role in Chinese speech recognition [2, 3]
-- All utterances were sampled at 8 kHz with 16-bit resolution. The feature vector consisted of 12-order LPC-derived cepstral coefficients, 12-order delta cepstral coefficients, one delta log energy and one delta delta log energy referred to [4, 5]
-- Chinese is a tone language:  http://esl.fis.edu/grammar/langdiff/chinese.htm
-  : English has more vowel sounds than Chinese.
-  : Chinese learners find it difficult to hear the difference between l and r, and so may mispronounce rake and rice as lake and lice. Southern Chinese speakers have a similiar difficulty in distinguishing l and n.
-- Vectors of speech signal features (e.g., mel-frequency cepstral coefficients (MFCC), linear prediction coefficients (LPC), perceptual linear prediction coefficients (PLP), bottleneck features (ML), etc.) are extracted from the acoustical signal for dimensionality reduction and probabilistic modeling. [7]
+* from paper [13]
+1. spectrum
+2. duration
+3. pitch
+4. n-gram phnotactic
+5. bag-of-sounds
 
-Models
-- Hidden Markov models
-- feed-forward neural network
-- recurrent neural networks (LSTMs)
-- convolutional neural networks (CNNs)
-- deep neural network (DNNs)
+* common features fom audio files
+1. mel frequency cepstral coefficients (MFCC)
+2. 1, 2 order delta cepstral coefficients
+3. linear frequency cepstral coefficients (LFCC)
+4. linear prediction coefficients (LPC)
+5. perceptual linear prediction coefficients (PLP)
+5. bottleneck
+6. delta log energy
 
-Applications
+* other features from audio files
+1. sample frequency: Hz, Mel, Erb, MIDI
+2. sample width
+3. sampe channels
+4. # of audio frame
+5. spectrogram
+6. chromagram
+...
+
+[Toolboxs]
+- https://github.com/jamiebullock/LibXtract/
+- https://github.com/librosa/librosa
+- http://aubio.org/
+- http://yaafe.sourceforge.net/
+
+[Applications]
 - https://dictation.io/
 - http://www.nuance.com/dragon/index.htm
 - https://speechlogger.appspot.com/en/
@@ -28,11 +47,30 @@ Applications
 	https://arxiv.org/abs/1512.02595
 	http://www.manyakoetse.com/baiduinput/
 
-Papers
+[Challenges]
+- One of the challenges of speech recognition is the wide range of variability in speech and acoustics. [1]
+
+[How to recognize (features)]
+- recognize words [1]
+- tonal features: Chinese language is a tonal language.  Tone classification plays an important role in Chinese speech recognition [2, 3]
+- All utterances were sampled at 8 kHz with 16-bit resolution. The feature vector consisted of 12-order LPC-derived cepstral coefficients, 12-order delta cepstral coefficients, one delta log energy and one delta delta log energy referred to [4, 5]
+- Chinese is a tone language:  http://esl.fis.edu/grammar/langdiff/chinese.htm
+  : English has more vowel sounds than Chinese.
+  : Chinese learners find it difficult to hear the difference between l and r, and so may mispronounce rake and rice as lake and lice. Southern Chinese speakers have a similiar difficulty in distinguishing l and n.
+- Vectors of speech signal features (e.g., mel-frequency cepstral coefficients (MFCC), linear prediction coefficients (LPC), perceptual linear prediction coefficients (PLP), bottleneck features (ML), etc.) are extracted from the acoustical signal for dimensionality reduction and probabilistic modeling. [7]
+
+[Models]
+- Hidden Markov models
+- feed-forward neural network
+- recurrent neural networks (LSTMs)
+- convolutional neural networks (CNNs)
+- deep neural network (DNNs)
+
+[Papers]
 [1] https://arxiv.org/pdf/1512.02595v1.pdf
 [2] http://research.microsoft.com/en-us/um/people/xiaohe/publication/euro99liu_pap.pdf
 [3] http://languagelog.ldc.upenn.edu/myl/ProsodyFinal.pdf
-[4] Linear Regression Based Bayesian Predictive Classification for Speech Recognition 
+[4] Linear Regression Based Bayesian Predictive Classification for Speech Recognition
 [5] Acoustic modeling for large vocabulary speech recognition
 [6] Advances in Phone-Based Modeling for Automatic Accent Classification
 [7] Automatic speech recognition for under-resourced languages: A survey
@@ -43,8 +81,8 @@ Papers
 [12] A Vector Space Modeling Approach to Spoken Language Identification
 [13] Integrating Acoustic, Prosodic and Phonotactic Features for Spoken Language Identification
 
-Organization
+[Organization]
 - feature extraction, acoustic models, language and pronunciation models, speaker adaptation [1]
 
-Dataset
+[Additional Dataset]
 - 1997 Mandarin Broadcast News Speech: https://catalog.ldc.upenn.edu/LDC98S73
