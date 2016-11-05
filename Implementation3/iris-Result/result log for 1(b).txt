@@ -1,0 +1,1162 @@
+4£¬7£¬9,38,46,81,
+[done] Loading data File. using time 0.0019 s, 
+
+******Part 1*****
+
+****stop when number in node is less than: 1   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 2, threshold 5.0, gain 0.31128, N=8 to (2 and 6)
+featrue 3, threshold 1.6, gain 0.45915, N=6 to (3 and 3)
+featrue 0, threshold 7.2, gain 0.91830, N=3 to (2 and 1)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+featrue 1, threshold 3.2, gain 0.65002, N=6 to (5 and 1)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> (feature 2) < 5.0 ? 
+        T-> class 1: 2 
+        F-> (feature 3) < 1.6 ? 
+          T-> class 2: 3 
+          F-> (feature 0) < 7.2 ? 
+            T-> class 1: 2 
+            F-> class 2: 1 
+      F-> (feature 0) < 6.0 ? 
+        T-> (feature 1) < 3.2 ? 
+          T-> class 2: 5 
+          F-> class 1: 1 
+        F-> class 2: 31 
+
+****stop when number in node is less than: 2   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 2, threshold 5.0, gain 0.31128, N=8 to (2 and 6)
+featrue 3, threshold 1.6, gain 0.45915, N=6 to (3 and 3)
+featrue 0, threshold 7.2, gain 0.91830, N=3 to (2 and 1)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+featrue 1, threshold 3.2, gain 0.65002, N=6 to (5 and 1)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> (feature 2) < 5.0 ? 
+        T-> class 1: 2 
+        F-> (feature 3) < 1.6 ? 
+          T-> class 2: 3 
+          F-> (feature 0) < 7.2 ? 
+            T-> class 1: 2 
+            F-> class 2: 1 
+      F-> (feature 0) < 6.0 ? 
+        T-> (feature 1) < 3.2 ? 
+          T-> class 2: 5 
+          F-> class 1: 1 
+        F-> class 2: 31 
+
+****stop when number in node is less than: 3   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 2, threshold 5.0, gain 0.31128, N=8 to (2 and 6)
+featrue 3, threshold 1.6, gain 0.45915, N=6 to (3 and 3)
+featrue 0, threshold 7.2, gain 0.91830, N=3 to (2 and 1)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+featrue 1, threshold 3.2, gain 0.65002, N=6 to (5 and 1)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> (feature 2) < 5.0 ? 
+        T-> class 1: 2 
+        F-> (feature 3) < 1.6 ? 
+          T-> class 2: 3 
+          F-> (feature 0) < 7.2 ? 
+            T-> class 1: 2 
+            F-> class 2: 1 
+      F-> (feature 0) < 6.0 ? 
+        T-> (feature 1) < 3.2 ? 
+          T-> class 2: 5 
+          F-> class 1: 1 
+        F-> class 2: 31 
+
+****stop when number in node is less than: 4   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 2, threshold 5.0, gain 0.31128, N=8 to (2 and 6)
+featrue 3, threshold 1.6, gain 0.45915, N=6 to (3 and 3)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+featrue 1, threshold 3.2, gain 0.65002, N=6 to (5 and 1)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> (feature 2) < 5.0 ? 
+        T-> class 1: 2 
+        F-> (feature 3) < 1.6 ? 
+          T-> class 2: 3 
+          F-> class 2: 1 of 3
+      F-> (feature 0) < 6.0 ? 
+        T-> (feature 1) < 3.2 ? 
+          T-> class 2: 5 
+          F-> class 1: 1 
+        F-> class 2: 31 
+
+****stop when number in node is less than: 5   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 2, threshold 5.0, gain 0.31128, N=8 to (2 and 6)
+featrue 3, threshold 1.6, gain 0.45915, N=6 to (3 and 3)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+featrue 1, threshold 3.2, gain 0.65002, N=6 to (5 and 1)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> (feature 2) < 5.0 ? 
+        T-> class 1: 2 
+        F-> (feature 3) < 1.6 ? 
+          T-> class 2: 3 
+          F-> class 2: 1 of 3
+      F-> (feature 0) < 6.0 ? 
+        T-> (feature 1) < 3.2 ? 
+          T-> class 2: 5 
+          F-> class 1: 1 
+        F-> class 2: 31 
+
+****stop when number in node is less than: 6   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 2, threshold 5.0, gain 0.31128, N=8 to (2 and 6)
+featrue 3, threshold 1.6, gain 0.45915, N=6 to (3 and 3)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+featrue 1, threshold 3.2, gain 0.65002, N=6 to (5 and 1)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> (feature 2) < 5.0 ? 
+        T-> class 1: 2 
+        F-> (feature 3) < 1.6 ? 
+          T-> class 2: 3 
+          F-> class 2: 1 of 3
+      F-> (feature 0) < 6.0 ? 
+        T-> (feature 1) < 3.2 ? 
+          T-> class 2: 5 
+          F-> class 1: 1 
+        F-> class 2: 31 
+
+****stop when number in node is less than: 7   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 2, threshold 5.0, gain 0.31128, N=8 to (2 and 6)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> (feature 2) < 5.0 ? 
+        T-> class 1: 2 
+        F-> class 2: 4 of 6
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 8   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 2, threshold 5.0, gain 0.31128, N=8 to (2 and 6)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> (feature 2) < 5.0 ? 
+        T-> class 1: 2 
+        F-> class 2: 4 of 6
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 9   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 10   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 11   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 12   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 13   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 14   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 15   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 16   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 17   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 18   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 19   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 20   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 21   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 22   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 23   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 24   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 25   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 26   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 27   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 28   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 29   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 30   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 31   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 32   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 33   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 34   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 35   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 36   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 37   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+featrue 0, threshold 6.0, gain 0.07385, N=37 to (6 and 31)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> (feature 0) < 6.0 ? 
+        T-> class 2: 5 of 6
+        F-> class 2: 31 
+
+****stop when number in node is less than: 38   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> class 2: 36 of 37
+
+****stop when number in node is less than: 39   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> class 2: 36 of 37
+
+****stop when number in node is less than: 40   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> class 2: 36 of 37
+
+****stop when number in node is less than: 41   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> class 2: 36 of 37
+
+****stop when number in node is less than: 42   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> class 2: 36 of 37
+
+****stop when number in node is less than: 43   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> class 2: 36 of 37
+
+****stop when number in node is less than: 44   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> class 2: 36 of 37
+
+****stop when number in node is less than: 45   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+featrue 3, threshold 1.8, gain 0.17809, N=45 to (8 and 37)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> (feature 3) < 1.8 ? 
+      T-> class 2: 4 of 8
+      F-> class 2: 36 of 37
+
+****stop when number in node is less than: 46   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 47   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 48   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 49   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 50   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 51   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 52   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 53   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 54   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 55   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 56   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 57   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 58   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 59   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 60   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 61   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 62   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 63   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 64   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 65   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 66   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 67   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 68   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 69   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 70   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 71   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 72   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 73   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 74   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 75   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 76   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 77   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 78   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 79   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 80   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+featrue 2, threshold 4.8, gain 0.71692, N=80 to (35 and 45)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> (feature 2) < 4.8 ? 
+    T-> class 1: 35 
+    F-> class 2: 40 of 45
+
+****stop when number in node is less than: 81   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 82   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 83   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 84   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 85   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 86   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 87   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 88   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 89   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 90   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 91   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 92   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 93   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 94   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 95   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 96   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 97   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 98   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 99   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+
+****stop when number in node is less than: 100   *****
+featrue 2, threshold 3.0, gain 0.91830, N=120 to (40 and 80)
+(feature 2) < 3.0 ? 
+  T-> class 0: 40 
+  F-> class 2: 40 of 80
+[done] Learn 100 trees. using time 5.1959 s, 
+
+[done] test trainning data and testing data. using time 0.1419 s.
