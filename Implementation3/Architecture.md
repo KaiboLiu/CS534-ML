@@ -10,8 +10,9 @@ def buildtree
 def printtree(tree,indent='')
 
 
-def getwidth(tree):
-def getdepth(tree):
+def getwidth(tree)
+def getdepth(tree)
+
 from PIL import Image,ImageDraw
 def drawtree(tree,jpeg='tree.jpg')
 def drawnode(draw,tree,x,y)
