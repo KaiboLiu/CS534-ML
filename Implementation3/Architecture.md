@@ -4,8 +4,6 @@ algorithm from part (1) as the base learner.
 
 def dividedata(Data, feature, threshold)
 
-def uniquecounts(Data)  #on class0,1,2
-
 def entrop(Data)
 
 class decisionnode
@@ -14,16 +12,6 @@ def buildtree
 
 def printtree(tree,indent='')
 
-
-def getwidth(tree)
-
-def getdepth(tree)
-
-from PIL import Image,ImageDraw
-
-def drawtree(tree,jpeg='tree.jpg')
-
-def drawnode(draw,tree,x,y)
-
+import drawtree
 
 def classify(test,tree)
