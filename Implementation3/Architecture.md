@@ -12,6 +12,6 @@ def buildtree
 
 def printtree(tree,indent='')
 
-import drawtree
+import drawtree.py
 
 def classify(test,tree)
