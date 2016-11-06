@@ -215,7 +215,7 @@ def RandomForest(trainData, testData, k, L):
             [tree, error] = buildtree_trErr(train_sset, k, featrue_bagging)
             forest.append(tree)
             tr_err = tr_err + error
-        trainError.append(tr_err)
+        trainError.append((float)tr_err / treeNum)
         forestList.append(forest)
 
         # test on forest
