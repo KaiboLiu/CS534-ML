@@ -134,7 +134,8 @@ def buildtree_trErr(Data, k=1, feaBagging=False,feature_pool=[0,1,2,3],scoref=en
                     #print 'featrue %d, threshold %.2f, gain %.5f, N=%d to (%d and %d)' %(feature, threshold, gain, n, len(set1),len(set2))
     if best_gain > 0:
         print 'featrue %d, threshold %.1f, gain %.5f, N=%d to (%d and %d)' %(best_feature, best_threshold, best_gain, n, len(best_sets[0]),len(best_sets[1]))
-        lft_feaPool, rht_feaPool = []
+        lft_feaPool = []
+        rht_feaPool = []
         if feaBagging == True:
             lft_feaPool = random.sample(feature_pool, 2)
             rht_feaPool = random.sample(feature_pool, 2)
@@ -202,7 +203,7 @@ def classify(testRow,tree):
 
 def RandomForest(trainData, testData, k):
     L = [5, 10, 15, 20, 25, 30]
-    sset_size = 0.8 * len(trainData)
+    sset_size = np.int(0.8 * len(trainData))
     featrue_bagging = True
 
     # build forest and test
@@ -211,10 +212,12 @@ def RandomForest(trainData, testData, k):
     testError = []
     for treeNum in L:
         # build forest
+        print '\n*** Forest with %d trees: \n' %treeNum
         forest = []
         tr_err = 0
         for i in range(treeNum):
-            train_sset = random.sample(trainData, sset_size)
+            sset_idx = random.sample(range(len(trainData)), sset_size)
+            train_sset = trainData[sset_idx[:]]
             [tree, error] = buildtree_trErr(train_sset, k, featrue_bagging)
             forest.append(tree)
             tr_err = tr_err + error
@@ -223,11 +226,11 @@ def RandomForest(trainData, testData, k):
 
         # test on forest
         te_err = 0
-        for row in test_data:
+        for row in testData:
             te_rst = []
             for tree in forest:
-                test_rst.append(classify(row,tree))
-            stat = collections.Counter(test_rst).most_common()
+                te_rst.append(classify(row,tree))
+            stat = collections.Counter(te_rst).most_common()
             label = stat[0][0]
             if np.int(label) != row[-1]:  # select majority class as test result
                 te_err+= 1
@@ -305,7 +308,6 @@ def RunMain():
     # feature_pool.sort()
     pdb.set_trace()
     for k in range(1, k_max+1):
-        k = 10
         [forest, tr_err, te_err]=RandomForest(train_data, test_data, k)
 
     # plot
