@@ -117,7 +117,12 @@ def buildtree_trErr(Data, k=1, feaBagging=False,feature_pool=[0,1,2,3],scoref=en
         return decisionnode(Class=[label,Data[:,last_column].tolist().count(label),n]), tr_err
 
     best_feature, best_threshold = None, None
-    for feature in feature_pool:
+    if feaBagging == True:
+        sset_feature = random.sample(feature_pool, 2)
+    else:
+        sset_feature = feature_pool
+
+    for feature in sset_feature:
         #Data.sort(lambda x,y:cmp(x[feature],y[feature])) #a sort method in list not numpy
         Data = Data[np.argsort(Data[:,feature])]
         for i in range(1,n):
@@ -134,16 +139,8 @@ def buildtree_trErr(Data, k=1, feaBagging=False,feature_pool=[0,1,2,3],scoref=en
                     #print 'featrue %d, threshold %.2f, gain %.5f, N=%d to (%d and %d)' %(feature, threshold, gain, n, len(set1),len(set2))
     if best_gain > 0:
         print 'featrue %d, threshold %.1f, gain %.5f, N=%d to (%d and %d)' %(best_feature, best_threshold, best_gain, n, len(best_sets[0]),len(best_sets[1]))
-        lft_feaPool = []
-        rht_feaPool = []
-        if feaBagging == True:
-            lft_feaPool = random.sample(feature_pool, 2)
-            rht_feaPool = random.sample(feature_pool, 2)
-        else:
-            lft_feaPool, rht_feaPool = feature_pool
-
-        [left_child, lftC_err] = buildtree_trErr(best_sets[0], k, feaBagging, lft_feaPool, scoref)
-        [right_child, rhtC_err] = buildtree_trErr(best_sets[1], k, feaBagging, rht_feaPool, scoref)
+        [left_child, lftC_err] = buildtree_trErr(best_sets[0], k, feaBagging, feature_pool, scoref)
+        [right_child, rhtC_err] = buildtree_trErr(best_sets[1], k, feaBagging, feature_pool, scoref)
         tr_err = lftC_err + rhtC_err
         return decisionnode(best_feature,best_threshold,left=left_child,right=right_child), tr_err
     else:   #this split has no update, changing feature and threshold won't split new nodes
