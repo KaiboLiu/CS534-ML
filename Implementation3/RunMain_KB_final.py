@@ -84,8 +84,7 @@ def buildtree(Data,k=1,feature_pool=[0,1,2,3],scoref=entropy):
                     best_sets = (set1, set2)
                     #print 'featrue %d, threshold %.2f, gain %.5f, N=%d to (%d and %d)' %(feature, threshold, gain, n, len(set1),len(set2))
     if best_gain > 0:
-        #*****************************最后加上去******************
-        #print 'featrue %d, threshold %.1f, gain %.5f, N=%d to (%d and %d)' %(best_feature, best_threshold, best_gain, n, len(best_sets[0]),len(best_sets[1]))
+        print 'featrue %d, threshold %.1f, gain %.5f, N=%d to (%d and %d)' %(best_feature, best_threshold, best_gain, n, len(best_sets[0]),len(best_sets[1]))
         left_child = buildtree(best_sets[0],k,feature_pool,scoref)
         right_child = buildtree(best_sets[1],k,feature_pool,scoref)
         return decisionnode(best_feature,best_threshold,left=left_child,right=right_child)
@@ -224,8 +223,7 @@ def run_part(data_train,data_test,k_max=1,saveDir="./iris-Result/",rate_subset=1
 def get_colour(color):
     '''
     b---blue   c---cyan  g---green    k----black
-    m---magenta r---red  w---white    y----yellow
-'''
+    m---magenta r---red  w---white    y----yellow'''
     color_set = ['r','b','m','g','c','k','y']
     return color_set[color % 7]
 
@@ -262,7 +260,7 @@ def RunMain():
         plt.plot(range(1,k_max+1),0.1*error_train_10[1:], get_colour(colour),label="learning data, L=%d" %(l))
         plt.plot(range(1,k_max+1),0.1*error_test_10[1:], get_colour(colour)+'--',label="testing data, L=%d" %(l))
         colour += 1
-        plt.xlim(1, k_max*1.9)
+        plt.xlim(1, k_max*2)
         plt.ylim(0, 0.2)
         plt.xlabel('k')
         plt.ylabel('error percentage')

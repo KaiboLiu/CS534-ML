@@ -15,3 +15,5 @@ def printtree(tree,indent='')
 import drawtree.py
 
 def classify(test,tree)
+
+def run_part() # can be used in part1 and part2 with different parameters
