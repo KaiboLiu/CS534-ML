@@ -199,32 +199,28 @@ def classify(testRow,tree):
         return classify(testRow, child)
 
 def RandomForest(trainData, testData, k, L):
-    sset_size = np.int(0.8 * len(trainData))
+    sset_size       = np.int(0.8 * len(trainData))
     featrue_bagging = True
+    repeatNum       = 10
 
     # build forest and test
-    forestList, trainError, testError = [], [], []
+    forestList, trainAcc, testAcc = [], [], []
     for treeNum in L:
-        # build forest
-        print '\n*** Forest with %d trees: \n' %treeNum
-        forest = []
-        tr_err = 0
-        repeatNum = 1
-        for j in  range(repeatNum):
-            #print "repeat", j
+        forest_rdm = []
+        tr_err, te_err = 0, 0
+        for j in  range(repeatNum): # multi test to reduce influence of random.
+            print '\n*** Forest with %d trees, Round %d: \n' %(treeNum, j)
+            forest = []
+            # build forest
             for i in range(treeNum):
                 sset_idx = random.sample(range(len(trainData)), sset_size)
                 train_sset = trainData[sset_idx[:]]
                 [tree, error] = buildtree_trErr(train_sset, k, featrue_bagging)
-                forest.append(tree)
                 tr_err = tr_err + error
-        trainError.append(np.float(tr_err) / (treeNum*repeatNum))
-        forestList.append(forest)
+                forest.append(tree) 
+            forest_rdm.append(forest)
 
-        # test on forest
-        te_err = 0
-        for j in  range(repeatNum):
-            #print "[Test] repeat", j
+            # test on forest
             for row in testData:
                 te_rst = []
                 for tree in forest:
@@ -233,8 +229,11 @@ def RandomForest(trainData, testData, k, L):
                 label = stat[0][0]
                 if np.int(label) != row[-1]:  # select majority class as test result
                     te_err+= 1
-        testError.append(np.float(te_err) / repeatNum)
-    return forestList, trainError, testError
+        trainAcc.append(100 - np.float(tr_err * 100)/(treeNum*repeatNum*sset_size))
+        testAcc.append(100 - np.float(te_err * 100) /(repeatNum * len(testData)))      
+        forestList.append(forest_rdm)
+
+    return forestList, trainAcc, testAcc
 
 
 def RunMain():
@@ -252,7 +251,7 @@ def RunMain():
     #******************Part 1***************************
     print '******Part 1*****'
     k_max = 25
-
+    
     error_train, error_test = np.zeros(k_max+1), np.zeros(k_max+1)
 
 
@@ -300,34 +299,35 @@ def RunMain():
     print '[done] test trainning data and testing data. using time %.4f s.\n' % (t1-t0)
     t0 = t1
 
-
+    
 
     #******************Part 2***************************
     # f = [0, 1, 2, 3]
     # feature_pool = random.sample(f, 2)  #choose 2/4 features out of 4
     # feature_pool.sort()
     #pdb.set_trace()
-    L = [5, 10, 15, 20, 25, 30]
-    K = [20, 40, 60, 80, 100]
-    k_max = len(K)
-    fTrain_err, fTest_err = np.zeros((k_max, len(L))), np.zeros((k_max, len(L)))
+    Larr = [5, 10, 15, 20, 25, 30]
+    Karr = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
+    # K = [20, 40, 60, 80, 100]
+    k_max = len(Karr)
+    fTrain_Acc, fTest_Acc = np.zeros((k_max, len(Larr))), np.zeros((k_max, len(Larr)))
 
     t0 = float(time.clock())
-    for k in range(0, len(K)):
+    for k in range(len(Karr)):
         print k
-        [forest, tr_err, te_err]=RandomForest(train_data, test_data, K[k], L)
-        fTrain_err[k-1, :] = tr_err[:]  # number of error example
-        fTest_err[k-1, :] = tr_err[:]  # number of error example
+        [forest, tr_acc, te_acc]=RandomForest(train_data, test_data, Karr[k], Larr)
+        fTrain_Acc[k, :] = tr_acc[:]  # number of error example
+        fTest_Acc[k, :] = te_acc[:]  # number of error example
     t1 = float(time.clock())
     print '[done] time %.4f s.\n' % (t1-t0)
 
     # plot
     plt.figure(2)
-    for i in range(0, len(L)):
-        plt.plot(fTrain_err[:,i], 'r',label='classify learning data %d' % L[i])
-        plt.plot(fTest_err[:,i], 'b',label='classify testing data %d' % L[i])
+    for i in range(0, len(Larr)):
+        plt.plot(fTrain_Acc[:,i], 'r',label='classify learning data %d' % Larr[i])
+        plt.plot(fTest_Acc[:,i], 'b',label='classify testing data %d' % Larr[i])
     plt.xlabel('k')
-    plt.ylabel('error percentage')
+    plt.ylabel('accuracy')
     plt.legend(loc='upper right')
     plt.grid(True)
     plt.show()
