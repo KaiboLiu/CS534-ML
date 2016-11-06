@@ -198,15 +198,12 @@ def classify(testRow,tree):
             child = tree.right
         return classify(testRow, child)
 
-def RandomForest(trainData, testData, k):
-    L = [5, 10, 15, 20, 25, 30]
+def RandomForest(trainData, testData, k, L):
     sset_size = np.int(0.8 * len(trainData))
     featrue_bagging = True
 
     # build forest and test
-    forestList = []
-    trainError = []
-    testError = []
+    forestList, trainError, testError = [], [], []
     for treeNum in L:
         # build forest
         print '\n*** Forest with %d trees: \n' %treeNum
@@ -304,8 +301,12 @@ def RunMain():
     # feature_pool = random.sample(f, 2)  #choose 2/4 features out of 4
     # feature_pool.sort()
     pdb.set_trace()
+    L = [5, 10, 15, 20, 25, 30]
+    fTrain_err, fTest_err = np.zeros((k_max, len(L))), np.zeros((k_max, len(L)))
     for k in range(1, k_max+1):
-        [forest, tr_err, te_err]=RandomForest(train_data, test_data, k)
+        [forest, tr_err, te_err]=RandomForest(train_data, test_data, k, L)
+        fTrain_err[k-1, :] = tr_err[:]  # number of error example
+        fTest_err[k-1, :] = tr_err[:]  # number of error example
 
     # plot
 
