@@ -198,16 +198,10 @@ def classify(testRow,tree):
             child = tree.right
         return classify(testRow, child)
 
-<<<<<<< HEAD
-def RandomForest(trainData, testData, k, L):
-    sset_size       = len(trainData) # np.int(0.8 * len(trainData))
-=======
-def RandomForest(trainData, testData, k, L, r):
-    sset_size       = np.int(0.8 * len(trainData))
->>>>>>> 0f652234c05e782b9ee4e0b7396a1fd629408965
-    featrue_bagging = True
-    repeatNum       = r
-
+def RandomForest(trainData, testData, k, L, R):
+    sset_size = len(trainData) # np.int(0.8 * len(trainData))
+    repeatNum = R
+    feature_bagging = True
     # build forest and test
     forestList, trainAcc, testAcc = [], [], []
     for treeNum in L:
@@ -220,7 +214,7 @@ def RandomForest(trainData, testData, k, L, r):
             for i in range(treeNum):
                 sset_idx = np.random.choice(range(len(trainData)), sset_size)
                 train_sset = trainData[sset_idx[:]]
-                [tree, error] = buildtree_trErr(train_sset, k, featrue_bagging)
+                [tree, error] = buildtree_trErr(train_sset, k, feature_bagging)
                 tr_err = tr_err + error
                 forest.append(tree)
             forest_rdm.append(forest)
@@ -262,7 +256,7 @@ def RunMain():
     #******************Part 1***************************
     print '******Part 1*****'
     k_max = 25
-    '''
+    
     error_train, error_test = np.zeros(k_max+1), np.zeros(k_max+1)
 
 
@@ -309,7 +303,7 @@ def RunMain():
     t1 = float(time.clock())
     print '[done] test trainning data and testing data. using time %.4f s.\n' % (t1-t0)
     t0 = t1
-    '''
+    
 
 
     #******************Part 2***************************
