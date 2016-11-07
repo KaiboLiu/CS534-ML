@@ -199,7 +199,7 @@ def classify(testRow,tree):
         return classify(testRow, child)
 
 def RandomForest(trainData, testData, k, L):
-    sset_size       = np.int(0.8 * len(trainData))
+    sset_size       = len(trainData) # np.int(0.8 * len(trainData))
     featrue_bagging = True
     repeatNum       = 10
 
@@ -213,7 +213,7 @@ def RandomForest(trainData, testData, k, L):
             forest = []
             # build forest
             for i in range(treeNum):
-                sset_idx = random.sample(range(len(trainData)), sset_size)
+                sset_idx = np.random.choice(range(len(trainData)), sset_size)
                 train_sset = trainData[sset_idx[:]]
                 [tree, error] = buildtree_trErr(train_sset, k, featrue_bagging)
                 tr_err = tr_err + error
