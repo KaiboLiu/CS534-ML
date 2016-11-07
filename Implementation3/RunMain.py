@@ -198,10 +198,10 @@ def classify(testRow,tree):
             child = tree.right
         return classify(testRow, child)
 
-def RandomForest(trainData, testData, k, L):
+def RandomForest(trainData, testData, k, L, r):
     sset_size       = np.int(0.8 * len(trainData))
     featrue_bagging = True
-    repeatNum       = 10
+    repeatNum       = r
 
     # build forest and test
     forestList, trainAcc, testAcc = [], [], []
@@ -313,14 +313,16 @@ def RunMain():
     # feature_pool.sort()
     #pdb.set_trace()
     Larr = [5, 10, 15, 20, 25, 30]
-    Karr = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-    my_xticks = ['5', '10', '15', '20', '25', '30', '35', '40', '45', '50']
-    k_max = len(Karr)
+    #Karr = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    #my_xticks = ['5', '10', '15', '20', '25', '30', '35', '40', '45', '50']
+    k_max = 50
+    r = 10
+
     fTrain_Acc, fTest_Acc = np.zeros((k_max, len(Larr))), np.zeros((k_max, len(Larr)))
 
     t0 = float(time.clock())
-    for k in range(len(Karr)):
-        [forest, tr_acc, te_acc]=RandomForest(train_data, test_data, Karr[k], Larr)
+    for k in range(1,k_max):
+        [forest, tr_acc, te_acc]=RandomForest(train_data, test_data, k, Larr, r)
         fTrain_Acc[k, :] = tr_acc[:]  # number of error example
         fTest_Acc[k, :] = te_acc[:]  # number of error example
     t1 = float(time.clock())
@@ -328,13 +330,14 @@ def RunMain():
 
     # plot
     colour = 0
-    plt.xticks(Karr, my_xticks)
+    #plt.xticks(Karr, my_xticks)
     plt.figure(2)
     for i in range(0, len(Larr)):
-        plt.plot(Karr, fTrain_Acc[:,i], get_colour(colour), label='learning data L=%d' % Larr[i])
-        plt.plot(Karr, fTest_Acc[:,i], get_colour(colour)+'--', label='testing data L=%d' % Larr[i])
+        plt.plot(fTrain_Acc[:,i], get_colour(colour), label='learning data L=%d' % Larr[i])
+        plt.plot(fTest_Acc[:,i], get_colour(colour)+'--', label='testing data L=%d' % Larr[i])
         colour += 1
-        plt.xlim(1, np.max(Karr)*2)
+        plt.xlim(1, 65)
+        plt.ylim(90, 100)
     plt.xlabel('k')
     plt.ylabel('the percentage of accuracy')
     plt.legend(loc='upper right')
