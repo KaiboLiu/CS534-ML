@@ -84,7 +84,7 @@ def buildtree(Data, k=1,feature_pool=[0,1,2,3],scoref=entropy):
                     best_sets = (set1, set2)
                     #print 'featrue %d, threshold %.2f, gain %.5f, N=%d to (%d and %d)' %(feature, threshold, gain, n, len(set1),len(set2))
     if best_gain > 0:
-        print 'featrue %d, threshold %.1f, gain %.5f, N=%d to (%d and %d)' %(best_feature, best_threshold, best_gain, n, len(best_sets[0]),len(best_sets[1]))
+        #print 'featrue %d, threshold %.1f, gain %.5f, N=%d to (%d and %d)' %(best_feature, best_threshold, best_gain, n, len(best_sets[0]),len(best_sets[1]))
         left_child = buildtree(best_sets[0],k,feature_pool,scoref)
         right_child = buildtree(best_sets[1],k,feature_pool,scoref)
         return decisionnode(best_feature,best_threshold,left=left_child,right=right_child)
@@ -138,7 +138,7 @@ def buildtree_trErr(Data, k=1, feaBagging=False,feature_pool=[0,1,2,3],scoref=en
                     best_sets = (set1, set2)
                     #print 'featrue %d, threshold %.2f, gain %.5f, N=%d to (%d and %d)' %(feature, threshold, gain, n, len(set1),len(set2))
     if best_gain > 0:
-        print 'featrue %d, threshold %.1f, gain %.5f, N=%d to (%d and %d)' %(best_feature, best_threshold, best_gain, n, len(best_sets[0]),len(best_sets[1]))
+        #print 'featrue %d, threshold %.1f, gain %.5f, N=%d to (%d and %d)' %(best_feature, best_threshold, best_gain, n, len(best_sets[0]),len(best_sets[1]))
         [left_child, lftC_err] = buildtree_trErr(best_sets[0], k, feaBagging, feature_pool, scoref)
         [right_child, rhtC_err] = buildtree_trErr(best_sets[1], k, feaBagging, feature_pool, scoref)
         tr_err = lftC_err + rhtC_err
@@ -198,10 +198,15 @@ def classify(testRow,tree):
             child = tree.right
         return classify(testRow, child)
 
+<<<<<<< HEAD
 def RandomForest(trainData, testData, k, L):
     sset_size       = len(trainData) # np.int(0.8 * len(trainData))
+=======
+def RandomForest(trainData, testData, k, L, r):
+    sset_size       = np.int(0.8 * len(trainData))
+>>>>>>> 0f652234c05e782b9ee4e0b7396a1fd629408965
     featrue_bagging = True
-    repeatNum       = 10
+    repeatNum       = r
 
     # build forest and test
     forestList, trainAcc, testAcc = [], [], []
@@ -209,7 +214,7 @@ def RandomForest(trainData, testData, k, L):
         forest_rdm = []
         tr_err, te_err = 0, 0
         for j in  range(repeatNum): # multi test to reduce influence of random.
-            print '\n*** Forest with %d trees, Round %d: \n' %(treeNum, j)
+            print '\n*** Forest with %d trees (k=%d), Round %d: \n' %(treeNum, k, j)
             forest = []
             # build forest
             for i in range(treeNum):
@@ -217,7 +222,7 @@ def RandomForest(trainData, testData, k, L):
                 train_sset = trainData[sset_idx[:]]
                 [tree, error] = buildtree_trErr(train_sset, k, featrue_bagging)
                 tr_err = tr_err + error
-                forest.append(tree) 
+                forest.append(tree)
             forest_rdm.append(forest)
 
             # test on forest
@@ -230,11 +235,17 @@ def RandomForest(trainData, testData, k, L):
                 if np.int(label) != row[-1]:  # select majority class as test result
                     te_err+= 1
         trainAcc.append(100 - np.float(tr_err * 100)/(treeNum*repeatNum*sset_size))
-        testAcc.append(100 - np.float(te_err * 100) /(repeatNum * len(testData)))      
+        testAcc.append(100 - np.float(te_err * 100) /(repeatNum * len(testData)))
         forestList.append(forest_rdm)
 
     return forestList, trainAcc, testAcc
 
+def get_colour(color):
+    '''
+    b---blue   c---cyan  g---green    k----black
+    m---magenta r---red  w---white    y----yellow'''
+    color_set = ['r','b','m','g','c','k','y']
+    return color_set[color % 7]
 
 def RunMain():
     print '************Welcome to the World of Decision Tree!***********'
@@ -251,7 +262,7 @@ def RunMain():
     #******************Part 1***************************
     print '******Part 1*****'
     k_max = 25
-    
+    '''
     error_train, error_test = np.zeros(k_max+1), np.zeros(k_max+1)
 
 
@@ -298,8 +309,8 @@ def RunMain():
     t1 = float(time.clock())
     print '[done] test trainning data and testing data. using time %.4f s.\n' % (t1-t0)
     t0 = t1
+    '''
 
-    
 
     #******************Part 2***************************
     # f = [0, 1, 2, 3]
@@ -307,27 +318,33 @@ def RunMain():
     # feature_pool.sort()
     #pdb.set_trace()
     Larr = [5, 10, 15, 20, 25, 30]
-    Karr = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60]
-    # K = [20, 40, 60, 80, 100]
-    k_max = len(Karr)
+    #Karr = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
+    #my_xticks = ['5', '10', '15', '20', '25', '30', '35', '40', '45', '50']
+    k_max = 50
+    r = 10
+
     fTrain_Acc, fTest_Acc = np.zeros((k_max, len(Larr))), np.zeros((k_max, len(Larr)))
 
     t0 = float(time.clock())
-    for k in range(len(Karr)):
-        print k
-        [forest, tr_acc, te_acc]=RandomForest(train_data, test_data, Karr[k], Larr)
+    for k in range(1,k_max):
+        [forest, tr_acc, te_acc]=RandomForest(train_data, test_data, k, Larr, r)
         fTrain_Acc[k, :] = tr_acc[:]  # number of error example
         fTest_Acc[k, :] = te_acc[:]  # number of error example
     t1 = float(time.clock())
     print '[done] time %.4f s.\n' % (t1-t0)
 
     # plot
+    colour = 0
+    #plt.xticks(Karr, my_xticks)
     plt.figure(2)
     for i in range(0, len(Larr)):
-        plt.plot(fTrain_Acc[:,i], 'r',label='classify learning data %d' % Larr[i])
-        plt.plot(fTest_Acc[:,i], 'b',label='classify testing data %d' % Larr[i])
+        plt.plot(fTrain_Acc[:,i], get_colour(colour), label='learning data L=%d' % Larr[i])
+        plt.plot(fTest_Acc[:,i], get_colour(colour)+'--', label='testing data L=%d' % Larr[i])
+        colour += 1
+        plt.xlim(1, 65)
+        plt.ylim(90, 100)
     plt.xlabel('k')
-    plt.ylabel('accuracy')
+    plt.ylabel('the percentage of accuracy')
     plt.legend(loc='upper right')
     plt.grid(True)
     plt.show()
