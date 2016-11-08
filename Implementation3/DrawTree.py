@@ -17,8 +17,9 @@ def getdepth(tree):
 from PIL import Image, ImageDraw, ImageFont
 
 def drawtree(tree,jpeg='tree.jpg'):
-    w=getwidth(tree)*100
-    h=getdepth(tree)*100+120
+    scale = 150
+    w=getwidth(tree)*scale+50
+    h=getdepth(tree)*scale+scale/2
 
     img=Image.new('RGB',(w,h),(255,255,255))
     draw=ImageDraw.Draw(img)
@@ -31,12 +32,12 @@ def drawnode(draw,tree,x,y):
     feature_name = ['Feature 0','Feature 1', 'Feature 2', 'Feature 3']
     class_name   = ['class 0','class 1','class 2']
     fnt = ImageFont.truetype("./arial.ttf",22)
-    
+    scale = 150
     
     if tree.Class==None:
         # Get the width of each branch
-        w1=getwidth(tree.left)*100
-        w2=getwidth(tree.right)*100
+        w1=getwidth(tree.left)*scale
+        w2=getwidth(tree.right)*scale
 
         # Determine the total space required by this node
         left=x-(w1+w2)/2
@@ -46,12 +47,12 @@ def drawnode(draw,tree,x,y):
         draw.text((x-50,y-20),feature_name[tree.feature]+' < '+str(tree.threshold)+' ?',font=fnt,fill=(0,0,0))
 
         # Draw links to the branches
-        draw.line((x,y,left+w1/2,y+100),fill=(255,0,0),width=3)
-        draw.line((x,y,right-w2/2,y+100),fill=(95, 57, 191),width=3)
+        draw.line((x,y,left+w1/2,y+scale),fill=(255,0,0),width=3)
+        draw.line((x,y,right-w2/2,y+scale),fill=(95, 57, 191),width=3)
     
         # Draw the branch nodes
-        drawnode(draw,tree.left,left+w1/2,y+100)
-        drawnode(draw,tree.right,right-w2/2,y+100)
+        drawnode(draw,tree.left,left+w1/2,y+scale)
+        drawnode(draw,tree.right,right-w2/2,y+scale)
     else:
         txt = class_name[int(tree.Class[0])]+':'+str(tree.Class[1])
         if len(tree.Class) > 2:
