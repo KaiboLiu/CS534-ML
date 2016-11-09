@@ -264,14 +264,14 @@ def RunMain():
 
     #******************Part 1***************************
     print '******Part 1*****'
-    k_max = 25
-    
-    error_train, error_test = np.zeros(k_max+1), np.zeros(k_max+1)
+    k_max = 120
+
+    error_train, error_test = np.zeros(k_max), np.zeros(k_max)
 
 
     trees = []          #######delete if no sorage of trees
     for k in range(1,k_max+1):
-        print '\n****stop when number in node is less than: %d   *****' %(k)
+        #print '\n****stop when number in node is less than: %d   *****' %(k)
         tree=buildtree(train_data,k)
         # [tree, tr_err] = buildtree_trErr(train_data, k)
         # error_train[k] = tr_err
@@ -286,33 +286,34 @@ def RunMain():
         #training errors
         for row in train_data:
             if classify(row,trees[k-1]) != row[-1]:  #######delete's[k-1]' if no sorage of trees
-                error_train[k] += 1
+                error_train[k-1] += 1
         #testing errors
         for row in test_data:
             if classify(row,trees[k-1]) != row[-1]:   #######delete's[k-1]' if no sorage of trees
-                error_test[k] += 1
+                error_test[k-1] += 1
     '''
     # b---blue   c---cyan  g---green    k----black
     # m---magenta r---red  w---white    y----yellow
     '''
-    error_train[:] = 1/float(len(train_data))*error_train
-    error_test[:] = 1/float(len(test_data))*error_test
+    error_train[:] = 100 - (100/float(len(train_data))*error_train)
+    error_test[:] = 100 - (100/float(len(test_data))*error_test)
     plt.figure(1)
-    plt.plot(error_train, 'r',label="classify learning data")
-    plt.plot(error_test, 'b',label="classify testing data")
-    plt.xlim(0, k_max)
-    plt.ylim(0, 0.5)
+    plt.plot(range(1,k_max+1), error_train, 'b',label="learning data")
+    plt.plot(range(1,k_max+1), error_test, 'r--',label="testing data")
+    plt.xlim(1, k_max)
+    plt.ylim(60, 101)
     plt.xlabel('k')
-    plt.ylabel('error percentage')
+    plt.ylabel('the percentage of correctly classified examples')
     plt.legend(loc='upper right')
     plt.grid(True)
+    plt.show()
     plt.savefig(saveDir+"Part1_error vs k=0-%d" %(k_max))
     #printtree_name(tree)
     #s1, s2 = dividedata(tmp,0,5.5)
     t1 = float(time.clock())
     print '[done] test trainning data and testing data. using time %.4f s.\n' % (t1-t0)
     t0 = t1
-    
+
 
 
     #******************Part 2***************************
@@ -323,7 +324,6 @@ def RunMain():
     Larr = [5, 10, 15, 20, 25, 30]
     #Karr = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     #my_xticks = ['5', '10', '15', '20', '25', '30', '35', '40', '45', '50']
-    k_max = 50
     r = 10
 
     fTrain_Acc, fTest_Acc = np.zeros((k_max, len(Larr))), np.zeros((k_max, len(Larr)))
@@ -344,10 +344,10 @@ def RunMain():
         plt.plot(fTrain_Acc[:,i], get_colour(colour), label='learning data L=%d' % Larr[i])
         plt.plot(fTest_Acc[:,i], get_colour(colour)+'--', label='testing data L=%d' % Larr[i])
         colour += 1
-        plt.xlim(1, 65)
-        plt.ylim(90, 100)
+        plt.xlim(1, 120)
+        plt.ylim(60, 100)
     plt.xlabel('k')
-    plt.ylabel('the percentage of accuracy')
+    plt.ylabel('the percentage of correctly classified examples')
     plt.legend(loc='upper right')
     plt.grid(True)
     plt.show()
