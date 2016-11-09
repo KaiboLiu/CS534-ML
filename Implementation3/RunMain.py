@@ -215,9 +215,18 @@ def RandomForest(trainData, testData, k, L, R):
                 sset_idx = np.random.choice(range(len(trainData)), sset_size)
                 train_sset = trainData[sset_idx[:]]
                 [tree, error] = buildtree_trErr(train_sset, k, feature_bagging)
-                tr_err = tr_err + error
                 forest.append(tree)
             forest_rdm.append(forest)
+
+            # calc train error on forest
+            for row in trainData:
+                te_rst = []
+                for tree in forest:
+                    te_rst.append(classify(row,tree))
+                stat = collections.Counter(te_rst).most_common()
+                label = stat[0][0]
+                if np.int(label) != row[-1]:  # select majority class as test result
+                    tr_err+= 1
 
             # test on forest
             for row in testData:
@@ -228,7 +237,7 @@ def RandomForest(trainData, testData, k, L, R):
                 label = stat[0][0]
                 if np.int(label) != row[-1]:  # select majority class as test result
                     te_err+= 1
-        trainAcc.append(100 - np.float(tr_err * 100)/(treeNum*repeatNum*sset_size))
+        trainAcc.append(100 - np.float(tr_err * 100)/(repeatNum * len(trainData)))
         testAcc.append(100 - np.float(te_err * 100) /(repeatNum * len(testData)))
         forestList.append(forest_rdm)
 
