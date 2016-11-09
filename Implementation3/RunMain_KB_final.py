@@ -90,8 +90,10 @@ def buildtree(Data,k=1,n_feature=4,scoref=entropy):
                     best_feature, best_threshold = feature, threshold
                     best_sets = (set1, set2)
                     #print 'featrue %d, threshold %.2f, gain %.5f, N=%d to (%d and %d)' %(feature, threshold, gain, n, len(set1),len(set2))
+    
     if best_gain > 0:
-        print 'featrue %d, threshold %.1f, gain %.5f, N=%d to (%d and %d)' %(best_feature, best_threshold, best_gain, n, len(best_sets[0]),len(best_sets[1]))
+        ######## output the threshold and gain ########
+        #print 'featrue %d, threshold %.1f, gain %.5f, N=%d to (%d and %d)' %(best_feature, best_threshold, best_gain, n, len(best_sets[0]),len(best_sets[1]))
         left_child = buildtree(best_sets[0],k,n_feature,scoref)
         right_child = buildtree(best_sets[1],k,n_feature,scoref)
         return decisionnode(best_feature,best_threshold,left=left_child,right=right_child)
@@ -200,8 +202,8 @@ def run_part(data_train,data_test,k_max=1,saveDir="./iris-Result/",rate_subset=1
             if mode(predict_matrix_test[i])[0][0] != data_test[i,-1]:
                 error_test[k] += 1
 
-    error_train[:] = 1-1/float(len(data_train))*error_train
-    error_test[:] = 1-1/float(len(data_test))*error_test
+    accuracy_train = 100*(1-1/float(len(data_train))*error_train)
+    accuracy_test = 100*(1-1/float(len(data_test))*error_test)
     t1 = float(time.clock())
     print '[done] Learn and test k%d*L%d trees. using time %.4f s, \n' % (k_max,L,t1-t0)
     t0 = t1
@@ -209,19 +211,18 @@ def run_part(data_train,data_test,k_max=1,saveDir="./iris-Result/",rate_subset=1
     '''b---blue   c---cyan  g---green    k----black
     m---magenta r---red  w---white    y----yellow'''
     if saveDir[-2] == '1':
-        #print len(error_train),len(error_train[1:-1]),len(error_train[0:-1]),error_train[0]
         plt.figure(1,figsize=(8, 6), dpi=80)
-        plt.plot(range(1,k_max+1),error_train[1:], 'r',label="classify learning data")
-        plt.plot(range(1,k_max+1),error_test[1:], 'b',label="classify testing data")
+        plt.plot(range(1,k_max+1),accuracy_train[1:], 'r',label="training data")
+        plt.plot(range(1,k_max+1),accuracy_test[1:], 'b',label="testing data")
         plt.xlim(1, k_max)
-        plt.ylim(0.65, 1.05)
+        plt.ylim(65, 100)
         plt.xlabel('k')
-        plt.ylabel('accuracy percentage')  
-        plt.legend(loc='upper right')
+        plt.ylabel('accuracy (%)')  
+        plt.legend(loc='lower left')
         plt.grid(True)
         plt.savefig(saveDir+"accuracy vs k=0-%d" %(k_max))
     elif saveDir[-2] == '2':
-        return error_train,error_test
+        return accuracy_train,accuracy_test
     
         
 def get_colour(color):
@@ -247,88 +248,87 @@ def RunMain():
     #******************Part 1***************************
     print '******Part 1*****'
     k_max = 50
-    #run_part(data_train,data_test,k_max,saveDir+'Part1_',rate_subset=1,L=1)
+    #run_part(data_train,data_test,k_max,saveDir+'Part1_',rate_subset=1,L=1,show_tree=False)
     
     #******************Part 2***************************
     print '******Part 2*****'
-    rate_subset = 0.9
-    #Loop_list = [5,10,15,20,25,30]
-    Loop_list = [1,1,1,1,1,5]
-    random_runs = 1
+    rate_subset = 1
+    Loop_list = [5,10,15,20,25,30]
+    #Loop_list = [1,1,1,1,1,5]
+    random_runs = 10
     colour = 0
     for l in Loop_list:
-        error_train_10,error_test_10 = np.zeros(k_max+1), np.zeros(k_max+1)
+        accuracy_train_10,accuracy_test_10 = np.zeros(k_max+1), np.zeros(k_max+1)
         for iteration in range(random_runs): #10 randm runs
-            error_train,error_test =run_part(data_train,data_test,k_max,saveDir+'Part2_',rate_subset,l,show_tree=False)
-            error_train_10,error_test_10 = error_train_10 + error_train,error_test_10+error_test
-            
+            accuracy_train,accuracy_test =run_part(data_train,data_test,k_max,saveDir+'Part2_',rate_subset,l,show_tree=False)
+            accuracy_train_10,accuracy_test_10 = accuracy_train_10 + accuracy_train,accuracy_test_10+accuracy_test
+        
+        accuracy_train = 1/float(random_runs)*accuracy_train_10
+        accuracy_test = 1/float(random_runs)*accuracy_test_10
         #training data VS k
         plt.figure(2,figsize=(8, 5), dpi=80)#, facecolor='w', edgecolor='k')
-        plt.plot(range(1,k_max+1),1/float(random_runs)*error_train_10[1:], get_colour(colour),label="learning data, L=%d" %(l))
+        plt.plot(range(1,k_max+1),accuracy_train[1:], get_colour(colour),label="training data, L=%d" %(l))
         plt.xlim(1, k_max)
-        plt.ylim(0.7, 1)
+        plt.ylim(85, 100)
         plt.xlabel('k')
-        plt.ylabel('accuracy percentage')
+        plt.ylabel('accuracy (%)')
         plt.legend(loc='lower left')
         plt.grid(True)
 
         #testing data VS k
-        c = colour
         plt.figure(3,figsize=(8, 5), dpi=80)#, facecolor='w', edgecolor='k')
-        plt.plot(range(1,k_max+1),1/float(random_runs)*error_test_10[1:], get_colour(colour)+'--',label="testing data, L=%d" %(l))
+        plt.plot(range(1,k_max+1),accuracy_test[1:], get_colour(colour)+'--',label="testing data, L=%d" %(l))
         plt.xlim(1, k_max)
-        plt.ylim(0.7, 1)
+        plt.ylim(85, 100)
         plt.xlabel('k')
-        plt.ylabel('accuracy percentage')
+        plt.ylabel('accuracy (%)')
         plt.legend(loc='lower left')
         plt.grid(True)
         
-        #training & testing with only all Ls + upper right lengend
+        #training & testing with all Ls + upper right lengend
         plt.figure(4,figsize=(8, 5), dpi=80)#, facecolor='w', edgecolor='k')
-        plt.plot(range(1,k_max+1),1/float(random_runs)*error_train_10[1:], get_colour(c),label="learning data, L=%d" %(l))
-        plt.plot(range(1,k_max+1),1/float(random_runs)*error_test_10[1:], get_colour(colour)+'--',label="testing data, L=%d" %(l))
+        plt.plot(range(1,k_max+1),accuracy_train[1:], get_colour(colour),label="training data, L=%d" %(l))
+        plt.plot(range(1,k_max+1),accuracy_test[1:], get_colour(colour)+'--',label="testing data, L=%d" %(l))
         plt.xlim(1, k_max*1.65)
-        plt.ylim(0.8, 1)
+        plt.ylim(90, 100)
         plt.xlabel('k')
-        plt.ylabel('accuracy percentage')
+        plt.ylabel('accuracy (%)')
         plt.legend(loc='upper right')
         plt.grid(True)
         
-        #training & testing with only all Ls + lower left lengend
+        #training & testing with all Ls + lower left lengend
         plt.figure(5,figsize=(8, 5), dpi=80)#, facecolor='w', edgecolor='k')
-        plt.plot(range(1,k_max+1),1/float(random_runs)*error_train_10[1:], get_colour(c),label="learning data, L=%d" %(l))
-        plt.plot(range(1,k_max+1),1/float(random_runs)*error_test_10[1:], get_colour(colour)+'--',label="testing data, L=%d" %(l))
+        plt.plot(range(1,k_max+1),accuracy_train[1:], get_colour(colour),label="training data, L=%d" %(l))
+        plt.plot(range(1,k_max+1),accuracy_test[1:], get_colour(colour)+'--',label="testing data, L=%d" %(l))
         plt.xlim(1, k_max)
-        plt.ylim(0.5, 1)
+        plt.ylim(50, 100)
         plt.xlabel('k')
-        plt.ylabel('accuracy percentage')
+        plt.ylabel('accuracy (%)')
         plt.legend(loc='lower left')
         plt.grid(True)
         
         #training & testing with only one L
         plt.figure(l+6,figsize=(8, 5), dpi=80)#, facecolor='w', edgecolor='k')
-        plt.plot(range(1,k_max+1),1/float(random_runs)*error_train_10[1:], get_colour(c),label="learning data, L=%d" %(l))
-        plt.plot(range(1,k_max+1),1/float(random_runs)*error_test_10[1:], get_colour(colour)+'--',label="testing data, L=%d" %(l))
+        plt.plot(range(1,k_max+1),accuracy_train[1:], get_colour(colour),label="training data, L=%d" %(l))
+        plt.plot(range(1,k_max+1),accuracy_test[1:], get_colour(colour)+'--',label="testing data, L=%d" %(l))
         plt.xlim(1, k_max)
-        plt.ylim(0.8, 1)
+        plt.ylim(90, 100)
         plt.xlabel('k')
-        plt.ylabel('accuracy percentage')
+        plt.ylabel('accuracy (%)')
         plt.legend(loc='lower left')
         plt.grid(True)
         plt.savefig(saveDir+'Part2_L%d_trees_accuracy vs k%d' %(l,k_max))
         
         colour += 1
         
-        
     plt.figure(2)
-    plt.savefig(saveDir+'Part2_%dXL_trees_training_accuracy vs k%d' %(len(Loop_list),k_max))
+    plt.savefig(saveDir+'Part2_all_%dL_trees_training_accuracy vs k%d' %(len(Loop_list),k_max))
     plt.figure(3)
-    plt.savefig(saveDir+'Part2_%dXL_trees_testing_accuracy vs k%d' %(len(Loop_list),k_max))    
+    plt.savefig(saveDir+'Part2_all_%dL_trees_testing_accuracy vs k%d' %(len(Loop_list),k_max))    
     plt.figure(4)
-    plt.savefig(saveDir+'Part2_%dXL_trees_all_accuracy vs k%d_upper_right' %(len(Loop_list),k_max))
+    plt.savefig(saveDir+'Part2_all_%dL_trees_all_accuracy vs k%d_upper_right' %(len(Loop_list),k_max))
     plt.figure(5)
-    plt.savefig(saveDir+'Part2_%dXL_trees_all_accuracy vs k%d_lower_left' %(len(Loop_list),k_max))
-
+    plt.savefig(saveDir+'Part2_all_%dL_trees_all_accuracy vs k%d_lower_left' %(len(Loop_list),k_max))
 
 if __name__ == "__main__":
     RunMain()
