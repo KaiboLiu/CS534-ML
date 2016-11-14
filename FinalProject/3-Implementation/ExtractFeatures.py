@@ -3,6 +3,13 @@ import scipy.io.wavfile
 from scikits.talkbox.features import mfcc
 import matplotlib.pyplot as plt
 
+def Written2File(fileName, vecV):
+	f = open(fileName, "w")
+	for v in vecV:
+		line = " ".join([str(vecV(fea)) for fea in v.split()])
+		f.write(line + "\n")
+	f.close()
+
 def ExtreactMFCC(train, test):
 	train_feature = np.zeros((len(train), 13))
 	test_feature = np.zeros((len(test), 13))
@@ -32,9 +39,14 @@ def ExtreactMFCC(train, test):
 
 	return train_feature, test_feature
 
-'''
+
 if __name__ == "__main__":
-	train = np.array(["chinese1.wav","chinese2.wav","english1.wav","english2.wav"])
-	test = np.array(["chinese3.wav","chinese4.wav","english3.wav","english4.wav"])
-	ExtreactMFCC(train, test)
-'''
+	train = np.array(["./Data/train/chinese1.wav","./Data/train/chinese2.wav","./Data/train/english1.wav","./Data/train/english2.wav"])
+	test = np.array(["./Data/test/chinese3.wav","./Data/test/chinese4.wav","./Data/test/english3.wav","./Data/test/english4.wav"])
+	[trainF, testF] = ExtreactMFCC(train, test)
+
+	trainFileName = "./Feature/train.dev"
+	testFileName  = "./Feature/test.dev"
+	Written2File(trainFileName, trainF)
+	Written2File(testFileName, testF)
+
