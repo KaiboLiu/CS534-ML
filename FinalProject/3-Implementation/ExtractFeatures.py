@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 def Written2File(fileName, vecV):
 	f = open(fileName, "w")
 	for v in vecV:
-		line = " ".join([str(vecV(fea)) for fea in v.split()])
+		line = " ".join([str(fea) for fea in v.tolist()])
 		f.write(line + "\n")
 	f.close()
 
