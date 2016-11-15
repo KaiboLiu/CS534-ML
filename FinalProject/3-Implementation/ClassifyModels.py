@@ -28,9 +28,9 @@ class ClassModel:
 
 	def readFile(self, fileName, isTrain):
 		if isTrain == True:
-			self.trainData = np.genfromtxt(fileName)
+			self.trainData    = np.genfromtxt(fileName)
 		else:
-			self.testData = np.genfromtxt(fileName)
+			self.testData    = np.genfromtxt(fileName)
 
 	def divideTrainData(self, percent):
 		train_size = len(self.trainData)
@@ -40,6 +40,8 @@ class ClassModel:
 
 		val_idx  = set(range(train_size)) - set(sset_idx)
 		val_sset = self.trainData[val_idx[:]]
+
+		return train_sset, val_sset
 
 	def featureNormalize(self):
 		del self.norTrainData[:]
@@ -53,47 +55,6 @@ class ClassModel:
 				Xstd = 1
 			self.norTrainData[:,k] = (self.trainData[:,k]-Xmean)/Xstd
 			self.norTestData[:,k]  = (self.testData[:,k] -Xmean)/Xstd
-
-	def gaussianMixMode(self, maxModelNum, classNum):
-		# statistic class number and examples.
-		class_trainData = []
-		for k in range(classNum):
-			class_trainData[k] = [ele[0:-1] for ele in self.norTrainData if self.norTrainData[:,-1] == k]
-
-		# GMM fit
-		bestGMM  = []
-		cv_types = ['spherical', 'tied', 'diag', 'full']
-		for k in range(classNum):
-			lowest_bic = np.infty
-			train_bic = [] # cost, to check fitness
-			for cv_type in cv_types:
-				for n_components in range(1, maxModelNum):
-					# Fit a Gaussian mixture with EM
-					gmm = mixture.GaussianMixture(n_components=n_components, covariance_type=cv_type)
-					gmm.fit(class_trainData[k])
-
-					train_bic.append(gmm.bic(X))
-					if train_bic[-1] < lowest_bic:
-						lowest_bic = train_bic[-1]
-						best_gmm   = gmm
-			bestGMM.append(best_gmm)
-
-		# test on GMM model
-		testResult = []
-		accuracy = 0
-		for row in self.norTestData:
-			bestScore = np.infty
-			bestLabel = None
-			for k in range(classNum):
-				score = bestGMM[k].score_samples(row[0:-1])[0] # how score looks like?
-				if(score > bestScore):
-					bestScore = score
-					bestLabel = k
-			if bestLabel == row[-1]:
-				accuracy += 1
-			testResult.append(bestLabel)
-		return testResult, accuracy
-
 
 	def neuralNetwork(self):
 		# training data to fit model
@@ -111,3 +72,52 @@ class ClassModel:
 			testResult.append(testRst)
 
 		return testResult, accuracy
+
+
+def gmm_train(trainData, classLabel, maxModelNum = 2):
+	# statistic class number and examples.
+	class_trainData = []
+	classNum        = 0
+	for k in classLabel:
+		tmp = [ele[0:-1] for ele in trainData if ele[-1] == k]
+		class_trainData.append(tmp)
+		classNum = classNum + 1
+
+	# GMM fit
+	bestGMM  = []
+	cv_types = ['spherical', 'tied', 'diag', 'full']
+	for k in range(classNum):
+		lowest_bic = np.infty
+		train_bic = [] # cost, to check fitness
+		for cv_type in cv_types:
+			for n_components in range(1, maxModelNum):
+				# Fit a Gaussian mixture with EM
+				gmm = mixture.GaussianMixture(n_components=n_components, covariance_type=cv_type)
+				gmm.fit(class_trainData[k])
+
+				train_bic.append(gmm.bic(np.array(class_trainData[k])))
+				if train_bic[-1] < lowest_bic:
+					lowest_bic = train_bic[-1]
+					best_gmm   = gmm
+		bestGMM.append(best_gmm)
+
+	return bestGMM
+
+def gmm_classify(testData, modelBag):
+	classNum = len(modelBag)
+	
+	# test on GMM model
+	testResult = []
+	accuracy = 0
+	for row in testData:
+		bestScore = -np.infty
+		bestLabel = None
+		for k in range(classNum):
+			score = modelBag[k].score(row[0:-1].reshape(1,-1)) # how score looks like?
+			if(score > bestScore):
+				bestScore = score
+				bestLabel = k
+		if bestLabel == row[-1]:
+			accuracy += 1
+		testResult.append(bestLabel)
+	return testResult, accuracy
