@@ -3,13 +3,17 @@
 : Tatoeba website which has full sentences and translations in text and audio with ALL Languages.
 http://tatoeba.org/cmn/downloads
 :we can find 'sentences_with_audio'
+#no place for downloading, only to find sentence list and filter the ones with audio, then explore the source code of website to acquire the audio link and then download them.
 
 2.https://www.internationalphoneticassociation.org/content/ipa-handbook-downloads
 :IPA Handbook downloads,  a large set of .WAV files including English, Cantonese, Korean, Japanese and so on.
 :May require contacting for permission
+#limited samples without purchasing
 
 3.http://archive.phonetics.ucla.edu/
 :UCLA Phonetics Lab Archive offers many audio files of spoken word in many languagesaudio files of spoken word in many languages
+#mixed with English interpretation
+#Chinese Mandarin(cmn) is not actual mandarin, more like taiwaness
 
 4.https://www.nist.gov/itl/iad/mig/2015-language-recognition-evaluation
 :2015 NIST Language Recognition Evaluation (LRE15)
@@ -21,12 +25,13 @@ https://catalog.ldc.upenn.edu/license/ldc-non-members-agreement.pdf
 
 6.http://www.voxforge.org/
 :Speech audio and corpus in English, Albanian, Bulgarian, Catalan, Croatian, Dutch, French, German, Greek, Hebrew, Italian, Latin, Persian, Portuguese, Russian, Spanish, Turkish, Ukrainian
+#Downloaded 170 wave files for English
 
 7.http://www.speech.cs.cmu.edu/databases/an4/
 :The CMU AN4 Audio Databases(English)
 
 8.https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research#Speech
-
+#No Chinese
 
 [Dataset]-music
 https://en.wikipedia.org/wiki/List_of_datasets_for_machine_learning_research#Music
