@@ -5,6 +5,7 @@ import pdb
 
 import ClassifyModels as cf
 
+
 def RunMain():
 	time.clock()
 	t0 = float(time.clock())
@@ -21,11 +22,14 @@ def RunMain():
 
 	pdb.set_trace()
 	gmmBag = cf.gmm_train(cfModel.trainData, classLabel)
-	gmmTest, gmmAcc = cf.gmm_classify(cfModel.testData, gmmBag)
+	[gmmTest, gmmAcc] = cf.gmm_classify(cfModel.testData, gmmBag)
+	print "GMM test result:\n", gmmAcc, gmmTest
 
-	print gmmTest, gmmAcc
-
-
+	svmModel = cf.svm_train(cfModel.trainData)
+	[svmTest, svmAcc] = cf.svm_classify(cfModel.testData, svmModel)
+	print "\nsvm test result:\n", "accuracy: ", svmAcc, "\n test rst: ", svmTest
 
 if __name__ == "__main__":
 	RunMain()
+
+

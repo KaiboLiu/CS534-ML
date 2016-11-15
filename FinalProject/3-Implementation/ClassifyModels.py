@@ -56,23 +56,6 @@ class ClassModel:
 			self.norTrainData[:,k] = (self.trainData[:,k]-Xmean)/Xstd
 			self.norTestData[:,k]  = (self.testData[:,k] -Xmean)/Xstd
 
-	def neuralNetwork(self):
-		# training data to fit model
-		kernel = ['linear', 'rbf','poly']
-		clf = svm.SVC(kernel[2])
-		clf.fit(self.trainData[:,0:-1], self.trainData[:,-1])
-
-		# test on testData
-		accuracy = 0
-		testResult = []
-		for row in testData:
-			testRst = clf.predict(row[0:-1])
-			if testRst == row[-1]:
-				accuracy += 1
-			testResult.append(testRst)
-
-		return testResult, accuracy
-
 
 def gmm_train(trainData, classLabel, maxModelNum = 2):
 	# statistic class number and examples.
@@ -120,4 +103,31 @@ def gmm_classify(testData, modelBag):
 		if bestLabel == row[-1]:
 			accuracy += 1
 		testResult.append(bestLabel)
+	return testResult, accuracy
+
+def svm_train(trainData):
+	bestSVM = []
+	# training data to fit model
+	kernel = ['linear', 'rbf','poly']
+	bestScore = -np.infty
+	for k in kernel:
+		clf = svm.SVC(kernel = k)
+		clf.fit(trainData[:,0:-1], trainData[:,-1])
+
+		score = clf.score(trainData[:,0:-1], trainData[:,-1])
+		if(score > bestScore):
+			bestScore = score
+			bestSVM   = clf
+	return bestSVM
+
+def svm_classify(testData, svmModel):
+	# test on testData
+	accuracy = 0
+	testResult = []
+	for row in testData:
+		testRst = svmModel.predict(row[0:-1].reshape(1,-1))
+		if testRst == row[-1]:
+			accuracy += 1
+		testResult.append(testRst)
+
 	return testResult, accuracy
