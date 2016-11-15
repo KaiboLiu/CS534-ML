@@ -2,6 +2,7 @@ import numpy as np
 import scipy.io.wavfile
 from scikits.talkbox.features import mfcc
 import matplotlib.pyplot as plt
+import librosa
 
 def Written2File(fileName, vecV):
 	f = open(fileName, "w")
@@ -50,13 +51,31 @@ def ExtreactMFCC(train, test):
 
 	return train_feature, test_feature
 
+def ExtractTempoBeat(train, test):
+	for i in range(len(train)):
+		print "\nfilename:", train[i]
+		y, sr = librosa.load(train[i])
+		#print "waveform:", y # waveform
+		#print "sampling rate", sr # sampling rate
+
+		tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
+		print "tempo:", tempo
+		#print('Estimated tempo: {:.2f} beats per minute'.format(tempo))
+
+		beat_times = librosa.frames_to_time(beat_frames, sr=sr)
+		#print "beat_frames:", beat_frames
+		print "beat_times:", np.average(beat_times)
+		#print('Saving output to beat_times.csv')
+		#librosa.output.times_csv('beat_times.csv', beat_times)
+
 
 if __name__ == "__main__":
 	train = np.array(["./Data/train/chinese1.wav","./Data/train/chinese2.wav","./Data/train/english1.wav","./Data/train/english2.wav"])
 	test = np.array(["./Data/test/chinese3.wav","./Data/test/chinese4.wav","./Data/test/english3.wav","./Data/test/english4.wav"])
 	[trainF, testF] = ExtreactMFCC(train, test)
+	ExtractTempoBeat(train, test)
 
 	trainFileName = "./Feature/train.dev"
 	testFileName  = "./Feature/test.dev"
-	Written2File(trainFileName, trainF)
-	Written2File(testFileName, testF)
+	#Written2File(trainFileName, trainF)
+	#Written2File(testFileName, testF)
