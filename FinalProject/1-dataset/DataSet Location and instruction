@@ -1,0 +1,12 @@
+Dataset for final project was shared in Google Drive via email. 
+If any question, please feel free to contact Kaibo.
+
+The version of dataset on 11/15/2016 is extracted from tatoeba.org. 
+I use AudioCrawl_batch.py to crawl mp3 files and store their names. Then I use a free software to convert them into wav files.
+This dataset contains two languages: Eng and Chn/Cmn, consisted of 600 training files+200 testing files, with 48000 sampling rate and mono channel.
+
+I got another dataset from the source of voxforge, they are direct wav files but only English. I can offer them or expand the tatoeba one if you need more data.
+
+
+
+Kaibo
