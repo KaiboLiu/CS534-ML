@@ -11,22 +11,29 @@ def Written2File(fileName, vecV):
 	f.close()
 
 def ExtreactMFCC(train, test):
-	train_feature = np.zeros((len(train), 13))
-	test_feature = np.zeros((len(test), 13))
+	feature_dim = 13
+	train_feature = np.zeros((len(train), feature_dim+1))
+	test_feature = np.zeros((len(test), feature_dim+1))
 
 	for i in range(len(train)):
 		sample_rate, X = scipy.io.wavfile.read(train[i])
 		ceps, mspec, spec = mfcc(X, fs=sample_rate)
 		num_ceps = len(ceps)
 		mfcc_coeff = np.mean(ceps[int(num_ceps / 10):int(num_ceps * 9 / 10)], axis=0)
-		train_feature[i] = mfcc_coeff
+		if train[i].find("chinese") > 0:
+			mfcc_coeff_withClass = np.append(mfcc_coeff, 0)
+		elif train[i].find("english") > 0:
+			mfcc_coeff_withClass = np.append(mfcc_coeff, 1)
+		train_feature[i] = mfcc_coeff_withClass
 
+		'''
 		# plot
 		plt.figure(1)
 		if train[i].find("chinese"):
-			plt.plot(range(13), mfcc_coeff, 'r')
+			plt.plot(range(feature_dim), mfcc_coeff, 'r')
 		elif train[i].find("english"):
-			plt.plot(range(13), mfcc_coeff, 'b')
+			plt.plot(range(feature_dim), mfcc_coeff, 'b')
+		'''
 
 	#plt.show()
 
@@ -35,7 +42,11 @@ def ExtreactMFCC(train, test):
 		ceps, mspec, spec = mfcc(X, fs=sample_rate)
 		num_ceps = len(ceps)
 		mfcc_coeff = np.mean(ceps[int(num_ceps / 10):int(num_ceps * 9 / 10)], axis=0)
-		test_feature[i] = mfcc_coeff
+		if test[i].find("chinese") > 0:
+			mfcc_coeff_withClass = np.append(mfcc_coeff, 0)
+		elif test[i].find("english") > 0:
+			mfcc_coeff_withClass = np.append(mfcc_coeff, 1)
+		test_feature[i] = mfcc_coeff_withClass
 
 	return train_feature, test_feature
 
@@ -49,4 +60,3 @@ if __name__ == "__main__":
 	testFileName  = "./Feature/test.dev"
 	Written2File(trainFileName, trainF)
 	Written2File(testFileName, testF)
-
