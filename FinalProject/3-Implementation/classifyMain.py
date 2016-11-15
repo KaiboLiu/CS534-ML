@@ -21,13 +21,22 @@ def RunMain():
 	classLabel = [0, 1] # 0-Chinese, 1-English
 
 	pdb.set_trace()
+	'''
 	gmmBag = cf.gmm_train(cfModel.trainData, classLabel)
 	[gmmTest, gmmAcc] = cf.gmm_classify(cfModel.testData, gmmBag)
-	print "GMM test result:\n", gmmAcc, gmmTest
+	print "\nGMM test result:\n", "accuracy: ", gmmAcc, "\n test rst: ", gmmTest
 
 	svmModel = cf.svm_train(cfModel.trainData)
 	[svmTest, svmAcc] = cf.svm_classify(cfModel.testData, svmModel)
 	print "\nsvm test result:\n", "accuracy: ", svmAcc, "\n test rst: ", svmTest
+	'''
+
+	cfModel.featureNormalize()
+	nnModel = cf.nn_train(cfModel.norTrainData)
+	[nnTest, nnAcc] = cf.nn_classify(cfModel.norTestData, nnModel)
+	print "\nNN test result:\n", "accuracy: ", nnAcc, "\n test rst: ", nnTest
+
+
 
 if __name__ == "__main__":
 	RunMain()

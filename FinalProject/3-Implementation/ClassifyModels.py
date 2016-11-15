@@ -13,6 +13,8 @@ import itertools
 from scipy import linalg
 from sklearn import mixture # GMM model
 from sklearn import svm     # svm model
+from sklearn.neural_network import MLPClassifier # NN model
+from sklearn.preprocessing import StandardScaler
 import collections
 import random
 # import matplotlib.pyplot as plt
@@ -44,6 +46,12 @@ class ClassModel:
 		return train_sset, val_sset
 
 	def featureNormalize(self):
+		scaler = StandardScaler()
+		scaler.fit(self.trainData)
+
+		self.norTrainData = scaler.transform(self.trainData)
+		self.norTestData  = scaler.transform(self.testData)
+		'''
 		del self.norTrainData[:]
 		del self.norTestData[:]
 
@@ -55,6 +63,8 @@ class ClassModel:
 				Xstd = 1
 			self.norTrainData[:,k] = (self.trainData[:,k]-Xmean)/Xstd
 			self.norTestData[:,k]  = (self.testData[:,k] -Xmean)/Xstd
+		'''
+
 
 
 def gmm_train(trainData, classLabel, maxModelNum = 2):
@@ -106,6 +116,8 @@ def gmm_classify(testData, modelBag):
 	return testResult, accuracy
 
 def svm_train(trainData):
+	# the changing param could be kernel, gamma, C.
+
 	bestSVM = []
 	# training data to fit model
 	kernel = ['linear', 'rbf','poly']
@@ -131,3 +143,28 @@ def svm_classify(testData, svmModel):
 		testResult.append(testRst)
 
 	return testResult, accuracy
+
+def nn_train(trainData):
+	# the varies parameter could be hidden layer info, 
+	clf = MLPClassifier(solver = 'lbfgs', alpha = 1e-5, hidden_layer_sizes = (5, 2), random_state = 1)
+	clf.fit(trainData[:,0:-1], trainData[:,-1])
+
+	return clf
+
+def nn_classify(testData, nnModel):
+	# test on testData
+	accuracy = 0
+	testResult = []
+	for row in testData:
+		testRst = nnModel.predict(row[0:-1].reshape(1,-1))
+		if testRst == row[-1]:
+			accuracy += 1
+		testResult.append(testRst)
+
+	return testResult, accuracy
+
+
+
+
+
+
