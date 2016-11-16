@@ -51,29 +51,62 @@ def ExtreactMFCC(train, test):
 
 	return train_feature, test_feature
 
-def ExtractTempoBeat(train, test):
+def ExtractFeaturesByLibrosa(train, test):
 	for i in range(len(train)):
 		print "\nfilename:", train[i]
 		y, sr = librosa.load(train[i])
-		#print "waveform:", y # waveform
-		#print "sampling rate", sr # sampling rate
 
 		tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
 		print "tempo:", tempo
-		#print('Estimated tempo: {:.2f} beats per minute'.format(tempo))
 
 		beat_times = librosa.frames_to_time(beat_frames, sr=sr)
-		#print "beat_frames:", beat_frames
-		print "beat_times:", np.average(beat_times)
-		#print('Saving output to beat_times.csv')
-		#librosa.output.times_csv('beat_times.csv', beat_times)
+		print "beat_times:", beat_times.shape
+
+		chromagram = librosa.feature.chroma_stft(y, sr=sr)
+		print "chromagram:", chromagram.shape
+
+		Qchromagram = librosa.feature.chroma_cqt(y, sr=sr)
+		print "Qchromagram:", Qchromagram.shape
+
+		chromagram_cens = librosa.feature.chroma_cens(y, sr=sr)
+		print "chromagram_cens:", chromagram_cens.shape
+
+		melspec = librosa.feature.melspectrogram(y, sr=sr)
+		print "melspectrogram:", melspec.shape
+
+		mfcc = librosa.feature.mfcc(y, sr=sr)
+		print "mfcc:", mfcc.shape
+
+		rmse = librosa.feature.rmse(y)
+		print "rmse:", rmse.shape
+
+		centroid = librosa.feature.spectral_centroid(y, sr=sr)
+		print "spectral_centroid:", centroid.shape
+
+		bandwidth = librosa.feature.spectral_bandwidth(y, sr=sr)
+		print "spectral_bandwidth:", bandwidth.shape
+
+		contrast = librosa.feature.spectral_contrast(y, sr=sr)
+		print "spectral_contrast:", contrast.shape
+
+		rolloff = librosa.feature.spectral_rolloff(y, sr=sr)
+		print "rolloff:", rolloff.shape
+
+		poly_features = librosa.feature.poly_features(y, sr=sr)
+		print "poly_features:", poly_features.shape
+
+		tonnetz = librosa.feature.tonnetz(y, sr=sr)
+		print "tonnetz:", tonnetz.shape
+
+		zero_crossing_rate = librosa.feature.zero_crossing_rate(y)
+		print "zero_crossing_rate:", zero_crossing_rate.shape
 
 
 if __name__ == "__main__":
 	train = np.array(["./Data/train/chinese1.wav","./Data/train/chinese2.wav","./Data/train/english1.wav","./Data/train/english2.wav"])
 	test = np.array(["./Data/test/chinese3.wav","./Data/test/chinese4.wav","./Data/test/english3.wav","./Data/test/english4.wav"])
-	[trainF, testF] = ExtreactMFCC(train, test)
-	ExtractTempoBeat(train, test)
+	#[trainF, testF] = ExtreactMFCC(train, test)
+	ExtractFeaturesByLibrosa(train, test)
 
 	trainFileName = "./Feature/train.dev"
 	testFileName  = "./Feature/test.dev"
