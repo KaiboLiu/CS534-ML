@@ -14,7 +14,8 @@ from scipy import linalg
 from sklearn import mixture # GMM model
 from sklearn import svm     # svm model
 from sklearn.neural_network import MLPClassifier # NN model
-from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import perceptron  # perceptron
+from sklearn.preprocessing import StandardScaler # for normalize
 import collections
 import random
 # import matplotlib.pyplot as plt
@@ -163,6 +164,23 @@ def nn_classify(testData, nnModel):
 
 	return testResult, accuracy
 
+def perceptron_train(trainData):
+	clf = perceptron.Perceptron(n_iter = 10, verbose = 0, random_state = None, fit_intercept = True)
+	clf.fit(trainData[:,0:-1], trainData[:,-1])
+
+	return clf
+
+def perceptron_classify(testData, pcpModel):
+	# test on testData
+	accuracy = 0
+	testResult = []
+	for row in testData:
+		testRst = pcpModel.predict(row[0:-1].reshape(1,-1))
+		if testRst == row[-1]:
+			accuracy += 1
+		testResult.append(testRst)
+
+	return testResult, accuracy
 
 
 
