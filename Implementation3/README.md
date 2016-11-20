@@ -4,7 +4,7 @@ random forest (using feature Bagging and bootstrapped sampling) with the modifie
 algorithm from part (1) as the base learner.
 ***
 ##functions
-
+'''
 def dividedata(Data, feature, threshold)
 
 def entrop(Data)
@@ -20,3 +20,4 @@ import drawtree.py
 def classify(test,tree)
 
 def run_part() # can be used in part1 and part2 with different parameters
+'''
