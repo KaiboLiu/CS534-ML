@@ -1,6 +1,6 @@
 '''
 This code is made by KaiboLiu
-to automatically creat training and dev dataset with audio files from original dataset
+to automatically creat training and testing dataset with audio files from original dataset
 for final project of CS534
 '''
 
@@ -56,23 +56,23 @@ def RunCreat():
 		shutil.rmtree(dstDir)  	#delete the dir of path and all files in it
 	os.makedirs(dstDir)		#creat the dir for new diy dataset
 	os.makedirs(dstDir+'train/')
-	os.makedirs(dstDir+'dev/')
+	os.makedirs(dstDir+'test/')
 
 	'''use following two lists to decide the size of new dataset. 
 	If you set some of the element >0, then the corresponding language is added to dataset'''
-	# origin data samples is [500,500,688,400,400,400,400], can be divided into training and dev in each language
+	# origin data samples is [500,500,688,400,400,400,400], can be divided into training and testing in each language
 	n_list_train = 	[300,300,388,0,0,0,0]#[3,3,3,2,4,0,3]
-	n_list_dev   = 	[200,200,300,0,0,0,0]#[1,1,1,1,1,0,1]
+	n_list_test   = [200,200,300,0,0,0,0]#[1,1,1,1,1,0,1]
 
 	dataTrain = []
-	dataDev = []
+	dataTest  = []
 
 	n_train = sum(n_list_train)
-	n_dev = sum(n_list_dev)
+	n_test = sum(n_list_test)
 
 	for i in range(len(lang_list)):
 		t0 = float(time.clock())
-		n_sample = n_list_dev[i]+n_list_train[i]
+		n_sample = n_list_test[i]+n_list_train[i]
 		if n_sample == 0:
 			continue
 		if n_list_train[i] == 0:
@@ -92,22 +92,22 @@ def RunCreat():
 			dataTrain.append(newData[j].tolist())  #add this speech information into diy training data(list)
 			shutil.copy(srcDir+lang+'/'+index+'.wav', dstDir+'train/')
 
-		# start to build dev data with language[i]
+		# start to build test data with language[i]
 		for j in range(n_list_train[i],n_sample):
 			index, lang = newData[j,0], newData[j,1]
 			if index[0] == 'S':
 				lang = 'engStory'
-			dataDev.append(newData[j].tolist())  #add this speech information into diy dev data(list)
-			shutil.copy(srcDir+lang+'/'+index+'.wav', dstDir+'dev/')
+			dataTest.append(newData[j].tolist())  #add this speech information into diy test data(list)
+			shutil.copy(srcDir+lang+'/'+index+'.wav', dstDir+'test/')
 
 		t1 = float(time.clock())
-		print 'from %s, copy %d data into train, and %d data into dev, using %.4fs.' %(lang_list[i],n_list_train[i],n_list_dev[i],t1-t0)
+		print 'from %s, copy %d data into train, and %d data into test, using %.4fs.' %(lang_list[i],n_list_train[i],n_list_test[i],t1-t0)
 		
 	#print dataTrain
-	#print dataDev
+	#print dataTest
 
 	WriteFile(dstDir+'speech_list.train', random.sample(dataTrain,n_train))
-	WriteFile(dstDir+'speech_list.dev', random.sample(dataDev,n_dev))
+	WriteFile(dstDir+'speech_list.test', random.sample(dataTest,n_test))
 
 	t1 = float(time.clock())
 	print '[done] total runtime is %.4fs. \n' % (t1-t00)

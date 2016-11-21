@@ -15,16 +15,16 @@
 
 2.DIY Dataset
 
-We can custom the distribution and percentage of data samples from each language appeared in our training and dev dataset, like ingredient from a chef.  
+We can custom the distribution and percentage of data samples from each language appeared in our training and testing dataset, like ingredient from a chef.  
 See `line 64-65` in `diyDataset.py`, and the comments above them. I offer 6 languages and 7 type of `.wav` files.
 
-Any of you can modify `n_list_train` and `n_list_dev` with the idea how many elements from the corresponding language should be added in new training and dev data. What you need to do is typing the number, it can randomly choose the amount you want from one exact language into dataset and copy `.wav` into a new folder `./diyDataset`.
+Any of you can modify `n_list_train` and `n_list_test` with the idea how many elements from the corresponding language should be added in new training and testing data. What you need to do is typing the number, it can randomly choose the amount you want from one exact language into dataset and copy `.wav` into a new folder `./diyDataset`.
 ```
 Creat new datafiles and copy 1700 files as a new dataset, takes about 5 seconds, shown below.
 ```
->from cmn, copy 300 data into train, and 200 data into dev, using 1.2671s.  
->from eng, copy 300 data into train, and 200 data into dev, using 1.0449s.  
->from engStory, copy 388 data into train, and 300 data into dev, using 2.1868s.  
+>from cmn, copy 300 data into train, and 200 data into test, using 1.2671s.  
+>from eng, copy 300 data into train, and 200 data into test, using 1.0449s.  
+>from engStory, copy 388 data into train, and 300 data into test, using 2.1868s.  
 >[done] total runtime is 4.5075s.   
 
 
