@@ -2,7 +2,7 @@
 ###11/21/2016
 
 1.More languages added
-
+1.dafdsadfsd
 |#|name|language|description|  
 |:---:|:----:|:----:|:---  
 |1|[cmn](http://tatoeba.org/eng/sentences/with_audio/cmn "Chinese")| Chinese(Mandarin)| female:`500`|  
@@ -13,7 +13,7 @@
 |5|[jpn](http://tatoeba.org/eng/sentences/with_audio/jpn "Japanes")| Japanese| female:400|  
 |6|[rus](http://tatoeba.org/eng/sentences/with_audio/rus "Russian")| Russian| male:400|  
 
-1.DIY Dataset
+2.DIY Dataset
 
 We can custom the distribution and percentage of data samples from each language appeared in our training and dev dataset, like ingredient from a chef.  
 See `line 64-65` in `diyDataset.py`, and the comments above them. I offer 6 languages and 7 type of `.wav` files.
