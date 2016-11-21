@@ -17,6 +17,9 @@ We can custom the distribution and percentage of data samples from each language
 See `line 64-65` in `diyDataset.py`, and the comments above them. I offer 6 languages and 7 type of `.wav` files.
 
 Any of you can modify `n_list_train` and `n_list_dev` with the idea how many elements from the corresponding language should be added in new training and dev data. What you need to do is typing the number, it can randomly choose the amount you want from one exact language into dataset and copy `.wav` into a new folder `./diyDataset`.
+```
+Copy 1000 files into a new dataset takes about 5 seconds.
+```
 
 ---
 ###11/15/2016
