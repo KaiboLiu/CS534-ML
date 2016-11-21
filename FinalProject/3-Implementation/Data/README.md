@@ -1,8 +1,8 @@
 	
 ###11/21/2016
 
-1.More languages added
-1.dafdsadfsd
+1.More languages added  
+1.dafdsadfsd  
 |#|name|language|description|  
 |:---:|:----:|:----:|:---  
 |1|[cmn](http://tatoeba.org/eng/sentences/with_audio/cmn "Chinese")| Chinese(Mandarin)| female:`500`|  
