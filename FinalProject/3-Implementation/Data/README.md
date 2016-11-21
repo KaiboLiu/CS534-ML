@@ -20,10 +20,10 @@ Any of you can modify `n_list_train` and `n_list_dev` with the idea how many ele
 ```
 Creat new datafiles and copy 1700 files as a new dataset, takes about 5 seconds, shown below.
 ```
->from cmn, copy 300 data into train, and 200 data into dev, using 1.2671s.
->from eng, copy 300 data into train, and 200 data into dev, using 1.0449s.
->from engStory, copy 388 data into train, and 300 data into dev, using 2.1868s.
->[done] total runtime is 4.5075s. 
+>from cmn, copy 300 data into train, and 200 data into dev, using 1.2671s.  
+>from eng, copy 300 data into train, and 200 data into dev, using 1.0449s.  
+>from engStory, copy 388 data into train, and 300 data into dev, using 2.1868s.  
+>[done] total runtime is 4.5075s.   
 
 
 ---
