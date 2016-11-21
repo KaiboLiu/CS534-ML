@@ -5,13 +5,13 @@ More languages added
 
 |#|name|language|description|  
 |---|----|----|:---:  
-|1|![cmn](http://tatoeba.org/eng/sentences/with_audio/cmn "Chinese")| Chinese(Mandarin)| female:`500`|  
-|2|![eng](http://tatoeba.org/eng/sentences/with_audio/eng "English")| English| male:`500`|  
-|2|![engStory]('wutheringheights' "English")| English| From Eugene's story audio, female, splitted into 688 wavs. |  
-|3|![deu](http://tatoeba.org/eng/sentences/with_audio/deu "German,")| German,| male:400|  
-|4|![fra](http://tatoeba.org/eng/sentences/with_audio/fra "French,")| French,| male:400|  
-|5|![jpn](http://tatoeba.org/eng/sentences/with_audio/jpn "Japanes")| Japanese| female:400|  
-|6|![rus](http://tatoeba.org/eng/sentences/with_audio/rus "Russian")| Russian| male:400|  
+|1|[cmn](http://tatoeba.org/eng/sentences/with_audio/cmn "Chinese")| Chinese(Mandarin)| female:`500`|  
+|2|[eng](http://tatoeba.org/eng/sentences/with_audio/eng "English")| English| male:`500`|  
+|2|[engStory]('wutheringheights' "English")| English| From Eugene's story audio, female, splitted into 688 wavs. |  
+|3|[deu](http://tatoeba.org/eng/sentences/with_audio/deu "German,")| German,| male:400|  
+|4|[fra](http://tatoeba.org/eng/sentences/with_audio/fra "French,")| French,| male:400|  
+|5|[jpn](http://tatoeba.org/eng/sentences/with_audio/jpn "Japanes")| Japanese| female:400|  
+|6|[rus](http://tatoeba.org/eng/sentences/with_audio/rus "Russian")| Russian| male:400|  
 
 We can custom the distribution and percentage of data samples from each language appeared in our training and dev dataset, like ingredient from a chef.  
 See `line 64-65` in `diyDataset.py`, and the comments above them. I offer 6 languages and 7 type of `.wav` files.  
