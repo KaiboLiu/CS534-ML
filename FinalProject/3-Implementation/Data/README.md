@@ -1,5 +1,5 @@
 	
-###11/20/2016
+###11/21/2016
 
 More languages added
 
@@ -18,8 +18,13 @@ See `line 64-65` in `diyDataset.py`, and the comments above them. I offer 6 lang
 
 Any of you can modify `n_list_train` and `n_list_dev` with the idea how many elements from the corresponding language should be added in new training and dev data. What you need to do is typing the number, it can randomly choose the amount you want from one exact language into dataset and copy `.wav` into a new folder `./diyDataset`.
 ```
-Copy 1000 files into a new dataset takes about 5 seconds.
+Creat new datafiles and copy 1700 files as a new dataset, takes about 5 seconds, shown below.
 ```
+>from cmn, copy 300 data into train, and 200 data into dev, using 1.2671s.
+>from eng, copy 300 data into train, and 200 data into dev, using 1.0449s.
+>from engStory, copy 388 data into train, and 300 data into dev, using 2.1868s.
+>[done] total runtime is 4.5075s. 
+
 
 ---
 ###11/15/2016
