@@ -18,6 +18,7 @@ from sklearn.linear_model import perceptron  # perceptron
 from sklearn.preprocessing import StandardScaler # for normalize
 import collections
 import random
+import copy
 # import matplotlib.pyplot as plt
 # import matplotlib as mpl
 
@@ -34,6 +35,16 @@ class ClassModel:
 			self.trainData    = np.genfromtxt(fileName)
 		else:
 			self.testData    = np.genfromtxt(fileName)
+	def cropTrainData(self, number):
+		smp_num = len(self.trainData)
+		rdm_idx = random.sample(xrange(0,smp_num), smp_num)
+		self.testData = np.vstack((self.testData,self.trainData[rdm_idx[number:]]))
+		
+		self.trainData = np.delete(self.trainData, rdm_idx[number:], 0)
+		#temp1 = copy.deepcopy(self.trainData[rdm_idx[:number]])
+		#del self.trainData[:]
+		#self.trainData = temp[:]
+		
 
 	def divideTrainData(self, percent):
 		train_size = len(self.trainData)
@@ -48,10 +59,13 @@ class ClassModel:
 
 	def featureNormalize(self):
 		scaler = StandardScaler()
-		scaler.fit(self.trainData)
+		scaler.fit(self.trainData[:,0:-1])
 
-		self.norTrainData = scaler.transform(self.trainData)
-		self.norTestData  = scaler.transform(self.testData)
+		self.norTrainData         = self.trainData
+		self.norTrainData[:,0:-1] = scaler.transform(self.trainData[:,0:-1])
+
+		self.norTestData          = self.testData
+		self.norTestData[:,0:-1]  = scaler.transform(self.testData[:,0:-1])
 		'''
 		del self.norTrainData[:]
 		del self.norTestData[:]
