@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import mode
 import time
 import random
+import pdb
 
 import LoadData   as ld
 
@@ -64,6 +65,42 @@ def kmeans(Data,k):
 
     return clusterInfo, SSE
 
+def Random_Kmeans(inData, Label, k, rdNum = 10):
+    smp_Num = len(inData)
+    k = 2
+    minSSE, accuracy = 1e100 , 0
+    t1 = float(time.clock())
+    for i in range(rdNum):
+        t0 = t1
+        print '#%d kmeans:' %(i+1),
+        clusterInfo, SSE = kmeans(inData,k)
+        if SSE < minSSE:
+            minSSE = SSE
+            bestCluster = clusterInfo
+        t1 = float(time.clock())
+        print 'using time %.4f s.' % (t1-t0)
+
+    purity = measurePurity(smp_Num, k, bestCluster, Label)
+    print 'purity = ', purity
+
+    return bestCluster, purity
+
+def PCA_analysis(inData, Label, maxEigenNum):
+    #pdb.set_trace()
+    cov = np.cov(inData.T)
+    [U, S, V] = np.linalg.svd(cov)
+    sortIdx = (-S).argsort()
+    print 'the first 10 feature and their eigen-value are: ', sortIdx[:10], S[sortIdx[:10]]
+
+    # extract eigen-vectors and do classification
+    if (maxEigenNum > len(S)):
+        print 'maximum eigen-vector number couldnot larger than feature number, fix it to feature number. \n'
+        maxEigenNum = len(S)
+    for i in range(maxEigenNum):
+        fea_idx = sortIdx[0:(i+1)]
+        print '\n*** PCA: using feature ', fea_idx
+
+        [clusterInfo, SSE] = Random_Kmeans(inData[:,fea_idx[:]], Label, 2, 10)
 
 def get_colour(color):
     '''
@@ -71,6 +108,7 @@ def get_colour(color):
     m---magenta r---red  w---white    y----yellow'''
     color_set = ['r','b','m','g','c','k','y']
     return color_set[color % 7]
+
 
 def computeMeanCovariance(Data, Label, class_label):
     members = Data[np.where(Label == class_label)]
@@ -118,7 +156,7 @@ def RunMain():
     if not os.path.exists(saveDir):
         os.makedirs(saveDir)
 
-
+    
     #******************Part 1***************************
     #Kmeans clustering
     print '******Part 1******'
@@ -141,12 +179,14 @@ def RunMain():
 
     t1 = float(time.clock())
     print '[done] purity with best SSE is %.3f%%, time for part 1 is %.4f s. \n' % (purity,t1-t01)
-
+    
 
     #******************Part 2***************************
     print '******Part 2******'
+    maxEigenNum = 3
+    PCA_analysis(Data, Label, maxEigenNum)
 
-
+    
     #******************Part 3***************************
     print '******Part 3******'
     t01 = float(time.clock())
