@@ -51,7 +51,7 @@ def kmeans(Data,k):
                     newCenter = j
             if clusterInfo[i,0] != newCenter:
                 clusterChanged = True
-                clusterInfo[i,:] = newCenter,minDist**2
+                clusterInfo[i,:] = newCenter,minDist#**2
 
         #step 2: update the centers
         for j in range(k):
@@ -59,7 +59,7 @@ def kmeans(Data,k):
             centers[j] = np.mean(members,axis = 0)
 
     SSE = sum(clusterInfo[:,1])
-    print 'SSE %.4f,' %(SSE),
+    #print 'SSE %.4f,' %(SSE),
     for j in range(k):
         print 'cluster%d:%d,' %(j,clusterInfo[:,0].tolist().count(j)),
 
@@ -102,6 +102,8 @@ def PCA_analysis(inData, Label, maxEigenNum):
 
         [clusterInfo, SSE] = Random_Kmeans(inData[:,fea_idx[:]], Label, 2, 10)
 
+    return SSE
+
 def get_colour(color):
     '''
     b---blue   c---cyan  g---green    k----black
@@ -114,22 +116,14 @@ def computeMeanCovariance(Data, Label, class_label):
     members = Data[np.where(Label == class_label)]
     mean = np.mean(members, 0)
     scatter = np.dot((members - mean).T, (members - mean))
-    return mean, scatter, members
+    return mean, scatter
 
-def LDA(Data, Label):
-    [mean0, scatter0, members0] = computeMeanCovariance(Data, Label, 0)
-    [mean1, scatter1, members1] = computeMeanCovariance(Data, Label, 1)
+def LDA_analysis(Data, Label):
+    [mean0, scatter0] = computeMeanCovariance(Data, Label, 0)
+    [mean1, scatter1] = computeMeanCovariance(Data, Label, 1)
     S = scatter0 + scatter1
     w = np.dot(inv(S), (mean0 - mean1))
-    a = np.dot(members0, w)
-    b = np.dot(members1, w)
-    '''
-    plt.figure(1, figsize=(10,5))
-    plt.scatter(a, np.zeros(len(a)), c='r')
-    plt.scatter(b, np.ones(len(b)), c='b')
-    plt.ylim(-1,2)
-    plt.show()
-    '''
+
     return np.dot(Data, w)
 
 def measurePurity(n_data, k, bestCluster, Label):
@@ -156,7 +150,6 @@ def RunMain():
     if not os.path.exists(saveDir):
         os.makedirs(saveDir)
 
-    
     #******************Part 1***************************
     #Kmeans clustering
     print '******Part 1******'
@@ -176,27 +169,29 @@ def RunMain():
         print 'using time %.4f s.' % (t1-t0)
 
     purity = measurePurity(n_data, k, bestCluster, Label)
-
     t1 = float(time.clock())
-    print '[done] purity with best SSE is %.3f%%, time for part 1 is %.4f s. \n' % (purity,t1-t01)
-    
+    print '[Kmeans] purity with best SSE is %.3f%%, time for part 1 is %.4f s. \n' % (purity,t1-t01)
+
 
     #******************Part 2***************************
     print '******Part 2******'
+    t01 = float(time.clock())
     maxEigenNum = 3
-    PCA_analysis(Data, Label, maxEigenNum)
+    purity = PCA_analysis(Data, Label, maxEigenNum)
+    t1 = float(time.clock())
+    print '[PCA] purity with best SSE is %.3f%%, time for part 2 is %.4f s. \n' % (purity,t1-t01)
 
-    
+
     #******************Part 3***************************
     print '******Part 3******'
     t01 = float(time.clock())
-    projected_data = LDA(Data, Label)
-    bestCluster, SSE = kmeans(projected_data,2)
-
-    purity = measurePurity(n_data, k, bestCluster, Label)
-
+    projected_data = LDA_analysis(Data, Label)
+    print projected_data[0:6]
+    bestCluster, purity = Random_Kmeans(projected_data, Label, 2, 10)
+    #bestCluster, SSE = kmeans(projected_data,2)
+    #purity = measurePurity(n_data, k, bestCluster, Label)
     t1 = float(time.clock())
-    print '[done] purity with best SSE is %.3f%%, time for part 1 is %.4f s. \n' % (purity,t1-t01)
+    print '[LDA] purity with best SSE is %.3f%%, time for part 3 is %.4f s. \n' % (purity,t1-t01)
 
 
     t1 = float(time.clock())
