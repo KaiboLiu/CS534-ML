@@ -69,16 +69,13 @@ def Random_Kmeans(inData, Label, k, rdNum = 10):
     smp_Num = len(inData)
     k = 2
     minSSE, accuracy = 1e100 , 0
-    t1 = float(time.clock())
+
     for i in range(rdNum):
-        t0 = t1
         print '#%d kmeans:' %(i+1),
         clusterInfo, SSE = kmeans(inData,k)
         if SSE < minSSE:
             minSSE = SSE
-            bestCluster = clusterInfo
-        t1 = float(time.clock())
-        print 'using time %.4f s.' % (t1-t0)
+            bestCluster = clusterInfo        
 
     purity = measurePurity(smp_Num, k, bestCluster, Label)
     print 'purity = ', purity
@@ -87,22 +84,39 @@ def Random_Kmeans(inData, Label, k, rdNum = 10):
 
 def PCA_analysis(inData, Label, maxEigenNum):
     #pdb.set_trace()
-    cov = np.cov(inData.T)
+    cov       = np.cov(inData.T)
     [U, S, V] = np.linalg.svd(cov)
-    sortIdx = (-S).argsort()
-    print 'the first 10 feature and their eigen-value are: ', sortIdx[:10], S[sortIdx[:10]]
+    sortIdx   = (-S).argsort()
+    var_sum   = np.sum(S)
+    print 'the first 10 feature are: ', sortIdx[:10]
+    print 'var_sum is ', var_sum,'\n\ntheir eigen-value are ', S[sortIdx[:10]]
 
+    # Q2, how much dimensions are needed to retain at least 80% and 90% of th total variance respectively?  
+    cumRtVar    = S[sortIdx[:]]*float(100)/var_sum
+    cumRtVar    = np.cumsum(cumRtVar)
+    print '\nthe cumulative retained accuracy is: ', cumRtVar[:10]
+    
     # extract eigen-vectors and do classification
     if (maxEigenNum > len(S)):
         print 'maximum eigen-vector number couldnot larger than feature number, fix it to feature number. \n'
         maxEigenNum = len(S)
+
+    pcaPurity  = []
+    pcaTime    = []
     for i in range(maxEigenNum):
-        fea_idx = sortIdx[0:(i+1)]
-        print '\n*** PCA: using feature ', fea_idx
+        t0 = float(time.clock())
 
-        [clusterInfo, SSE] = Random_Kmeans(inData[:,fea_idx[:]], Label, 2, 10)
+        print '\n*** PCA: using feature ', sortIdx[0:(i+1)]
+        Ureduce            = U[:,sortIdx[0:(i+1)]]
+        DataReduce         = np.dot(inData, Ureduce)
+        [clusterInfo, purity] = Random_Kmeans(DataReduce, Label, 2, 10)
 
-    return SSE
+        t1 = float(time.clock())
+        print 'using time %.4f s.' % (t1-t0)
+
+        pcaPurity.append(round(purity, 4))
+        pcaTime.append(round(t1-t0, 4))
+    return cumRtVar, pcaPurity, pcaTime
 
 def get_colour(color):
     '''
@@ -149,7 +163,7 @@ def RunMain():
     saveDir    = "./walking-Result/"
     if not os.path.exists(saveDir):
         os.makedirs(saveDir)
-
+    
     #******************Part 1***************************
     #Kmeans clustering
     print '******Part 1******'
@@ -170,18 +184,55 @@ def RunMain():
 
     purity = measurePurity(n_data, k, bestCluster, Label)
     t1 = float(time.clock())
+    allF_purity = round(purity, 4)
+    allF_time   = round(t1-t01, 4)
     print '[Kmeans] purity with best SSE is %.3f%%, time for part 1 is %.4f s. \n' % (purity,t1-t01)
-
+    
 
     #******************Part 2***************************
     print '******Part 2******'
     t01 = float(time.clock())
     maxEigenNum = 3
-    purity = PCA_analysis(Data, Label, maxEigenNum)
+    [curVar, pcaPurity, pcaTime] = PCA_analysis(Data, Label, maxEigenNum)
+
+    print 'PCA purities are: ', pcaPurity, '\n runing times are: ', pcaTime
+
+    #------------------- 
+    plt.figure()
+    t = np.arange(1, len(curVar)+1, 1)
+
+    plt.subplot(211)
+    plt.plot(t, curVar, 'b')
+
+    plt.subplot(212)
+    plt.plot(t[0:180], curVar[0:180], 'b')
+    plt.xlabel('feature number')
+    plt.ylabel('percentage of cumulative variance', position = (0.1, 1))
+    plt.savefig(saveDir+'pca_cumVarPerc.png')
+    plt.cla()
+    #---------------------------
+    plt.subplot()
+
+    pcaPurity.append(allF_purity)
+    pcaTime.append(allF_time)
+    ind = np.arange(len(pcaPurity))
+    width = 0.35
+    
+    rectsP = plt.bar(ind, pcaPurity, width, color = 'b', label = 'purity')
+    rectsT = plt.bar(ind+width, pcaTime, width, color = 'r', label = 'time cost')
+    plt.xlim(0, 5)
+    plt.xlabel('feature selection')
+    plt.xticks(ind+width, ('pca_1', 'pca_2', 'pca_3', 'all feature')) 
+    plt.legend()
+    
+    plt.tight_layout()
+    plt.savefig(saveDir+'pca_comparing.png')
+
+    #--------------------------------
     t1 = float(time.clock())
-    print '[PCA] purity with best SSE is %.3f%%, time for part 2 is %.4f s. \n' % (purity,t1-t01)
+    print '[PCA] time for part 2 is %.4f s. \n' % (t1-t01)
 
-
+    
     #******************Part 3***************************
     print '******Part 3******'
     t01 = float(time.clock())
@@ -196,7 +247,7 @@ def RunMain():
 
     t1 = float(time.clock())
     print '[done] total runtime is %.4f s. \n' % (t1-t00)
-
+    
 
 if __name__ == "__main__":
     RunMain()
