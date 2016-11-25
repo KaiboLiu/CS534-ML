@@ -10,7 +10,7 @@ Created on Fri Nov 19 23:01:07 2016
 import os
 import numpy as np
 from numpy import *
-from numpy.linalg import inv
+from numpy.linalg import *
 import matplotlib.pyplot as plt
 from scipy.stats import mode
 import time
@@ -51,7 +51,7 @@ def kmeans(Data,k):
                     newCenter = j
             if clusterInfo[i,0] != newCenter:
                 clusterChanged = True
-                clusterInfo[i,:] = newCenter,minDist#**2
+                clusterInfo[i,:] = newCenter,minDist**2
 
         #step 2: update the centers
         for j in range(k):
@@ -75,7 +75,7 @@ def Random_Kmeans(inData, Label, k, rdNum = 10):
         clusterInfo, SSE = kmeans(inData,k)
         if SSE < minSSE:
             minSSE = SSE
-            bestCluster = clusterInfo        
+            bestCluster = clusterInfo
 
     purity = measurePurity(smp_Num, k, bestCluster, Label)
     print 'purity = ', purity
@@ -91,11 +91,11 @@ def PCA_analysis(inData, Label, maxEigenNum):
     print 'the first 10 feature are: ', sortIdx[:10]
     print 'var_sum is ', var_sum,'\n\ntheir eigen-value are ', S[sortIdx[:10]]
 
-    # Q2, how much dimensions are needed to retain at least 80% and 90% of th total variance respectively?  
+    # Q2, how much dimensions are needed to retain at least 80% and 90% of th total variance respectively?
     cumRtVar    = S[sortIdx[:]]*float(100)/var_sum
     cumRtVar    = np.cumsum(cumRtVar)
     print '\nthe cumulative retained accuracy is: ', cumRtVar[:10]
-    
+
     # extract eigen-vectors and do classification
     if (maxEigenNum > len(S)):
         print 'maximum eigen-vector number couldnot larger than feature number, fix it to feature number. \n'
@@ -130,15 +130,27 @@ def computeMeanCovariance(Data, Label, class_label):
     members = Data[np.where(Label == class_label)]
     mean = np.mean(members, 0)
     scatter = np.dot((members - mean).T, (members - mean))
-    return mean, scatter
+    return mean, scatter, members
 
 def LDA_analysis(Data, Label):
-    [mean0, scatter0] = computeMeanCovariance(Data, Label, 0)
-    [mean1, scatter1] = computeMeanCovariance(Data, Label, 1)
+    [mean0, scatter0, members0] = computeMeanCovariance(Data, Label, 0)
+    [mean1, scatter1, members1] = computeMeanCovariance(Data, Label, 1)
     S = scatter0 + scatter1
     w = np.dot(inv(S), (mean0 - mean1))
+    w_norm = w / norm(w)
+    projected_members0 = np.dot(members0, w_norm)
+    projected_members1 = np.dot(members1, w_norm)
 
-    return np.dot(Data, w)
+    saveDir    = "./walking-Result/"
+    plt.figure(2)
+    plt.hist(projected_members0, color='r', alpha=0.5, label='class 0')
+    plt.hist(projected_members1, color='b', alpha=0.5, label='class 1')
+    plt.xlabel('projected data values')
+    plt.ylabel('frequency')
+    plt.legend(loc='upper right')
+    plt.savefig(saveDir+'lda_distribution.png')
+
+    return np.dot(Data, w_norm)
 
 def measurePurity(n_data, k, bestCluster, Label):
     labelPredict = np.zeros(n_data)
@@ -158,12 +170,14 @@ def RunMain():
     # # load data, and save data.
     [Data, Label] = ld.LoadData()
     t1 = float(time.clock())
-    print '[done] Loading data File. using time %.4f s.\n' % (t1-t0)
+    #print '[done] Loading data File. using time %.4f s.\n' % (t1-t0)
 
     saveDir    = "./walking-Result/"
     if not os.path.exists(saveDir):
         os.makedirs(saveDir)
-    
+
+    purity_compare = []
+    time_compare = []
     #******************Part 1***************************
     #Kmeans clustering
     print '******Part 1******'
@@ -186,8 +200,10 @@ def RunMain():
     t1 = float(time.clock())
     allF_purity = round(purity, 4)
     allF_time   = round(t1-t01, 4)
-    print '[Kmeans] purity with best SSE is %.3f%%, time for part 1 is %.4f s. \n' % (purity,t1-t01)
-    
+    purity_compare.append(allF_purity)
+    time_compare.append(allF_time)
+    print '[Kmeans] purity with best SSE is %.3f%%, time for part 1 is %.4f s. \n' % (purity,(t1-t01))
+
 
     #******************Part 2***************************
     print '******Part 2******'
@@ -197,8 +213,8 @@ def RunMain():
 
     print 'PCA purities are: ', pcaPurity, '\n runing times are: ', pcaTime
 
-    #------------------- 
-    plt.figure()
+    #-------------------
+    plt.figure(1)
     t = np.arange(1, len(curVar)+1, 1)
 
     plt.subplot(211)
@@ -213,18 +229,22 @@ def RunMain():
     #---------------------------
     plt.subplot()
 
+    idx = np.argmax(pcaPurity)
+    purity_compare.append(pcaPurity[idx])
+    time_compare.append(pcaTime[idx])
+
     pcaPurity.append(allF_purity)
     pcaTime.append(allF_time)
     ind = np.arange(len(pcaPurity))
     width = 0.35
-    
+
     rectsP = plt.bar(ind, pcaPurity, width, color = 'b', label = 'purity')
     rectsT = plt.bar(ind+width, pcaTime, width, color = 'r', label = 'time cost')
     plt.xlim(0, 5)
     plt.xlabel('feature selection')
-    plt.xticks(ind+width, ('pca_1', 'pca_2', 'pca_3', 'all feature')) 
+    plt.xticks(ind+width, ('pca_1', 'pca_2', 'pca_3', 'all feature'))
     plt.legend()
-    
+
     plt.tight_layout()
     plt.savefig(saveDir+'pca_comparing.png')
 
@@ -232,22 +252,33 @@ def RunMain():
     t1 = float(time.clock())
     print '[PCA] time for part 2 is %.4f s. \n' % (t1-t01)
 
-    
+
     #******************Part 3***************************
     print '******Part 3******'
     t01 = float(time.clock())
     projected_data = LDA_analysis(Data, Label)
-    print projected_data[0:6]
-    bestCluster, purity = Random_Kmeans(projected_data, Label, 2, 10)
-    #bestCluster, SSE = kmeans(projected_data,2)
-    #purity = measurePurity(n_data, k, bestCluster, Label)
+    bestCluster, purity = Random_Kmeans(projected_data, Label, 2, 1)
     t1 = float(time.clock())
     print '[LDA] purity with best SSE is %.3f%%, time for part 3 is %.4f s. \n' % (purity,t1-t01)
 
+    purity_compare.append(round(purity, 4))
+    time_compare.append(round(t1-t01, 4))
+
+    plt.figure(3)
+    ind = np.arange(len(purity_compare))
+    width = 0.35
+    rectsP = plt.bar(ind, purity_compare, width, color = 'b', label = 'purity')
+    rectsT = plt.bar(ind+width, time_compare, width, color = 'r', label = 'time cost')
+    plt.xlim(0, 3.5)
+    plt.xlabel('dimension reduction')
+    plt.xticks(ind+width, ('original data', 'PCA', 'LDA'))
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(saveDir+'lda_comparing.png')
 
     t1 = float(time.clock())
     print '[done] total runtime is %.4f s. \n' % (t1-t00)
-    
+
 
 if __name__ == "__main__":
     RunMain()
