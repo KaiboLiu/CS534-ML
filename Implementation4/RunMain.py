@@ -69,16 +69,20 @@ def Random_Kmeans(inData, Label, k, rdNum = 10):
     smp_Num = len(inData)
     k = 2
     minSSE, accuracy = 1e100 , 0
-
+    t1 = float(time.clock())
     for i in range(rdNum):
+        t0 = t1
         print '#%d kmeans:' %(i+1),
         clusterInfo, SSE = kmeans(inData,k)
         if SSE < minSSE:
             minSSE = SSE
             bestCluster = clusterInfo
-
+        print 'SSE %.4f,' %(SSE),
+        #for j in range(k):
+        #    print 'cluster%d:%d,' %(j,clusterInfo[:,0].tolist().count(j)),
+        t1 = float(time.clock())
+        print 'using time %.4f s.' % (t1-t0)
     purity = measurePurity(smp_Num, k, bestCluster, Label)
-    print 'purity = ', purity
 
     return bestCluster, purity
 
@@ -112,7 +116,7 @@ def PCA_analysis(inData, Label, maxEigenNum):
         [clusterInfo, purity] = Random_Kmeans(DataReduce, Label, 2, 10)
 
         t1 = float(time.clock())
-        print 'using time %.4f s.' % (t1-t0)
+        print 'purity is %.3f%%, using time %.4f s. \n' % (purity,(t1-t0))
 
         pcaPurity.append(round(purity, 4))
         pcaTime.append(round(t1-t0, 4))
@@ -136,6 +140,8 @@ def LDA_analysis(Data, Label):
     [mean0, scatter0, members0] = computeMeanCovariance(Data, Label, 0)
     [mean1, scatter1, members1] = computeMeanCovariance(Data, Label, 1)
     S = scatter0 + scatter1
+    if abs(det(S)) < 1e-5:
+        S += 1e-4*np.eye(S.shape[1])
     w = np.dot(inv(S), (mean0 - mean1))
     w_norm = w / norm(w)
     projected_members0 = np.dot(members0, w_norm)
@@ -182,28 +188,15 @@ def RunMain():
     #Kmeans clustering
     print '******Part 1******'
     t01 = float(time.clock())
-    n_data = len(Data)
-    randomRuns = 10
-    k = 2
-    minSSE, accuracy = 1e20 , 0
-    for i in range(randomRuns):
-        t0 = t1
-        print '#%d kmeans:' %(i+1),
-        clusterInfo, SSE = kmeans(Data,k)
-        if SSE < minSSE:
-            minSSE = SSE
-            bestCluster = clusterInfo
-        t1 = float(time.clock())
-        print 'using time %.4f s.' % (t1-t0)
-
-    purity = measurePurity(n_data, k, bestCluster, Label)
+    bestCluster, purity = Random_Kmeans(Data, Label, k = 2, rdNum = 10)
     t1 = float(time.clock())
+    print '[Kmeans] purity with best SSE is %.3f%%, time for part 1 is %.4f s. \n' % (purity,(t1-t01))
+
+
     allF_purity = round(purity, 4)
     allF_time   = round(t1-t01, 4)
     purity_compare.append(allF_purity)
     time_compare.append(allF_time)
-    print '[Kmeans] purity with best SSE is %.3f%%, time for part 1 is %.4f s. \n' % (purity,(t1-t01))
-
 
     #******************Part 2***************************
     print '******Part 2******'
