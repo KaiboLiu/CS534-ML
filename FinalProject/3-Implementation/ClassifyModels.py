@@ -30,20 +30,22 @@ class ClassModel:
 		self.norTrainData = []
 		self.norTestData  = []
 
+		self.testLen = len(self.testData)
+
 	def readFile(self, fileName, isTrain):
 		if isTrain == True:
 			self.trainData    = np.genfromtxt(fileName)
 		else:
 			self.testData    = np.genfromtxt(fileName)
+			self.testLen = len(self.testData)
+
 	def cropTrainData(self, number):
 		smp_num = len(self.trainData)
 		rdm_idx = random.sample(xrange(0,smp_num), smp_num)
 		self.testData = np.vstack((self.testData,self.trainData[rdm_idx[number:]]))
-		
 		self.trainData = np.delete(self.trainData, rdm_idx[number:], 0)
-		#temp1 = copy.deepcopy(self.trainData[rdm_idx[:number]])
-		#del self.trainData[:]
-		#self.trainData = temp[:]
+
+		self.testLen = len(self.testData)
 		
 
 	def divideTrainData(self, percent):
@@ -80,14 +82,12 @@ class ClassModel:
 			self.norTestData[:,k]  = (self.testData[:,k] -Xmean)/Xstd
 		'''
 
-
-
-def gmm_train(trainData, classLabel, maxModelNum = 2):
+def gmm_train(trainData, classLabel, feaSt = 0, feaEnd = -1, maxModelNum = 2):
 	# statistic class number and examples.
 	class_trainData = []
 	classNum        = 0
 	for k in classLabel:
-		tmp = [ele[0:-1] for ele in trainData if ele[-1] == k]
+		tmp = [ele[feaSt: feaEnd] for ele in trainData if ele[-1] == k]
 		class_trainData.append(tmp)
 		classNum = classNum + 1
 
@@ -111,7 +111,7 @@ def gmm_train(trainData, classLabel, maxModelNum = 2):
 
 	return bestGMM
 
-def gmm_classify(testData, modelBag):
+def gmm_classify(testData, modelBag, feaSt = 0, feaEnd = -1):
 	classNum = len(modelBag)
 	
 	# test on GMM model
@@ -121,7 +121,7 @@ def gmm_classify(testData, modelBag):
 		bestScore = -np.infty
 		bestLabel = None
 		for k in range(classNum):
-			score = modelBag[k].score(row[0:-1].reshape(1,-1)) # how score looks like?
+			score = modelBag[k].score(row[feaSt: feaEnd].reshape(1,-1)) # how score looks like?
 			if(score > bestScore):
 				bestScore = score
 				bestLabel = k
@@ -130,7 +130,7 @@ def gmm_classify(testData, modelBag):
 		testResult.append(bestLabel)
 	return testResult, accuracy
 
-def svm_train(trainData):
+def svm_train(trainData, feaSt = 0, feaEnd = -1):
 	# the changing param could be kernel, gamma, C.
 
 	bestSVM = []
@@ -139,57 +139,57 @@ def svm_train(trainData):
 	bestScore = -np.infty
 	for k in kernel:
 		clf = svm.SVC(kernel = k)
-		clf.fit(trainData[:,0:-1], trainData[:,-1])
+		clf.fit(trainData[:,feaSt: feaEnd], trainData[:,-1])
 
-		score = clf.score(trainData[:,0:-1], trainData[:,-1])
+		score = clf.score(trainData[:, feaSt: feaEnd], trainData[:,-1])
 		if(score > bestScore):
 			bestScore = score
 			bestSVM   = clf
 	return bestSVM
 
-def svm_classify(testData, svmModel):
+def svm_classify(testData, svmModel, feaSt = 0, feaEnd = -1):
 	# test on testData
 	accuracy = 0
 	testResult = []
 	for row in testData:
-		testRst = svmModel.predict(row[0:-1].reshape(1,-1))
+		testRst = svmModel.predict(row[feaSt: feaEnd].reshape(1,-1))
 		if testRst == row[-1]:
 			accuracy += 1
 		testResult.append(testRst)
 
 	return testResult, accuracy
 
-def nn_train(trainData):
+def nn_train(trainData, feaSt = 0, feaEnd = -1):
 	# the varies parameter could be hidden layer info, 
 	clf = MLPClassifier(solver = 'lbfgs', alpha = 1e-5, hidden_layer_sizes = (5, 2), random_state = 1)
-	clf.fit(trainData[:,0:-1], trainData[:,-1])
+	clf.fit(trainData[:,feaSt: feaEnd], trainData[:,-1])
 
 	return clf
 
-def nn_classify(testData, nnModel):
+def nn_classify(testData, nnModel, feaSt = 0, feaEnd = -1):
 	# test on testData
 	accuracy = 0
 	testResult = []
 	for row in testData:
-		testRst = nnModel.predict(row[0:-1].reshape(1,-1))
+		testRst = nnModel.predict(row[feaSt: feaEnd].reshape(1,-1))
 		if testRst == row[-1]:
 			accuracy += 1
 		testResult.append(testRst)
 
 	return testResult, accuracy
 
-def perceptron_train(trainData):
+def perceptron_train(trainData, feaSt = 0, feaEnd = -1):
 	clf = perceptron.Perceptron(n_iter = 10, verbose = 0, random_state = None, fit_intercept = True)
-	clf.fit(trainData[:,0:-1], trainData[:,-1])
+	clf.fit(trainData[:, feaSt: feaEnd], trainData[:,-1])
 
 	return clf
 
-def perceptron_classify(testData, pcpModel):
+def perceptron_classify(testData, pcpModel, feaSt = 0, feaEnd = -1):
 	# test on testData
 	accuracy = 0
 	testResult = []
 	for row in testData:
-		testRst = pcpModel.predict(row[0:-1].reshape(1,-1))
+		testRst = pcpModel.predict(row[feaSt: feaEnd].reshape(1,-1))
 		if testRst == row[-1]:
 			accuracy += 1
 		testResult.append(testRst)
