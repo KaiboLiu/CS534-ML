@@ -250,7 +250,7 @@ def RunMain():
     print '******Part 3******'
     projected_data = LDA_analysis(Data, Label)
     t01 = float(time.clock())
-    bestCluster, purity = Random_Kmeans(projected_data, Label, 2, 1)
+    bestCluster, purity = Random_Kmeans(projected_data, Label, 2, 10)
     t1 = float(time.clock())
     print '[LDA] purity with best SSE is %.3f%%, time for part 3 is %.4f s. \n' % (purity,t1-t01)
 
