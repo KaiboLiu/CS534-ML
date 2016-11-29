@@ -7,11 +7,11 @@ import pandas
 
 def LoadData():
     # read input data for training & testing
-    dataDir    = "./Data/"
-    trainFile  = "train.txt"
-    testFile   = "test.txt"
-    train = pandas.read_csv(dataDir+trainFile, sep=",", names=["filename","label"])
-    test = pandas.read_csv(dataDir+testFile, sep=",", names=["filename","label"])
+    dataDir    = "./Data/diyDataset/"
+    trainFile  = "speech_list.train"
+    testFile   = "speech_list.test"
+    train = pandas.read_csv(dataDir+trainFile, sep="\t", names=["filename","label"])
+    test = pandas.read_csv(dataDir+testFile, sep="\t", names=["filename","label"])
 
     return [train.filename, train.label, test.filename, test.label]
 
@@ -22,61 +22,18 @@ def Written2File(fileName, vecV):
 		f.write(line + "\n")
 	f.close()
 
-def ExtreactMFCC(train, test):
-	feature_dim = 13
-	train_feature = np.zeros((len(train), feature_dim+1))
-	test_feature = np.zeros((len(test), feature_dim+1))
-
-	for i in range(len(train)):
-		sample_rate, X = scipy.io.wavfile.read(train[i])
-		ceps, mspec, spec = mfcc(X, fs=sample_rate)
-		num_ceps = len(ceps)
-		mfcc_coeff = np.mean(ceps[int(num_ceps / 10):int(num_ceps * 9 / 10)], axis=0)
-		if train[i].find("chinese") > 0:
-			mfcc_coeff_withClass = np.append(mfcc_coeff, 0)
-		elif train[i].find("english") > 0:
-			mfcc_coeff_withClass = np.append(mfcc_coeff, 1)
-		train_feature[i] = mfcc_coeff_withClass
-
-		'''
-		# plot
-		plt.figure(1)
-		if train[i].find("chinese"):
-			plt.plot(range(feature_dim), mfcc_coeff, 'r')
-		elif train[i].find("english"):
-			plt.plot(range(feature_dim), mfcc_coeff, 'b')
-		'''
-
-	#plt.show()
-
-	for i in range(len(test)):
-		sample_rate, X = scipy.io.wavfile.read(test[i])
-		ceps, mspec, spec = mfcc(X, fs=sample_rate)
-		num_ceps = len(ceps)
-		mfcc_coeff = np.mean(ceps[int(num_ceps / 10):int(num_ceps * 9 / 10)], axis=0)
-		if test[i].find("chinese") > 0:
-			mfcc_coeff_withClass = np.append(mfcc_coeff, 0)
-		elif test[i].find("english") > 0:
-			mfcc_coeff_withClass = np.append(mfcc_coeff, 1)
-		test_feature[i] = mfcc_coeff_withClass
-
-	return train_feature, test_feature
-
 def ExtractFeaturesByLibrosa(sample, label, filePath):
 	sampleF = []
+	sampleF_len = []
+	cmnF = []
+	engF = []
 
 	for i in range(len(sample)):
 		print i
 		feature = []
-		filename = filePath + sample[i].astype('str') + ".wav"
+		filename = filePath + sample[i] + ".wav"
 		y, sr = librosa.load(filename)
-		'''
-		tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
-		print "tempo:", tempo
 
-		beat_times = librosa.frames_to_time(beat_frames, sr=sr)
-		print "beat_times:", beat_times.shape
-		'''
 		chromagram = librosa.feature.chroma_stft(y, sr=sr)
 		#print "chromagram:", np.average(chromagram, 1)
 		feature.extend(np.average(chromagram, 1))
@@ -131,6 +88,7 @@ def ExtractFeaturesByLibrosa(sample, label, filePath):
 
 		if label[i].find("cmn") == 0:
 			feature.append(0)
+
 		elif label[i].find("eng") == 0:
 			feature.append(1)
 
@@ -138,17 +96,18 @@ def ExtractFeaturesByLibrosa(sample, label, filePath):
 
 	return np.array(sampleF)
 
-if __name__ == "__main__":
-	#[trainF, testF] = ExtreactMFCC(train, test)
+def RunMain():
 	[trainX, trainY, testX, testY] = LoadData()
 
-	fileDir    = "./Data/"
-	trainFolder  = "train/"
-	testFolder   = "test/"
-	trainF = ExtractFeaturesByLibrosa(trainX, trainY, fileDir+trainFolder)
-	testF = ExtractFeaturesByLibrosa(testX, testY, fileDir+testFolder)
+	trainFolder  = "./Data/diyDataset/train/"
+	testFolder   = "./Data/diyDataset/test/"
+	trainF = ExtractFeaturesByLibrosa(trainX, trainY, trainFolder)
+	testF = ExtractFeaturesByLibrosa(testX, testY, testFolder)
 
-	trainFileName = "./Feature/train.dev"
-	testFileName  = "./Feature/test.dev"
-	Written2File(trainFileName, trainF)
-	Written2File(testFileName, testF)
+	trainFeature = "./Data/Feature/train.dev"
+	testFeature  = "./Data/Feature/test.dev"
+	Written2File(trainFeature, trainF)
+	Written2File(testFeature, testF)
+
+if __name__ == "__main__":
+	RunMain()
