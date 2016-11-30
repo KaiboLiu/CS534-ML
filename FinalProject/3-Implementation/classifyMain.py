@@ -24,9 +24,29 @@ def FeatureAnalysisBasedData(cfModel):
 		[testRst, accuracy, model] = cf.TrainAndClassify(newTrainData, newTestData, 'Perceptron')
 		testAccList.append(round(accuracy* float(100)/cfModel.testLen, 3))
 
+	feaLen = (np.array(feaIdx[1:])-np.array(feaIdx[:-1]))
 	print '\n using feature group includes: \n', feaName
-	print '\n number of feature in each grouop: \n', (np.array(feaIdx[1:])-np.array(feaIdx[:-1]))
+	print '\n number of feature in each grouop: \n', feaLen
 	print '\n test on single feature group, accuracy is\n', testAccList
+
+	'''
+	#---------------------------
+    plt.subplot()
+    ind = np.arange(len(testAccList))
+    width = 0.35
+
+    rectsP = plt.bar(ind, feaLen, width, color = 'b', label = 'number of features')
+    rectsT = plt.bar(ind+width, testAccList, width, color = 'r', label = 'test accuracy')
+    plt.xlim(0, 15)
+    plt.xlabel('feature group')
+    plt.xticks(ind+width, feaName)
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig(saveDir+'feature_analysis.png')
+
+    #--------------------------------
+    '''
 
 def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 	inData    = np.vstack((cfModel.trainData[:,:-1], cfModel.testData[:,:-1]))
@@ -54,7 +74,7 @@ def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 
 	# do training and classification.
 	# if use NN, Perception, it's better to do feature normalize first.
-	[testRst, accuracy, model] = cf.TrainAndClassify(newTrainData, newTestData, 'GMM')
+	[testRst, accuracy, model] = cf.TrainAndClassify(newTrainData, newTestData, 'NN')
 	print "\nPCA & GMM test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
 
 	return testRst, accuracy
@@ -134,6 +154,7 @@ def RunMain():
 	[testRst, acc] = FeatureReduction_sklearn(cfModel)
 
 
+	# pdb.set_trace()
 	# test different model over all feature.
 	[gmmTest, gmmAcc, gmmBag] = cf.TrainAndClassify(cfModel.trainData, cfModel.testData, 'GMM')
 	cf.saveModel(gmmBag, 'GMM', DIR_RESULT, 'Model_')

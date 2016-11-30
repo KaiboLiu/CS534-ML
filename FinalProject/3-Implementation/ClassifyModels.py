@@ -92,7 +92,7 @@ def featureNormalize(trainData, testData):
 	norTestData          = testData
 	norTestData[:,0:-1]  = scaler.transform(testData[:,0:-1])
 
-def gmm_train(trainData, classLabel, feaSt = 0, feaEnd = -1, maxModelNum = 2):
+def gmm_train(trainData, classLabel, feaSt = 0, feaEnd = -1, maxModelNum = 5):
 	# statistic class number and examples.
 	class_trainData = []
 	classNum        = 0
@@ -189,7 +189,7 @@ def nn_classify(testData, nnModel, feaSt = 0, feaEnd = -1):
 	return testResult, accuracy
 
 def perceptron_train(trainData, feaSt = 0, feaEnd = -1):
-	clf = perceptron.Perceptron(n_iter = 10, verbose = 0, random_state = None, fit_intercept = True)
+	clf = perceptron.Perceptron(n_iter = 10, shuffle = False, verbose = 0, random_state = None, fit_intercept = True)
 	clf.fit(trainData[:, feaSt: feaEnd], trainData[:,-1])
 
 	return clf
