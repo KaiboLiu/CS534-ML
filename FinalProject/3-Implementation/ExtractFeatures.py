@@ -89,6 +89,8 @@ def ExtractFeaturesByLibrosa(sample, label, filePath):
 
 		elif label[i].find("eng") == 0:
 			feature.append(1)
+		else:
+			print "Test file"
 
 		sampleF.append(feature)
 
