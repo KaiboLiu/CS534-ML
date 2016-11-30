@@ -8,6 +8,45 @@ import random
 import ClassifyModels as cf
 import FeatureReduction as fr
 
+def BasicModelAnalysis(cfModel, saveDir):
+
+	# test different model over all feature.
+	[gmmTest, gmmAcc, gmmBag, testMat] = cf.TrainAndClassify(cfModel.trainData, cfModel.testData, 'GMM')
+	cf.saveModel(gmmBag, 'GMM', saveDir, 'Model_')
+	print "\nGMM test result:\n", "accuracy: ", round(gmmAcc* float(100)/cfModel.testLen,3) #, "\n test rst: ", gmmTest
+	print 'test number:', cfModel.testLen, 'testMat is: \n', testMat
+	
+	'''
+	# test about model read.
+	gmmRdBag = []
+	for i in range(2):
+		clf = joblib.load(DIR_RESULT+'Model_'+'GMM_'+str(i)+'.pkl')
+		gmmRdBag.append(clf)
+	pdb.set_trace()
+	[gmmTest2, gmmAcc2, testMat] = cf.gmm_classify(cfModel.testData, gmmRdBag)
+	print "\n2nd ** GMM test result:\n", "accuracy: ", round(gmmAcc* float(100)/cfModel.testLen,3) #, "\n test rst: ", gmmTest
+	print 'test number:', cfModel.testLen, 'testMat is: \n', testMat
+	'''
+	
+	[svmTest, svmAcc, svmModel, testMat] = cf.TrainAndClassify(cfModel.trainData, cfModel.testData, 'SVM')
+	cf.saveModel(svmModel, 'SVM', saveDir, 'Model_')
+	print "\nsvm test result:\n", "accuracy: ", round(svmAcc* float(100)/cfModel.testLen,3) #, "\n test rst: ", svmTest
+	print testMat
+
+	# pdb.set_trace()
+	[nnTest, nnAcc, nnModel, testMat] = cf.TrainAndClassify(cfModel.norTrainData, cfModel.norTestData, 'NN')
+	cf.saveModel(nnModel, 'NN', saveDir, 'Model_')
+	print "\nNN test result:\n", "accuracy: ", round(nnAcc* float(100)/cfModel.testLen,3)#, "\n test rst: ", nnTest
+	print testMat
+
+	[pcpTest, pcpAcc, pcpModel, testMat] = cf.TrainAndClassify(cfModel.norTrainData, cfModel.norTestData, 'Perceptron')
+	cf.saveModel(pcpModel, 'Perceptron', saveDir, 'Model_')
+	print "\nPerceptron test result:\n", "accuracy: ", round(pcpAcc* float(100)/cfModel.testLen,3)#, "\n test rst: ", pcpTest
+	print testMat
+	# save trained model or models.
+
+
+
 def FeatureAnalysisBasedData(cfModel):
 	feaIdx  = [0, 12, 24, 36, 164, 184, 185, 186, 187, 194, 195, 197, 203, 204]
 	feaName = ['stft', 'cqt', 'cens', 'mel-spec', 'mfcc', 'rmse', 'spec_centroid',\
@@ -145,6 +184,8 @@ def RunMain():
 	classLabel = [0, 1] # 0-Chinese, 1-English
 	#pdb.set_trace()
 
+	BasicModelAnalysis(cfModel, DIR_RESULT)
+
 	# feature analysis.
 	if 0:
 		FeatureAnalysisBasedData(cfModel)
@@ -152,41 +193,6 @@ def RunMain():
 
 	[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM')
 	[testRst, acc] = FeatureReduction_sklearn(cfModel)
-
-
-	# test different model over all feature.
-	[gmmTest, gmmAcc, gmmBag, testMat] = cf.TrainAndClassify(cfModel.trainData, cfModel.testData, 'GMM')
-	cf.saveModel(gmmBag, 'GMM', DIR_RESULT, 'Model_')
-	print "\nGMM test result:\n", "accuracy: ", round(gmmAcc* float(100)/cfModel.testLen,3) #, "\n test rst: ", gmmTest
-	print 'test number:', cfModel.testLen, 'testMat is: \n', testMat
-	
-	'''
-	# test about model read.
-	gmmRdBag = []
-	for i in range(2):
-		clf = joblib.load(DIR_RESULT+'Model_'+'GMM_'+str(i)+'.pkl')
-		gmmRdBag.append(clf)
-	pdb.set_trace()
-	[gmmTest2, gmmAcc2, testMat] = cf.gmm_classify(cfModel.testData, gmmRdBag)
-	print "\n2nd ** GMM test result:\n", "accuracy: ", round(gmmAcc* float(100)/cfModel.testLen,3) #, "\n test rst: ", gmmTest
-	print 'test number:', cfModel.testLen, 'testMat is: \n', testMat
-	'''
-	# pdb.set_trace()
-	[svmTest, svmAcc, svmModel, testMat] = cf.TrainAndClassify(cfModel.trainData, cfModel.testData, 'SVM')
-	cf.saveModel(svmModel, 'SVM', DIR_RESULT, 'Model_')
-	print "\nsvm test result:\n", "accuracy: ", round(svmAcc* float(100)/cfModel.testLen,3) #, "\n test rst: ", svmTest
-	print testMat
-
-	[nnTest, nnAcc, nnModel, testMat] = cf.TrainAndClassify(cfModel.norTrainData, cfModel.norTestData, 'NN')
-	cf.saveModel(nnModel, 'NN', DIR_RESULT, 'Model_')
-	print "\nNN test result:\n", "accuracy: ", round(nnAcc* float(100)/cfModel.testLen,3)#, "\n test rst: ", nnTest
-	print testMat
-
-	[pcpTest, pcpAcc, pcpModel, testMat] = cf.TrainAndClassify(cfModel.norTrainData, cfModel.norTestData, 'Perceptron')
-	cf.saveModel(pcpModel, 'Perceptron', DIR_RESULT, 'Model_')
-	print "\nPerceptron test result:\n", "accuracy: ", round(pcpAcc* float(100)/cfModel.testLen,3)#, "\n test rst: ", pcpTest
-	print testMat
-	# save trained model or models.
 
 
 

@@ -20,6 +20,7 @@ from sklearn.externals import joblib # save classify model.
 import collections
 import random
 import copy
+import matplotlib.pyplot as plt
 # import matplotlib.pyplot as plt
 # import matplotlib as mpl
 
@@ -178,6 +179,17 @@ def nn_train(trainData, feaSt = 0, feaEnd = -1):
 	# the varies parameter could be hidden layer info, 
 	clf = MLPClassifier(solver = 'lbfgs', alpha = 1e-5, hidden_layer_sizes = (5, 2), random_state = 1)
 	clf.fit(trainData[:,feaSt: feaEnd], trainData[:,-1])
+	'''
+	fig, axes = plt.subplots(4, 1)
+	# use global min / max to ensure all weights are shown on the same scale
+	vmin, vmax = clf.coefs_[0].min(), clf.coefs_[0].max()
+	for coef, ax in zip(clf.coefs_[0].T, axes.ravel()):
+		ax.matshow(coef.reshape(4, 51), cmap=plt.cm.gray, vmin=.5 * vmin, vmax=.5 * vmax)
+		ax.set_xticks(())
+		ax.set_yticks(())
+
+	plt.show()
+	'''
 
 	return clf
 
