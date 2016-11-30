@@ -16,6 +16,7 @@ from sklearn import svm     # svm model
 from sklearn.neural_network import MLPClassifier # NN model
 from sklearn.linear_model import perceptron  # perceptron
 from sklearn.preprocessing import StandardScaler # for normalize
+from sklearn.externals import joblib # save classify model.
 import collections
 import random
 import copy
@@ -81,6 +82,15 @@ class ClassModel:
 			self.norTrainData[:,k] = (self.trainData[:,k]-Xmean)/Xstd
 			self.norTestData[:,k]  = (self.testData[:,k] -Xmean)/Xstd
 		'''
+def featureNormalize(trainData, testData):
+	scaler = StandardScaler()
+	scaler.fit(trainData[:,0:-1])
+
+	norTrainData         = trainData
+	norTrainData[:,0:-1] = scaler.transform(trainData[:,0:-1])
+
+	norTestData          = testData
+	norTestData[:,0:-1]  = scaler.transform(testData[:,0:-1])
 
 def gmm_train(trainData, classLabel, feaSt = 0, feaEnd = -1, maxModelNum = 2):
 	# statistic class number and examples.
@@ -196,6 +206,34 @@ def perceptron_classify(testData, pcpModel, feaSt = 0, feaEnd = -1):
 
 	return testResult, accuracy
 
+def TrainAndClassify(trainData, testData, modelName, classLabel = [0, 1] ):
+	if modelName == 'GMM':
+		lnModel = gmm_train(trainData, classLabel)
+		[testRst, acc] = gmm_classify(testData, lnModel)
+	elif modelName == 'SVM':
+		lnModel = svm_train(trainData)
+		[testRst, acc] = svm_classify(testData, lnModel)
+	elif modelName == 'NN':
+		lnModel = nn_train(trainData)
+		[testRst, acc] = nn_classify(testData, lnModel)
+	else: # Perceptron
+		lnModel = perceptron_train(trainData)
+		[testRst, acc] = perceptron_classify(testData, lnModel)
+
+	return testRst, acc, lnModel
+
+def saveModel(model, modelName, dirName, fileName):
+	if modelName == 'GMM':
+		classNum = len(model)
+		for i in range(classNum):
+			joblib.dump(model[i], dirName+fileName+modelName + '_' + str(i) +'.pkl')
+	else: # SVM, NN, Perceptron
+		joblib.dump(model, dirName+fileName+modelName+'.pkl')
+
+
+
+
+	
 
 
 
