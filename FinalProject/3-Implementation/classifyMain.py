@@ -20,7 +20,7 @@ def FeatureAnalysisBasedData(cfModel):
 		stIdx  = feaIdx[i]
 		endIdx = feaIdx[i+1]
 
-		[testRst, accuracy] = cf.TrainAndClassify(newTrainData, newTestData, 'Perceptron')
+		[testRst, accuracy, model] = cf.TrainAndClassify(newTrainData, newTestData, 'Perceptron')
 		testAccList.append(round(accuracy* float(100)/cfModel.testLen, 3))
 	
 	print '\n using feature group includes: \n', feaName
@@ -28,8 +28,7 @@ def FeatureAnalysisBasedData(cfModel):
 	print '\n test on single feature group, accuracy is\n', testAccList
 
 def FeatureReduction_PCA(cfModel, eigenThr, modelName):
-	#def PCA_analysis(inData, Label, maxEigenNum):
-	inData    = np.vstack(cfModel.trainData[:-1], cfModel.testData[:-1])
+	inData    = np.vstack((cfModel.trainData[:,:-1], cfModel.testData[:,:-1]))
 	#inData    = np.array(inData)
 	cov       = np.cov(inData.T)
 	[U, S, V] = np.linalg.svd(cov)
@@ -38,22 +37,26 @@ def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 	# Q2, how much dimensions are needed to retain at least 80% and 90% of th total variance respectively?
 	cumRtVar    = S[sortIdx[:]]*float(100)/np.sum(S)
 	cumRtVar    = np.cumsum(cumRtVar)
-	eigenIdx    = [i for i in xrange(len(S)) if cumRtVar > eigenThr][0]
+	eigenIdx    = [i for i in xrange(len(S)) if cumRtVar[i] > eigenThr][0]
 
 	# extract eigen-vectors and do classification
 	print '\n*** PCA: using feature ', sortIdx[0:(eigenIdx+1)]
 	Ureduce            = U[:,sortIdx[0:(eigenIdx+1)]]
 
+	# pdb.set_trace()
 	# classification on projection space
-	trainData_rd  = np.dot(cfModel.trainData[:-1], Ureduce) # feature reduce data
-	newTrainData  = np.hstack(DataReduce, cfModel.trainData[-1])
+	trainData_rd  = np.dot(cfModel.trainData[:,:-1], Ureduce) # feature reduce data
+	newTrainData  = np.c_[trainData_rd, cfModel.trainData[:,-1]]
 
-	testData_rd  = np.dot(cfModel.testData[:-1], Ureduce) # feature reduce data
-	newTestData  = np.hstack(DataReduce, cfModel.testData[-1])
+	testData_rd  = np.dot(cfModel.testData[:,:-1], Ureduce) # feature reduce data
+	newTestData  = np.c_[testData_rd, cfModel.testData[:,-1]]
 
 	# do training and classification.
 	# if use NN, Perception, it's better to do feature normalize first.
-	[testRst, accuracy] = cf.TrainAndClassify(newTrainData, newTestData, 'GMM')
+	[testRst, accuracy, model] = cf.TrainAndClassify(newTrainData, newTestData, 'GMM')
+	print "\nPCA & GMM test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+
+	return testRst, accuracy
 
 
 def RunMain():
@@ -78,6 +81,9 @@ def RunMain():
 	# feature analysis.
 	if 0:
 		FeatureAnalysisBasedData(cfModel)
+
+
+	[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM')
 
 	# test different model over all feature.
 	[gmmTest, gmmAcc, gmmBag] = cf.TrainAndClassify(cfModel.trainData, cfModel.testData, 'GMM')
