@@ -12,7 +12,7 @@ from sklearn.ensemble import ExtraTreesClassifier
 
 
 def LoadFeature():
-	dataDir    = "./Data/Feature/"
+	dataDir    = "./Feature/"
 	trainFeature  = "train.dev"
 	testFeature   = "test.dev"
 
@@ -70,8 +70,9 @@ def match_with_features(a):
 		if idx[0].size > 0:
 			selectedFName[featureName[i]] = idx
 		pre_i = featureIdx[i]
-	print "ReducedF:", selectedFName.keys()
+	#print "ReducedF:", selectedFName.keys()
 	#print "\nReduced Feature Index:\n", selectedFName.values()
+	return selectedFName.keys()
 
 def find_vectors(trainX, new_trainX):
 	# [12, 24, 36, 164, 184, 185, 186, 187, 194, 195, 197, 203, 204]
@@ -80,27 +81,38 @@ def find_vectors(trainX, new_trainX):
 		for j in range(trainX.shape[1]):
 			if hamming_dist(new_trainX[:,i], trainX[:,j]) == 0:
 				selectedF.append(j)
-	match_with_features(np.array(selectedF))
+	featureName = match_with_features(np.array(selectedF))
 	#print "\nReduced Feature Index:\n", selectedF
+	return featureName
 
-def feature_selection(trainX, trainY):
+def feature_selection_var(trainX, trainY, testX, testY, t=0.8):
 	# Removing features with low variance
-	t = 0.5
 	sel = VarianceThreshold(threshold=(t * (1 - t)))
 	new_trainX = sel.fit_transform(trainX)
+	new_testX = sel.fit_transform(testX)
 	print new_trainX.shape
-	find_vectors(trainX, new_trainX)
+	[x, y] = new_trainX.shape
+	featureName = find_vectors(trainX, new_trainX)
+	#print new_trainX, new_testX, y, featureName
+	return new_trainX, new_testX, y, featureName
 
+def feature_selection_L1(trainX, trainY, testX, testY, c=0.1):
+	# L1-based feature selection
+	lsvc = LinearSVC(C=c, penalty="l1", dual=False).fit(trainX, trainY)
+	model = SelectFromModel(lsvc, prefit=True)
+	new_trainX = model.transform(trainX)
+	new_testX = model.transform(testX)
+	print new_trainX.shape
+	[x, y] = new_trainX.shape
+	featureName = find_vectors(trainX, new_trainX)
+	return new_trainX, new_testX, y, featureName
+
+def feature_selection_tree(trainX, trainY, testX, testY):
+	'''
 	# Univariate feature selection
 	#new_train = SelectKBest(chi2, k=2).fit_transform(trainX, trainY)
 	#print new_train.shape
-
-	# L1-based feature selection
-	lsvc = LinearSVC(C=0.01, penalty="l1", dual=False).fit(trainX, trainY)
-	model = SelectFromModel(lsvc, prefit=True)
-	new_trainX = model.transform(trainX)
-	print new_trainX.shape
-	find_vectors(trainX, new_trainX)
+	'''
 
 	# Tree-based feature selection
 	clf = ExtraTreesClassifier()
@@ -108,13 +120,23 @@ def feature_selection(trainX, trainY):
 	clf.feature_importances_
 	model = SelectFromModel(clf, prefit=True)
 	new_trainX = model.transform(trainX)
+	new_testX = model.transform(testX)
 	print new_trainX.shape
-	find_vectors(trainX, new_trainX)
+	[x, y] = new_trainX.shape
+	featureName = find_vectors(trainX, new_trainX)
+	return new_trainX, new_testX, y, featureName
+
+def feature_selection_lda(trainX, trainY, testX, testY):
+	new_trainX = LDA_analysis(trainX, trainY)
+	new_testX = LDA_analysis(testX, testY)
+	featureName = []
+	return new_trainX, new_testX, 1, featureName
 
 def RunMain():
 	[trainX, trainY, testX, testY] = LoadFeature()
 	LDA_analysis(trainX, trainY)
-	feature_selection(trainX, trainY)
+	feature_selection(trainX, trainY, testX, testY)
+
 
 if __name__ == "__main__":
 	RunMain()

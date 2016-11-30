@@ -6,6 +6,7 @@ import pdb
 import random
 
 import ClassifyModels as cf
+import FeatureReduction as fr
 
 def FeatureAnalysisBasedData(cfModel):
 	feaIdx  = [0, 12, 24, 36, 164, 184, 185, 186, 187, 194, 195, 197, 203, 204]
@@ -22,7 +23,7 @@ def FeatureAnalysisBasedData(cfModel):
 
 		[testRst, accuracy, model] = cf.TrainAndClassify(newTrainData, newTestData, 'Perceptron')
 		testAccList.append(round(accuracy* float(100)/cfModel.testLen, 3))
-	
+
 	print '\n using feature group includes: \n', feaName
 	print '\n number of feature in each grouop: \n', (np.array(feaIdx[1:])-np.array(feaIdx[:-1]))
 	print '\n test on single feature group, accuracy is\n', testAccList
@@ -58,6 +59,52 @@ def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 
 	return testRst, accuracy
 
+def FeatureReduction_sklearn(cfModel):
+	trainX = cfModel.trainData[:,:-1]
+	trainY = cfModel.trainData[:,-1]
+	testX  = cfModel.testData[:,:-1]
+	testY  = cfModel.testData[:,-1]
+
+
+	[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_lda(trainX, trainY, testX, testY)
+	new_trainData = np.c_[new_trainX, trainY]
+	new_testData  = np.c_[new_testX, testY]
+
+	[testRst, accuracy, model] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
+	print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+
+	'''
+	accuraceList = []
+
+	L = np.arange(0.5,1.01,0.1)
+	for i in range(len(L)):
+		print L[i]
+		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_var(trainX, trainY, testX, testY, L[i])
+		new_trainData = np.c_[new_trainX, trainY]
+		new_testData  = np.c_[new_testX, testY]
+
+		[testRst, accuracy, model] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
+		accuraceList.append(round(accuracy* float(100)/cfModel.testLen,3))
+		print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+	plt.plot(accuraceList)
+	plt.show()
+
+	L = np.arange(0.01,100,10)
+	for i in range(len(L)):
+		print L[i]
+		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_L1(trainX, trainY, testX, testY, L[i])
+		new_trainData = np.c_[new_trainX, trainY]
+		new_testData  = np.c_[new_testX, testY]
+
+		[testRst, accuracy, model] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
+		accuraceList.append(round(accuracy* float(100)/cfModel.testLen,3))
+		print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+
+	plt.plot(accuraceList)
+	'''
+	plt.show()
+
+	return testRst, accuracy
 
 def RunMain():
 	time.clock()
@@ -72,7 +119,7 @@ def RunMain():
 	cfModel.readFile(DIR+TRAIN_FILE, 1)
 	cfModel.readFile(DIR+TEST_FILE, 0)
 
-	cfModel.cropTrainData(50)
+	#cfModel.cropTrainData(50)
 	cfModel.featureNormalize()
 
 	classLabel = [0, 1] # 0-Chinese, 1-English
@@ -84,6 +131,8 @@ def RunMain():
 
 
 	[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM')
+	[testRst, acc] = FeatureReduction_sklearn(cfModel)
+
 
 	# test different model over all feature.
 	[gmmTest, gmmAcc, gmmBag] = cf.TrainAndClassify(cfModel.trainData, cfModel.testData, 'GMM')
@@ -111,7 +160,7 @@ def RunMain():
 	[pcpTest, pcpAcc, pcpModel] = cf.TrainAndClassify(cfModel.norTrainData, cfModel.norTestData, 'Perceptron')
 	cf.saveModel(pcpModel, 'Perceptron', DIR_RESULT, 'Model_')
 	print "\nPerceptron test result:\n", "accuracy: ", round(pcpAcc* float(100)/cfModel.testLen,3)#, "\n test rst: ", pcpTest
-	
+
 	# save trained model or models.
 
 

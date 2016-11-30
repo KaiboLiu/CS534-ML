@@ -3,6 +3,7 @@ import scipy.io.wavfile
 from scikits.talkbox.features import mfcc
 import matplotlib.pyplot as plt
 import librosa
+import random
 import pandas
 
 def LoadData():
@@ -24,9 +25,6 @@ def Written2File(fileName, vecV):
 
 def ExtractFeaturesByLibrosa(sample, label, filePath):
 	sampleF = []
-	sampleF_len = []
-	cmnF = []
-	engF = []
 
 	for i in range(len(sample)):
 		print i
@@ -97,6 +95,7 @@ def ExtractFeaturesByLibrosa(sample, label, filePath):
 	return np.array(sampleF)
 
 def RunMain():
+	'''
 	[trainX, trainY, testX, testY] = LoadData()
 
 	trainFolder  = "./Data/diyDataset/train/"
@@ -104,10 +103,31 @@ def RunMain():
 	trainF = ExtractFeaturesByLibrosa(trainX, trainY, trainFolder)
 	testF = ExtractFeaturesByLibrosa(testX, testY, testFolder)
 
-	trainFeature = "./Data/Feature/train.dev"
-	testFeature  = "./Data/Feature/test.dev"
+	trainFeature = "./Feature/train.dev"
+	testFeature  = "./Feature/test.dev"
 	Written2File(trainFeature, trainF)
 	Written2File(testFeature, testF)
+	'''
+
+	[trainX, trainY, testX, testY] = LoadData()
+
+	trainFolder  = "./Data/diyDataset/train/"
+	testFolder   = "./Data/diyDataset/test/"
+	trainF = ExtractFeaturesByLibrosa(trainX, trainY, trainFolder)
+	testF = ExtractFeaturesByLibrosa(testX, testY, testFolder)
+
+	trainLen = len(trainF)
+	rdmIdx1  = random.sample(range(trainLen), trainLen)
+	new_trainF = trainF[rdmIdx1[:]]
+
+	testLen = len(testF)
+	rdmIdx2 = random.sample(range(testLen), testLen)
+	new_testF = testF[rdmIdx2[:]]
+
+	trainFeature = "./Feature/train.dev"
+	testFeature  = "./Feature/test.dev"
+	Written2File(trainFeature, new_trainF)
+	Written2File(testFeature, new_testF)
 
 if __name__ == "__main__":
 	RunMain()
