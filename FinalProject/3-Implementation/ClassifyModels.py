@@ -126,6 +126,7 @@ def gmm_classify(testData, modelBag, feaSt = 0, feaEnd = -1):
 	
 	# test on GMM model
 	testResult = []
+	testMat    = np.array([[0,0],[0,0]])
 	accuracy = 0
 	for row in testData:
 		bestScore = -np.infty
@@ -138,7 +139,9 @@ def gmm_classify(testData, modelBag, feaSt = 0, feaEnd = -1):
 		if bestLabel == row[-1]:
 			accuracy += 1
 		testResult.append(bestLabel)
-	return testResult, accuracy
+		testMat[bestLabel, row[-1]] = testMat[bestLabel, row[-1]]+1
+
+	return testResult, accuracy, testMat
 
 def svm_train(trainData, feaSt = 0, feaEnd = -1):
 	# the changing param could be kernel, gamma, C.
@@ -160,14 +163,16 @@ def svm_train(trainData, feaSt = 0, feaEnd = -1):
 def svm_classify(testData, svmModel, feaSt = 0, feaEnd = -1):
 	# test on testData
 	accuracy = 0
+	testMat    = np.array([[0,0],[0,0]])
 	testResult = []
 	for row in testData:
-		testRst = svmModel.predict(row[feaSt: feaEnd].reshape(1,-1))
+		testRst = svmModel.predict(row[feaSt: feaEnd].reshape(1,-1))[0]
 		if testRst == row[-1]:
 			accuracy += 1
 		testResult.append(testRst)
+		testMat[testRst, row[-1]] = testMat[testRst, row[-1]]+1
 
-	return testResult, accuracy
+	return testResult, accuracy, testMat
 
 def nn_train(trainData, feaSt = 0, feaEnd = -1):
 	# the varies parameter could be hidden layer info, 
@@ -178,15 +183,17 @@ def nn_train(trainData, feaSt = 0, feaEnd = -1):
 
 def nn_classify(testData, nnModel, feaSt = 0, feaEnd = -1):
 	# test on testData
-	accuracy = 0
+	accuracy   = 0
+	testMat    = np.array([[0,0],[0,0]])
 	testResult = []
 	for row in testData:
-		testRst = nnModel.predict(row[feaSt: feaEnd].reshape(1,-1))
+		testRst = nnModel.predict(row[feaSt: feaEnd].reshape(1,-1))[0]
 		if testRst == row[-1]:
 			accuracy += 1
 		testResult.append(testRst)
+		testMat[testRst, row[-1]] = testMat[testRst, row[-1]]+1
 
-	return testResult, accuracy
+	return testResult, accuracy, testMat
 
 def perceptron_train(trainData, feaSt = 0, feaEnd = -1):
 	clf = perceptron.Perceptron(n_iter = 10, shuffle = False, verbose = 0, random_state = None, fit_intercept = True)
@@ -198,29 +205,31 @@ def perceptron_classify(testData, pcpModel, feaSt = 0, feaEnd = -1):
 	# test on testData
 	accuracy = 0
 	testResult = []
+	testMat    = np.array([[0,0],[0,0]])
 	for row in testData:
-		testRst = pcpModel.predict(row[feaSt: feaEnd].reshape(1,-1))
+		testRst = pcpModel.predict(row[feaSt: feaEnd].reshape(1,-1))[0]
 		if testRst == row[-1]:
 			accuracy += 1
 		testResult.append(testRst)
+		testMat[testRst, row[-1]] = testMat[testRst, row[-1]]+1
 
-	return testResult, accuracy
+	return testResult, accuracy, testMat
 
 def TrainAndClassify(trainData, testData, modelName, classLabel = [0, 1] ):
 	if modelName == 'GMM':
 		lnModel = gmm_train(trainData, classLabel)
-		[testRst, acc] = gmm_classify(testData, lnModel)
+		[testRst, acc, testMat] = gmm_classify(testData, lnModel)
 	elif modelName == 'SVM':
 		lnModel = svm_train(trainData)
-		[testRst, acc] = svm_classify(testData, lnModel)
+		[testRst, acc, testMat] = svm_classify(testData, lnModel)
 	elif modelName == 'NN':
 		lnModel = nn_train(trainData)
-		[testRst, acc] = nn_classify(testData, lnModel)
+		[testRst, acc, testMat] = nn_classify(testData, lnModel)
 	else: # Perceptron
 		lnModel = perceptron_train(trainData)
-		[testRst, acc] = perceptron_classify(testData, lnModel)
+		[testRst, acc, testMat] = perceptron_classify(testData, lnModel)
 
-	return testRst, acc, lnModel
+	return testRst, acc, lnModel, testMat
 
 def saveModel(model, modelName, dirName, fileName):
 	if modelName == 'GMM':
