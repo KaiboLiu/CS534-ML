@@ -9,7 +9,7 @@ from sklearn.feature_selection import SelectFromModel
 
 from sklearn.svm import LinearSVC
 from sklearn.ensemble import ExtraTreesClassifier
-
+from sklearn.datasets import make_classification
 
 def LoadFeature():
 	dataDir    = "./Feature/"
@@ -50,7 +50,7 @@ def LDA_analysis(trainX, trainY):
     plt.xlabel('projected data values')
     plt.ylabel('frequency')
     plt.legend(loc='upper right')
-    #plt.show()
+    plt.show()
 
     return np.dot(trainX, w_norm)
 
@@ -82,7 +82,7 @@ def find_vectors(trainX, new_trainX):
 			if hamming_dist(new_trainX[:,i], trainX[:,j]) == 0:
 				selectedF.append(j)
 	featureName = match_with_features(np.array(selectedF))
-	#print "\nReduced Feature Index:\n", selectedF
+	print "\nReduced Feature Index:\n", selectedF
 	return featureName
 
 def feature_selection_var(trainX, trainY, testX, testY, t=0.8):
@@ -126,16 +126,54 @@ def feature_selection_tree(trainX, trainY, testX, testY):
 	featureName = find_vectors(trainX, new_trainX)
 	return new_trainX, new_testX, y, featureName
 
+def important_features_from_tree():
+	# Build a classification task using 3 informative features
+	train = np.genfromtxt("./Feature/train.dev")
+	[N, dim] = train.shape
+	y = train[:, dim-1]
+	X = np.delete(train, 1, 1)
+
+	# Build a forest and compute the feature importances
+	forest = ExtraTreesClassifier(n_estimators=250,
+	                              random_state=0)
+
+	forest.fit(X, y)
+	importances = forest.feature_importances_
+	print importances
+	std = np.std([tree.feature_importances_ for tree in forest.estimators_],
+	             axis=0)
+	indices = np.argsort(importances)[::-1][:3]
+	print indices.shape[0]
+
+	# Print the feature ranking
+	print("Feature ranking:")
+
+	for f in range(indices.shape[0]):
+	    print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
+
+	# Plot the feature importances of the forest
+	plt.figure()
+	plt.title("Feature importances")
+	plt.bar(range(indices.shape[0]), importances[indices],
+	       color="r", yerr=std[indices], align="center")
+	plt.xticks(range(X.shape[1]), indices)
+	plt.xlim([-1, indices.shape[0]])
+	plt.show()
+
 def feature_selection_lda(trainX, trainY, testX, testY):
 	new_trainX = LDA_analysis(trainX, trainY)
 	new_testX = LDA_analysis(testX, testY)
+	print new_trainX.shape
 	featureName = []
 	return new_trainX, new_testX, 1, featureName
 
 def RunMain():
 	[trainX, trainY, testX, testY] = LoadFeature()
 	LDA_analysis(trainX, trainY)
-	feature_selection(trainX, trainY, testX, testY)
+	feature_selection_var(trainX, trainY, testX, testY, t=0.8)
+	feature_selection_L1(trainX, trainY, testX, testY, c=0.1)
+	feature_selection_tree(trainX, trainY, testX, testY)
+	feature_selection_lda(trainX, trainY, testX, testY)
 
 
 if __name__ == "__main__":
