@@ -21,32 +21,36 @@ import collections
 import random
 import copy
 import matplotlib.pyplot as plt
+import pdb
 # import matplotlib.pyplot as plt
 # import matplotlib as mpl
 
 
 class ClassModel:
 	def __init__(self, trainData=[], testData=[]):
-		self.trainData = trainData
-		self.testData  = testData
-		self.norTrainData = []
-		self.norTestData  = []
+		self.dsmpTrainData = trainData
+		self.trainData     = trainData
+		self.testData      = testData
+		self.norTrainData  = []
+		self.norTestData   = []
 
 		self.testLen = len(self.testData)
 
 	def readFile(self, fileName, isTrain):
 		if isTrain == True:
-			self.trainData    = np.genfromtxt(fileName)
+			self.trainData     = np.genfromtxt(fileName)
+			self.dsmpTrainData = self.trainData
 		else:
 			self.testData    = np.genfromtxt(fileName)
 			self.testLen = len(self.testData)
 
 	def cropTrainData(self, number):
 		smp_num = len(self.trainData)
+		if number > smp_num:
+			number = smp_num
 		rdm_idx = random.sample(xrange(0,smp_num), smp_num)
-		self.testData = np.vstack((self.testData,self.trainData[rdm_idx[number:]]))
-		self.trainData = np.delete(self.trainData, rdm_idx[number:], 0)
-
+		self.trainData = np.delete(self.trainData, range(number,smp_num), 0)
+		self.testData = np.vstack((self.testData,self.trainData[0:number]))
 		self.testLen = len(self.testData)
 		
 
@@ -92,6 +96,7 @@ def featureNormalize(trainData, testData):
 
 	norTestData          = testData
 	norTestData[:,0:-1]  = scaler.transform(testData[:,0:-1])
+	return norTrainData, norTestData
 
 def gmm_train(trainData, classLabel, feaSt = 0, feaEnd = -1, maxModelNum = 5):
 	# statistic class number and examples.
@@ -104,7 +109,7 @@ def gmm_train(trainData, classLabel, feaSt = 0, feaEnd = -1, maxModelNum = 5):
 
 	# GMM fit
 	bestGMM  = []
-	cv_types = ['spherical', 'tied', 'diag', 'full']
+	cv_types = ['spherical']#, 'tied', 'diag', 'full']
 	for k in range(classNum):
 		lowest_bic = np.infty
 		train_bic = [] # cost, to check fitness
@@ -142,6 +147,7 @@ def gmm_classify(testData, modelBag, feaSt = 0, feaEnd = -1):
 		testResult.append(bestLabel)
 		testMat[bestLabel, row[-1]] = testMat[bestLabel, row[-1]]+1
 
+	accuracy = round(accuracy * float(100)/len(testData),3)
 	return testResult, accuracy, testMat
 
 def svm_train(trainData, feaSt = 0, feaEnd = -1):
@@ -149,7 +155,7 @@ def svm_train(trainData, feaSt = 0, feaEnd = -1):
 
 	bestSVM = []
 	# training data to fit model
-	kernel = ['linear', 'rbf','poly']
+	kernel = ['linear'] #, 'rbf','poly']
 	bestScore = -np.infty
 	for k in kernel:
 		clf = svm.SVC(kernel = k)
@@ -163,6 +169,7 @@ def svm_train(trainData, feaSt = 0, feaEnd = -1):
 
 def svm_classify(testData, svmModel, feaSt = 0, feaEnd = -1):
 	# test on testData
+	#pdb.set_trace()
 	accuracy = 0
 	testMat    = np.array([[0,0],[0,0]])
 	testResult = []
@@ -173,11 +180,12 @@ def svm_classify(testData, svmModel, feaSt = 0, feaEnd = -1):
 		testResult.append(testRst)
 		testMat[testRst, row[-1]] = testMat[testRst, row[-1]]+1
 
+	accuracy = round(accuracy * float(100)/len(testData),3)
 	return testResult, accuracy, testMat
 
 def nn_train(trainData, feaSt = 0, feaEnd = -1):
 	# the varies parameter could be hidden layer info, 
-	clf = MLPClassifier(solver = 'lbfgs', alpha = 1e-5, hidden_layer_sizes = (5, 2), random_state = 1)
+	clf = MLPClassifier(activation='relu',solver = 'lbfgs', alpha = 1e-5, hidden_layer_sizes = (10, 4), random_state = 1)
 	clf.fit(trainData[:,feaSt: feaEnd], trainData[:,-1])
 	'''
 	fig, axes = plt.subplots(4, 1)
@@ -205,10 +213,11 @@ def nn_classify(testData, nnModel, feaSt = 0, feaEnd = -1):
 		testResult.append(testRst)
 		testMat[testRst, row[-1]] = testMat[testRst, row[-1]]+1
 
+	accuracy = round(accuracy * float(100)/len(testData),3)
 	return testResult, accuracy, testMat
 
 def perceptron_train(trainData, feaSt = 0, feaEnd = -1):
-	clf = perceptron.Perceptron(n_iter = 10, shuffle = False, verbose = 0, random_state = None, fit_intercept = True)
+	clf = perceptron.Perceptron(n_iter = 15, shuffle = False, verbose = 0, random_state = None, fit_intercept = True)
 	clf.fit(trainData[:, feaSt: feaEnd], trainData[:,-1])
 
 	return clf
@@ -225,6 +234,7 @@ def perceptron_classify(testData, pcpModel, feaSt = 0, feaEnd = -1):
 		testResult.append(testRst)
 		testMat[testRst, row[-1]] = testMat[testRst, row[-1]]+1
 
+	accuracy = round(accuracy * float(100)/len(testData),3)
 	return testResult, accuracy, testMat
 
 def TrainAndClassify(trainData, testData, modelName, classLabel = [0, 1] ):

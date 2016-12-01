@@ -8,14 +8,36 @@ import random
 import ClassifyModels as cf
 import FeatureReduction as fr
 
-def BasicModelAnalysis(cfModel, saveDir):
+def BasicModelAnalysis(trainData, testData, saveDir = './', doSave = 0):
+
+	testLen = len(testData)
+	[norTrainData, norTestData] = cf.featureNormalize(trainData, testData)
 
 	# test different model over all feature.
-	[gmmTest, gmmAcc, gmmBag, testMat] = cf.TrainAndClassify(cfModel.trainData, cfModel.testData, 'GMM')
-	cf.saveModel(gmmBag, 'GMM', saveDir, 'Model_')
-	print "\nGMM test result:\n", "accuracy: ", round(gmmAcc* float(100)/cfModel.testLen,3) #, "\n test rst: ", gmmTest
-	print 'test number:', cfModel.testLen, 'testMat is: \n', testMat
+	[gmmTest, gmmAcc, gmmBag, gmmTestMat] = cf.TrainAndClassify(norTrainData, norTestData, 'GMM')
+	print "\nGMM test result:\n", "accuracy: ", gmmAcc #, "\n test rst: ", gmmTest
+	print 'test number:', testLen, 'testMat is: \n', gmmTestMat
 	
+	[svmTest, svmAcc, svmModel, svmTestMat] = cf.TrainAndClassify(norTrainData, norTestData, 'SVM')
+	print "\nsvm test result:\n", "accuracy: ", svmAcc #, "\n test rst: ", svmTest
+	print svmTestMat
+	
+	# pdb.set_trace()
+	[nnTest, nnAcc, nnModel, nnTestMat] = cf.TrainAndClassify(norTrainData, norTestData, 'NN')
+	print "\nNN test result:\n", "accuracy: ", nnAcc#, "\n test rst: ", nnTest
+	print nnTestMat
+	
+
+	[pcpTest, pcpAcc, pcpModel, pcpTestMat] = cf.TrainAndClassify(norTrainData, norTestData, 'Perceptron')
+	print "\nPerceptron test result:\n", "accuracy: ", pcpAcc#, "\n test rst: ", pcpTest
+	print pcpTestMat
+
+	if doSave == 1:
+		cf.saveModel(gmmBag,   'GMM', saveDir, 'Model_')
+		cf.saveModel(svmModel, 'SVM', saveDir, 'Model_')
+		cf.saveModel(nnModel,  'NN', saveDir, 'Model_')
+		cf.saveModel(pcpModel, 'Perceptron', saveDir, 'Model_')
+
 	'''
 	# test about model read.
 	gmmRdBag = []
@@ -23,35 +45,46 @@ def BasicModelAnalysis(cfModel, saveDir):
 		clf = joblib.load(DIR_RESULT+'Model_'+'GMM_'+str(i)+'.pkl')
 		gmmRdBag.append(clf)
 	pdb.set_trace()
-	[gmmTest2, gmmAcc2, testMat] = cf.gmm_classify(cfModel.testData, gmmRdBag)
-	print "\n2nd ** GMM test result:\n", "accuracy: ", round(gmmAcc* float(100)/cfModel.testLen,3) #, "\n test rst: ", gmmTest
-	print 'test number:', cfModel.testLen, 'testMat is: \n', testMat
+	[gmmTest2, gmmAcc2, testMat] = cf.gmm_classify(testData, gmmRdBag)
+	print "\n2nd ** GMM test result:\n", "accuracy: ", gmmAcc #, "\n test rst: ", gmmTest
+	print 'test number:', testLen, 'testMat is: \n', testMat
 	'''
-	
-	[svmTest, svmAcc, svmModel, testMat] = cf.TrainAndClassify(cfModel.trainData, cfModel.testData, 'SVM')
-	cf.saveModel(svmModel, 'SVM', saveDir, 'Model_')
-	print "\nsvm test result:\n", "accuracy: ", round(svmAcc* float(100)/cfModel.testLen,3) #, "\n test rst: ", svmTest
-	print testMat
 
-	# pdb.set_trace()
-	[nnTest, nnAcc, nnModel, testMat] = cf.TrainAndClassify(cfModel.norTrainData, cfModel.norTestData, 'NN')
-	cf.saveModel(nnModel, 'NN', saveDir, 'Model_')
-	print "\nNN test result:\n", "accuracy: ", round(nnAcc* float(100)/cfModel.testLen,3)#, "\n test rst: ", nnTest
-	print testMat
+	accuracy = [gmmAcc, svmAcc, nnAcc, pcpAcc]
+	testMat  = np.c_[gmmTestMat, svmTestMat, nnTestMat, pcpTestMat]
+	return  accuracy, testMat
 
-	[pcpTest, pcpAcc, pcpModel, testMat] = cf.TrainAndClassify(cfModel.norTrainData, cfModel.norTestData, 'Perceptron')
-	cf.saveModel(pcpModel, 'Perceptron', saveDir, 'Model_')
-	print "\nPerceptron test result:\n", "accuracy: ", round(pcpAcc* float(100)/cfModel.testLen,3)#, "\n test rst: ", pcpTest
-	print testMat
-	# save trained model or models.
+def BasicModelCompare(cfModel, saveDir):
+	trainPerp = np.linspace(0.1, 1, 10)
+
+	trainLen = len(cfModel.trainData)
+	testRcd_acc = []
+	for p in trainPerp:
+		dsmpTrainData  = cfModel.trainData[0:np.int(p*trainLen)]
+		[acc, testMat] = BasicModelAnalysis(dsmpTrainData, cfModel.testData)
+		testRcd_acc.append(acc)
+
+	#------------------------
+	plt.figure()
+	modelName   = ['GMM', 'NN', 'linear SVM', 'linear Perceptron']
+	testRcd_acc = np.array(testRcd_acc)
+	modelNum    = testRcd_acc.shape[1]
+	for i in range(modelNum):
+		plt.plot(trainPerp, testRcd_acc[:,i], label=modelName[i])
+
+	plt.legend(loc="center right")
+	plt.xlabel("Proportion train")
+	plt.ylabel("Test Accuracy(\%)")
+	plt.savefig(saveDir + 'basicModelCompare.png')
+	# plt.show()
+	#-----------------------------
 
 
-
-def FeatureAnalysisBasedData(cfModel):
+def FeatureAnalysisBasedData(cfModel, saveDir):
 	feaIdx  = [0, 12, 24, 36, 164, 184, 185, 186, 187, 194, 195, 197, 203, 204]
 	feaName = ['stft', 'cqt', 'cens', 'mel-spec', 'mfcc', 'rmse', 'spec_centroid',\
-	            'spec_bandwidth', 'spec_contrast', 'spec_rolloff', 'poly_features',\
-	            'tonnetz', 'zero_crossing_rate']
+	            'spec_bw', 'spec_contrast', 'spec_rolloff', 'poly_features',\
+	            'tonnetz', 'zero_cross_rate']
 	feaNum  = 13
 
 	# test on each feature
@@ -59,33 +92,34 @@ def FeatureAnalysisBasedData(cfModel):
 	for i in range(feaNum):
 		stIdx  = feaIdx[i]
 		endIdx = feaIdx[i+1]
+		newTrainData = np.c_[cfModel.norTrainData[:,stIdx:endIdx], cfModel.norTrainData[:,-1]]
+		newTestData  = np.c_[cfModel.norTestData[:,stIdx:endIdx], cfModel.norTestData[:,-1]]
 
-		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(newTrainData, newTestData, 'Perceptron')
-		testAccList.append(round(accuracy* float(100)/cfModel.testLen, 3))
+		# pdb.set_trace()
+		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(newTrainData, newTestData, 'SVM')
+		testAccList.append(accuracy)
 
 	feaLen = (np.array(feaIdx[1:])-np.array(feaIdx[:-1]))
 	print '\n using feature group includes: \n', feaName
 	print '\n number of feature in each grouop: \n', feaLen
 	print '\n test on single feature group, accuracy is\n', testAccList
 
-	'''
 	#---------------------------
-    plt.subplot()
-    ind = np.arange(len(testAccList))
-    width = 0.35
+	plt.figure()
+	ind = np.arange(len(testAccList))
+	width = 0.40
 
-    rectsP = plt.bar(ind, feaLen, width, color = 'b', label = 'number of features')
-    rectsT = plt.bar(ind+width, testAccList, width, color = 'r', label = 'test accuracy')
-    plt.xlim(0, 15)
-    plt.xlabel('feature group')
-    plt.xticks(ind+width, feaName)
-    plt.legend()
+	rectsP = plt.bar(ind, feaLen, width, color = 'b', label = 'number of features')
+	rectsT = plt.bar(ind+width, testAccList, width, color = 'r', label = 'test accuracy')
+	plt.xlabel('feature group')
+	plt.xticks(ind, feaName, rotation=45)
+	plt.legend()
 
-    plt.tight_layout()
-    plt.savefig(saveDir+'feature_analysis.png')
-
+	plt.tight_layout()
+	plt.savefig(saveDir+'eatureAna_seprate.png')
+	#plt.show()
     #--------------------------------
-    '''
+    
 
 def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 	inData    = np.vstack((cfModel.trainData[:,:-1], cfModel.testData[:,:-1]))
@@ -114,7 +148,7 @@ def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 	# do training and classification.
 	# if use NN, Perception, it's better to do feature normalize first.
 	[testRst, accuracy, model, testMat] = cf.TrainAndClassify(newTrainData, newTestData, 'NN')
-	print "\nPCA & GMM test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+	print "\nPCA & GMM test result:\n", "accuracy: ", accuracy
 
 	return testRst, accuracy
 
@@ -130,7 +164,7 @@ def FeatureReduction_sklearn(cfModel):
 	new_testData  = np.c_[new_testX, testY]
 
 	[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
-	print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+	print "\nsklearn test result:\n", "accuracy: ", accuracy
 
 	'''
 	accuraceList = []
@@ -144,7 +178,7 @@ def FeatureReduction_sklearn(cfModel):
 
 		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
 		accuraceList.append(round(accuracy* float(100)/cfModel.testLen,3))
-		print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+		print "\nsklearn test result:\n", "accuracy: ", accuracy
 	plt.plot(accuraceList)
 	plt.show()
 
@@ -157,7 +191,7 @@ def FeatureReduction_sklearn(cfModel):
 
 		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
 		accuraceList.append(round(accuracy* float(100)/cfModel.testLen,3))
-		print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+		print "\nsklearn test result:\n", "accuracy: ", accuracy
 
 	plt.plot(accuraceList)
 	'''
@@ -178,18 +212,17 @@ def RunMain():
 	cfModel.readFile(DIR+TRAIN_FILE, 1)
 	cfModel.readFile(DIR+TEST_FILE, 0)
 
-	cfModel.cropTrainData(100)
+	# cfModel.cropTrainData(100)
 	cfModel.featureNormalize()
 
 	classLabel = [0, 1] # 0-Chinese, 1-English
-	#pdb.set_trace()
 
-	BasicModelAnalysis(cfModel, DIR_RESULT)
+	# basic model comparison
+	BasicModelCompare(cfModel, DIR_RESULT)
+	BasicModelAnalysis(cfModel.trainData, cfModel.testData, DIR_RESULT)
 
 	# feature analysis.
-	if 0:
-		FeatureAnalysisBasedData(cfModel)
-
+	FeatureAnalysisBasedData(cfModel, DIR_RESULT)
 
 	[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM')
 	[testRst, acc] = FeatureReduction_sklearn(cfModel)
