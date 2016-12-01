@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.externals import joblib # save classify model.
+from sklearn.externals import joblib # save classify model
+from matplotlib.colors import ListedColormap #color map.
 import time
 import pdb
 import random
@@ -21,12 +22,11 @@ def BasicModelAnalysis(trainData, testData, saveDir = './', doSave = 0):
 	[svmTest, svmAcc, svmModel, svmTestMat] = cf.TrainAndClassify(norTrainData, norTestData, 'SVM')
 	print "\nsvm test result:\n", "accuracy: ", svmAcc #, "\n test rst: ", svmTest
 	print svmTestMat
-	
+
 	# pdb.set_trace()
 	[nnTest, nnAcc, nnModel, nnTestMat] = cf.TrainAndClassify(norTrainData, norTestData, 'NN')
 	print "\nNN test result:\n", "accuracy: ", nnAcc#, "\n test rst: ", nnTest
 	print nnTestMat
-	
 
 	[pcpTest, pcpAcc, pcpModel, pcpTestMat] = cf.TrainAndClassify(norTrainData, norTestData, 'Perceptron')
 	print "\nPerceptron test result:\n", "accuracy: ", pcpAcc#, "\n test rst: ", pcpTest
@@ -49,12 +49,11 @@ def BasicModelAnalysis(trainData, testData, saveDir = './', doSave = 0):
 	print "\n2nd ** GMM test result:\n", "accuracy: ", gmmAcc #, "\n test rst: ", gmmTest
 	print 'test number:', testLen, 'testMat is: \n', testMat
 	'''
-
 	accuracy = [gmmAcc, svmAcc, nnAcc, pcpAcc]
 	testMat  = np.c_[gmmTestMat, svmTestMat, nnTestMat, pcpTestMat]
 	return  accuracy, testMat
 
-def BasicModelCompare(cfModel, saveDir):
+def BasicModelCompare(cfModel, modelName, saveDir):
 	trainPerp = np.linspace(0.1, 1, 10)
 
 	trainLen = len(cfModel.trainData)
@@ -66,9 +65,8 @@ def BasicModelCompare(cfModel, saveDir):
 
 	#------------------------
 	plt.figure()
-	modelName   = ['GMM', 'NN', 'linear SVM', 'linear Perceptron']
 	testRcd_acc = np.array(testRcd_acc)
-	modelNum    = testRcd_acc.shape[1]
+	modelNum    = len(modelName)
 	for i in range(modelNum):
 		plt.plot(trainPerp, testRcd_acc[:,i], label=modelName[i])
 
@@ -77,7 +75,65 @@ def BasicModelCompare(cfModel, saveDir):
 	plt.ylabel("Test Accuracy(\%)")
 	plt.savefig(saveDir + 'basicModelCompare.png')
 	# plt.show()
+	plt.close()
 	#-----------------------------
+
+def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
+
+	if(trainData.shape[1]!= 3):
+		print 'feature number of each example should be 2. \n'
+		return
+	elif(trainData.shape[0] < 10):
+		print 'need more data in training set. \n'
+		return
+
+	h = .02
+	trX_min, trX_max = trainData[:, 0].min() - 0.5, trainData[:, 0].max() + 0.5
+	trY_min, trY_max = trainData[:, 1].min() - 0.5, trainData[:, 1].max() + 0.5
+	teX_min, teX_max = testData[:, 0].min() - 0.5, testData[:, 0].max() + 0.5
+	teY_min, teY_max = testData[:, 1].min() - 0.5, testData[:, 1].max() + 0.5
+	xx, yy = np.meshgrid(np.arange(min(trX_min, teX_min), max(trX_max, teX_max), h),
+	                     np.arange(min(trY_min, teY_min), max(trY_max, teY_max), h))
+	cm = plt.cm.RdBu
+	cm_bright  = ListedColormap(['#FF0000', '#00FF00'])
+	markerSign = ['+', 'o']
+	trainSign  = [markerSign[np.int(e)] for e in trainData[:,2]]
+	testSign   = [markerSign[np.int(e)] for e in testData[:,2]]
+
+
+	plt.figure()
+	modelNum = len(modelName)
+	for i in range(3):
+		plt.subplot(2,2,i)
+		# Plot the training points
+		plt.scatter(trainData[:, 0], trainData[:, 1], c=trainData[:,2], cmap=cm_bright)
+		# and testing points
+		plt.scatter(testData[:, 0], testData[:, 1], c=testData[:,2], cmap=cm_bright, alpha=1)
+		plt.xlim(xx.min(), xx.max())
+		plt.ylim(yy.min(), yy.max())
+		plt.xticks(())
+		plt.yticks(())
+		plt.title(modelName[i])
+		
+		# draw dicision boundary
+		if i == 0: # svm
+			model = cf.svm_train(trainData)
+			Z = model.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+		elif i == 1: # nn
+			model = cf.nn_train(trainData)
+			Z = model.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+		elif i == 2: # perceptron
+			model = cf.perceptron_train(trainData)
+			Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+		else: # gmm
+			[Z, acc, mat] = cf.TrainAndClassify(trainData, np.c_[xx.ravel(), yy.ravel()], 'GMM') 
+		
+		Z = Z.reshape(xx.shape)
+		plt.contourf(xx, yy, Z, cmap=cm, alpha=.4)
+		
+	#plt.show()
+
+
 
 
 def FeatureAnalysisBasedData(cfModel, saveDir):
@@ -118,6 +174,7 @@ def FeatureAnalysisBasedData(cfModel, saveDir):
 	plt.tight_layout()
 	plt.savefig(saveDir+'eatureAna_seprate.png')
 	#plt.show()
+	plt.close()
     #--------------------------------
     
 
@@ -147,6 +204,7 @@ def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 
 	# do training and classification.
 	# if use NN, Perception, it's better to do feature normalize first.
+	[newTrainData, newTestData] = cf.featureNormalize(newTrainData, newTestData)
 	[testRst, accuracy, model, testMat] = cf.TrainAndClassify(newTrainData, newTestData, 'NN')
 	print "\nPCA & GMM test result:\n", "accuracy: ", accuracy
 
@@ -218,9 +276,15 @@ def RunMain():
 	classLabel = [0, 1] # 0-Chinese, 1-English
 
 	# basic model comparison
-	BasicModelCompare(cfModel, DIR_RESULT)
-	BasicModelAnalysis(cfModel.trainData, cfModel.testData, DIR_RESULT)
+	#modelName   = ['linear SVM', 'NN', 'linear perceptron', 'GMM']
+	#trainData = np.c_[cfModel.trainData[:,0:2], cfModel.trainData[:,-1]]
+	#testData  = np.c_[cfModel.testData[:,0:2], cfModel.testData[:,-1]]
+	#BasicModelCompare_Draw(trainData, testData, modelName, DIR_RESULT)
 
+	modelName   = ['GMM', 'linear SVM', 'NN', 'linear Perceptron']
+	BasicModelCompare(cfModel, modelName, DIR_RESULT)
+	BasicModelAnalysis(cfModel.trainData, cfModel.testData, DIR_RESULT)
+	
 	# feature analysis.
 	FeatureAnalysisBasedData(cfModel, DIR_RESULT)
 
