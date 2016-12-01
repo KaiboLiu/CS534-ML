@@ -17,13 +17,12 @@ def LoadFeature():
 	testFeature   = "test.dev"
 
 	train = np.genfromtxt(dataDir+trainFeature)
-	[N, dim] = train.shape
-	trainY = train[:, dim-1]
-	trainX = np.delete(train, 1, 1)
-
 	test = np.genfromtxt(dataDir+testFeature)
-	testY = test[:, dim-1]
-	testX = np.delete(test, 1, 1)
+	trainX = train[:,:-1]
+	trainY = train[:,-1]
+	testX  = test[:,:-1]
+	testY  = test[:,-1]
+
 	return trainX, trainY, testX, testY
 
 def computeMeanVar(Data, Label, class_label):
@@ -44,15 +43,16 @@ def LDA_analysis(trainX, trainY):
     projected_members0 = np.dot(members0, w_norm)
     projected_members1 = np.dot(members1, w_norm)
 
-    plt.figure(2)
+    plt.figure(4)
     plt.hist(projected_members0, color='r', alpha=0.5, label='class 0')
     plt.hist(projected_members1, color='b', alpha=0.5, label='class 1')
+    plt.title('LDA')
     plt.xlabel('projected data values')
     plt.ylabel('frequency')
     plt.legend(loc='upper right')
-    plt.show()
+    #plt.show()
 
-    return np.dot(trainX, w_norm)
+    return np.dot(trainX, w_norm), w_norm
 
 def hamming_dist(x1, x2):
 	return np.sum(np.abs(x1-x2))
@@ -70,8 +70,8 @@ def match_with_features(a):
 		if idx[0].size > 0:
 			selectedFName[featureName[i]] = idx
 		pre_i = featureIdx[i]
-	#print "ReducedF:", selectedFName.keys()
-	#print "\nReduced Feature Index:\n", selectedFName.values()
+	#print "Reduced Feature Name:", selectedFName.keys()
+	#print "Reduced Feature Index:\n", selectedFName.values()
 	return selectedFName.keys()
 
 def find_vectors(trainX, new_trainX):
@@ -82,98 +82,107 @@ def find_vectors(trainX, new_trainX):
 			if hamming_dist(new_trainX[:,i], trainX[:,j]) == 0:
 				selectedF.append(j)
 	featureName = match_with_features(np.array(selectedF))
-	print "\nReduced Feature Index:\n", selectedF
-	return featureName
+	return featureName, selectedF
 
-def feature_selection_var(trainX, trainY, testX, testY, t=0.8):
+def feature_selection_var(trainX, trainY, testX, t=0.8):
 	# Removing features with low variance
 	sel = VarianceThreshold(threshold=(t * (1 - t)))
 	new_trainX = sel.fit_transform(trainX)
-	new_testX = sel.fit_transform(testX)
-	print new_trainX.shape
-	[x, y] = new_trainX.shape
-	featureName = find_vectors(trainX, new_trainX)
-	#print new_trainX, new_testX, y, featureName
-	return new_trainX, new_testX, y, featureName
+	featureNum = new_trainX.shape[1]
+	featureName, featureIdx = find_vectors(trainX, new_trainX)
+	new_testX = testX[:,featureIdx]
+	return new_trainX, new_testX, featureNum, featureName
 
-def feature_selection_L1(trainX, trainY, testX, testY, c=0.1):
+def feature_selection_L1(trainX, trainY, testX, c=0.1):
 	# L1-based feature selection
 	lsvc = LinearSVC(C=c, penalty="l1", dual=False).fit(trainX, trainY)
 	model = SelectFromModel(lsvc, prefit=True)
 	new_trainX = model.transform(trainX)
-	new_testX = model.transform(testX)
-	print new_trainX.shape
-	[x, y] = new_trainX.shape
-	featureName = find_vectors(trainX, new_trainX)
-	return new_trainX, new_testX, y, featureName
+	featureNum = new_trainX.shape[1]
+	featureName, featureIdx = find_vectors(trainX, new_trainX)
+	new_testX = testX[:,featureIdx]
+	return new_trainX, new_testX, featureNum, featureName
 
-def feature_selection_tree(trainX, trainY, testX, testY):
-	'''
-	# Univariate feature selection
-	#new_train = SelectKBest(chi2, k=2).fit_transform(trainX, trainY)
-	#print new_train.shape
-	'''
-
+def feature_selection_tree(trainX, trainY, testX):
 	# Tree-based feature selection
 	clf = ExtraTreesClassifier()
 	clf = clf.fit(trainX, trainY)
 	clf.feature_importances_
 	model = SelectFromModel(clf, prefit=True)
 	new_trainX = model.transform(trainX)
-	new_testX = model.transform(testX)
-	print new_trainX.shape
-	[x, y] = new_trainX.shape
-	featureName = find_vectors(trainX, new_trainX)
-	return new_trainX, new_testX, y, featureName
+	featureNum = new_trainX.shape[1]
+	featureName, featureIdx = find_vectors(trainX, new_trainX)
+	new_testX = testX[:,featureIdx]
+	return new_trainX, new_testX, featureNum, featureName
 
-def important_features_from_tree():
-	# Build a classification task using 3 informative features
-	train = np.genfromtxt("./Feature/train.dev")
-	[N, dim] = train.shape
-	y = train[:, dim-1]
-	X = np.delete(train, 1, 1)
-
+def important_features_from_tree(trainX, trainY, rank):
 	# Build a forest and compute the feature importances
 	forest = ExtraTreesClassifier(n_estimators=250,
 	                              random_state=0)
 
-	forest.fit(X, y)
+	forest.fit(trainX, trainY)
 	importances = forest.feature_importances_
-	print importances
 	std = np.std([tree.feature_importances_ for tree in forest.estimators_],
 	             axis=0)
-	indices = np.argsort(importances)[::-1][:3]
-	print indices.shape[0]
+	print rank
+	indices = np.argsort(importances)[::-1][:rank]
 
-	# Print the feature ranking
 	print("Feature ranking:")
 
 	for f in range(indices.shape[0]):
 	    print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
 
 	# Plot the feature importances of the forest
-	plt.figure()
-	plt.title("Feature importances")
+	plt.figure(3)
+	plt.title("Feature Importances")
 	plt.bar(range(indices.shape[0]), importances[indices],
 	       color="r", yerr=std[indices], align="center")
-	plt.xticks(range(X.shape[1]), indices)
+	plt.xticks(range(trainX.shape[1]), indices)
 	plt.xlim([-1, indices.shape[0]])
-	plt.show()
 
-def feature_selection_lda(trainX, trainY, testX, testY):
-	new_trainX = LDA_analysis(trainX, trainY)
-	new_testX = LDA_analysis(testX, testY)
-	print new_trainX.shape
+def feature_selection_lda(trainX, trainY, testX):
+	new_trainX, w_norm = LDA_analysis(trainX, trainY)
+	new_testX = np.dot(testX, w_norm)
+	new_trainX = new_trainX[np.newaxis, :]
 	featureName = []
 	return new_trainX, new_testX, 1, featureName
 
 def RunMain():
 	[trainX, trainY, testX, testY] = LoadFeature()
-	LDA_analysis(trainX, trainY)
-	feature_selection_var(trainX, trainY, testX, testY, t=0.8)
-	feature_selection_L1(trainX, trainY, testX, testY, c=0.1)
-	feature_selection_tree(trainX, trainY, testX, testY)
-	feature_selection_lda(trainX, trainY, testX, testY)
+	Y = []
+
+	print "[Variance-based Feature Selection]"
+	X = np.linspace(0, 1, 10)
+	for i in X:
+		new_trainX, new_testX, featureNum, featureName = feature_selection_var(trainX, trainY, testX, i)
+		Y.append(featureNum)
+	plt.figure(1)
+	plt.plot(X, Y)
+	plt.title('Variance-based Feature Selection')
+	plt.xlabel('variance threshold')
+	plt.ylabel('feature dimension')
+
+	print "[L1-based Feature Selection]"
+	Y = []
+	X = np.linspace(0.01, 10, 10)
+	for i in X:
+		new_trainX, new_testX, featureNum, featureName = feature_selection_L1(trainX, trainY, testX, i)
+		Y.append(featureNum)
+	plt.figure(2)
+	plt.plot(X, Y)
+	plt.title('L1-based Feature Selection')
+	plt.xlabel('sparsity coefficient')
+	plt.ylabel('feature dimension')
+
+	print "[Tree-based Feature Selection]"
+	new_trainX, new_testX, featureNum, featureName = feature_selection_tree(trainX, trainY, testX)
+	print featureName
+
+	important_features_from_tree(trainX, trainY, 10)
+
+	feature_selection_lda(trainX, trainY, testX)
+
+	plt.show()
 
 
 if __name__ == "__main__":
