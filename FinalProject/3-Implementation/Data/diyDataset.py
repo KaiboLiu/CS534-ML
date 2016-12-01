@@ -8,44 +8,44 @@ for final project of CS534
 # coding:utf-8
 import numpy as np
 import os
-import shutil 
+import shutil
 import random
 import time
 
 
 def LoadData(dataDir,lang):
     # read input data for training & testing
-    
+
     data_path = dataDir+'list_'+lang+'.data'
-    #wav_path  = dataDir+lang 
-    
+    #wav_path  = dataDir+lang
+
     Data = []
     f = open(data_path)
-    for line in f.readlines():  
+    for line in f.readlines():
         Data.append(line.strip().split('\t'))
     Data = np.array(Data)
     f.close()
-    
+
     return Data
 
 def WriteFile(fileName, Data):
 	f = open(fileName,"w")
 	for line in Data:
 		f.write(line[0]+'\t'+line[1]+'\n')
-		
+
 	f.close()
 
 def RunCreat():
 
 	time.clock()
 	t00 = float(time.clock())
-	
+
 	srcDir = './wav/'
 	dstDir = './diyDataset/'
-	lang_list= ['cmn','eng','engStory','deu','fra','jpn','rus'] 
+	lang_list= ['cmn','eng','engStory','deu','fra','jpn','rus']
 	#cmn  Chinese(Mandarin),female:500
 	#eng  English,male:500
-	#engStory:a story vedio splitted in to 688 wavs. 
+	#engStory:a story vedio splitted in to 688 wavs.
 	#deu  German,male:400
 	#fra  French,male:400
 	#jpn  Japanese,female:400
@@ -58,11 +58,11 @@ def RunCreat():
 	os.makedirs(dstDir+'train/')
 	os.makedirs(dstDir+'test/')
 
-	'''use following two lists to decide the size of new dataset. 
+	'''use following two lists to decide the size of new dataset.
 	If you set some of the element >0, then the corresponding language is added to dataset'''
 	# origin data samples is [500,500,688,400,400,400,400], can be divided into training and testing in each language
-	n_list_train = 	[300,300,388,0,0,0,0]#[3,3,3,2,4,0,3]
-	n_list_test   = [200,200,300,0,0,0,0]#[1,1,1,1,1,0,1]
+	n_list_train = 	[70,70,0,0,0,0,0]#[3,3,3,2,4,0,3]
+	n_list_test   = [30,30,0,0,0,0,0]#[1,1,1,1,1,0,1]
 
 	dataTrain = []
 	dataTest  = []
@@ -87,22 +87,22 @@ def RunCreat():
 		# start to build training data with language[i]
 		for j in range(n_list_train[i]):
 			index, lang = newData[j,0], newData[j,1]
-			if index[0] == 'S':
-				lang = 'engStory'
+			#if index[0] == 'S':
+			#	lang = 'engStory'
 			dataTrain.append(newData[j].tolist())  #add this speech information into diy training data(list)
 			shutil.copy(srcDir+lang+'/'+index+'.wav', dstDir+'train/')
 
 		# start to build test data with language[i]
 		for j in range(n_list_train[i],n_sample):
 			index, lang = newData[j,0], newData[j,1]
-			if index[0] == 'S':
-				lang = 'engStory'
+			#if index[0] == 'S':
+			#	lang = 'engStory'
 			dataTest.append(newData[j].tolist())  #add this speech information into diy test data(list)
 			shutil.copy(srcDir+lang+'/'+index+'.wav', dstDir+'test/')
 
 		t1 = float(time.clock())
 		print 'from %s, copy %d data into train, and %d data into test, using %.4fs.' %(lang_list[i],n_list_train[i],n_list_test[i],t1-t0)
-		
+
 	#print dataTrain
 	#print dataTest
 
@@ -111,8 +111,8 @@ def RunCreat():
 
 	t1 = float(time.clock())
 	print '[done] total runtime is %.4fs. \n' % (t1-t00)
-		
-		
+
+
 
 if __name__ == "__main__":
 	RunCreat()
