@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.externals import joblib # save classify model
 from matplotlib.colors import ListedColormap #color map.
+from sklearn.ensemble import  AdaBoostClassifier
 import time
 import pdb
 import random
@@ -18,7 +19,7 @@ def BasicModelAnalysis(trainData, testData, saveDir = './', doSave = 0):
 	[gmmTest, gmmAcc, gmmBag, gmmTestMat] = cf.TrainAndClassify(norTrainData, norTestData, 'GMM')
 	print "\nGMM test result:\n", "accuracy: ", gmmAcc #, "\n test rst: ", gmmTest
 	print 'test number:', testLen, 'testMat is: \n', gmmTestMat
-	
+
 	[svmTest, svmAcc, svmModel, svmTestMat] = cf.TrainAndClassify(norTrainData, norTestData, 'SVM')
 	print "\nsvm test result:\n", "accuracy: ", svmAcc #, "\n test rst: ", svmTest
 	print svmTestMat
@@ -31,6 +32,25 @@ def BasicModelAnalysis(trainData, testData, saveDir = './', doSave = 0):
 	[pcpTest, pcpAcc, pcpModel, pcpTestMat] = cf.TrainAndClassify(norTrainData, norTestData, 'Perceptron')
 	print "\nPerceptron test result:\n", "accuracy: ", pcpAcc#, "\n test rst: ", pcpTest
 	print pcpTestMat
+
+
+	#RandomForest $ AdaBoost
+	n_estimators=100
+    learning_rate=1.
+    clf = AdaBoostClassifier(n_estimators=n_estimators,learning_rate=learning_rate,algorithm='SAMME.R')
+    x_train = trainData[:,:-1]
+    y_train = trainData[:,-1]
+    clf.fit(x_train,y_train)
+    result = clf.predict(testData[:,:-1])
+    accuracy = 0
+    n_test = len(testData)
+	adaTestMat = np.array([[0,0],[0,0]])
+    for i in range(n_test):
+        if result[i] == testData[i,-1]:
+            accuracy += 1
+		adaTestMat[result[i], testData[i,-1]] = testMat[result[i], testData[i,-1]]+1
+	adaAcc = round(100*float(match)/n_test,3)
+    #print float(match)/n_test,clf.score(testData[:,:-1],testData[:,-1])
 
 	if doSave == 1:
 		cf.saveModel(gmmBag,   'GMM', saveDir, 'Model_')
@@ -49,8 +69,8 @@ def BasicModelAnalysis(trainData, testData, saveDir = './', doSave = 0):
 	print "\n2nd ** GMM test result:\n", "accuracy: ", gmmAcc #, "\n test rst: ", gmmTest
 	print 'test number:', testLen, 'testMat is: \n', testMat
 	'''
-	accuracy = [gmmAcc, svmAcc, nnAcc, pcpAcc]
-	testMat  = np.c_[gmmTestMat, svmTestMat, nnTestMat, pcpTestMat]
+	accuracy = [gmmAcc, svmAcc, nnAcc, pcpAcc, adaAcc]
+	testMat  = np.c_[gmmTestMat, svmTestMat, nnTestMat, pcpTestMat, adaTestMat]
 	return  accuracy, testMat
 
 def BasicModelCompare(cfModel, modelName, saveDir):
@@ -114,7 +134,7 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 		plt.xticks(())
 		plt.yticks(())
 		plt.title(modelName[i])
-		
+
 		# draw dicision boundary
 		if i == 0: # svm
 			model = cf.svm_train(trainData)
@@ -126,11 +146,11 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 			model = cf.perceptron_train(trainData)
 			Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
 		else: # gmm
-			[Z, acc, mat] = cf.TrainAndClassify(trainData, np.c_[xx.ravel(), yy.ravel()], 'GMM') 
-		
+			[Z, acc, mat] = cf.TrainAndClassify(trainData, np.c_[xx.ravel(), yy.ravel()], 'GMM')
+
 		Z = Z.reshape(xx.shape)
 		plt.contourf(xx, yy, Z, cmap=cm, alpha=.4)
-		
+
 	#plt.show()
 
 
@@ -176,7 +196,7 @@ def FeatureAnalysisBasedData(cfModel, saveDir):
 	#plt.show()
 	plt.close()
     #--------------------------------
-    
+
 
 def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 	inData    = np.vstack((cfModel.trainData[:,:-1], cfModel.testData[:,:-1]))
@@ -284,7 +304,7 @@ def RunMain():
 	modelName   = ['GMM', 'linear SVM', 'NN', 'linear Perceptron']
 	BasicModelCompare(cfModel, modelName, DIR_RESULT)
 	BasicModelAnalysis(cfModel.trainData, cfModel.testData, DIR_RESULT)
-	
+
 	# feature analysis.
 	FeatureAnalysisBasedData(cfModel, DIR_RESULT)
 
@@ -295,5 +315,3 @@ def RunMain():
 
 if __name__ == "__main__":
 	RunMain()
-
-
