@@ -36,20 +36,20 @@ def BasicModelAnalysis(trainData, testData, saveDir = './', doSave = 0):
 
 	#RandomForest $ AdaBoost
 	n_estimators=100
-    learning_rate=1.
-    clf = AdaBoostClassifier(n_estimators=n_estimators,learning_rate=learning_rate,algorithm='SAMME.R')
-    x_train = trainData[:,:-1]
-    y_train = trainData[:,-1]
-    clf.fit(x_train,y_train)
-    result = clf.predict(testData[:,:-1])
-    accuracy = 0
-    n_test = len(testData)
+	learning_rate=1.
+	clf = AdaBoostClassifier(n_estimators=n_estimators,learning_rate=learning_rate,algorithm='SAMME.R')
+	x_train = np.copy(trainData[:,:-1])
+	y_train = np.copy(trainData[:,-1])
+	clf.fit(x_train,y_train)
+	result = clf.predict(testData[:,:-1])
+	accuracy = 0
+	n_test = len(testData)
 	adaTestMat = np.array([[0,0],[0,0]])
-    for i in range(n_test):
-        if result[i] == testData[i,-1]:
-            accuracy += 1
-		adaTestMat[result[i], testData[i,-1]] = testMat[result[i], testData[i,-1]]+1
-	adaAcc = round(100*float(match)/n_test,3)
+	for i in range(n_test):
+	    if result[i] == testData[i,-1]:
+	        accuracy += 1
+		adaTestMat[result[i], testData[i,-1]] = adaTestMat[result[i], testData[i,-1]]+1
+	adaAcc = round(100*float(accuracy)/n_test,3)
     #print float(match)/n_test,clf.score(testData[:,:-1],testData[:,-1])
 
 	if doSave == 1:
@@ -114,6 +114,8 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 	teY_min, teY_max = testData[:, 1].min() - 0.5, testData[:, 1].max() + 0.5
 	xx, yy = np.meshgrid(np.arange(min(trX_min, teX_min), max(trX_max, teX_max), h),
 	                     np.arange(min(trY_min, teY_min), max(trY_max, teY_max), h))
+	allData = np.c_[xx.ravel(), yy.ravel()]
+
 	cm = plt.cm.RdBu
 	cm_bright  = ListedColormap(['#FF0000', '#00FF00'])
 	markerSign = ['+', 'o']
@@ -124,7 +126,7 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 	plt.figure()
 	modelNum = len(modelName)
 	for i in range(3):
-		plt.subplot(2,2,i)
+		plt.subplot(3, 1, i)
 		# Plot the training points
 		plt.scatter(trainData[:, 0], trainData[:, 1], c=trainData[:,2], cmap=cm_bright)
 		# and testing points
@@ -138,20 +140,22 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 		# draw dicision boundary
 		if i == 0: # svm
 			model = cf.svm_train(trainData)
-			Z = model.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+			Z = model.predict_proba(allData)[:, 1]
 		elif i == 1: # nn
 			model = cf.nn_train(trainData)
-			Z = model.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+			Z = model.predict_proba(allData)[:, 1]
 		elif i == 2: # perceptron
 			model = cf.perceptron_train(trainData)
-			Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
+			Z = model.predict(allData)
 		else: # gmm
 			[Z, acc, mat] = cf.TrainAndClassify(trainData, np.c_[xx.ravel(), yy.ravel()], 'GMM')
-
+	
 		Z = Z.reshape(xx.shape)
 		plt.contourf(xx, yy, Z, cmap=cm, alpha=.4)
+	plt.savefig(saveDir+'basicModelDraw.png')
 
 	#plt.show()
+	plt.close()
 
 
 
@@ -208,7 +212,9 @@ def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 	# Q2, how much dimensions are needed to retain at least 80% and 90% of th total variance respectively?
 	cumRtVar    = S[sortIdx[:]]*float(100)/np.sum(S)
 	cumRtVar    = np.cumsum(cumRtVar)
-	eigenIdx    = [i for i in xrange(len(S)) if cumRtVar[i] > eigenThr][0]
+	eigenIdx    = 200 # [i for i in xrange(len(S)) if cumRtVar[i] > eigenThr][0]
+	feaName     = fr.match_with_features(sortIdx[0:(eigenIdx+1)])
+	print 'eigen feature name: ', feaName
 
 	# extract eigen-vectors and do classification
 	print '\n*** PCA: using feature ', sortIdx[0:(eigenIdx+1)]
@@ -295,18 +301,21 @@ def RunMain():
 
 	classLabel = [0, 1] # 0-Chinese, 1-English
 
+	
 	# basic model comparison
-	#modelName   = ['linear SVM', 'NN', 'linear perceptron', 'GMM']
-	#trainData = np.c_[cfModel.trainData[:,0:2], cfModel.trainData[:,-1]]
-	#testData  = np.c_[cfModel.testData[:,0:2], cfModel.testData[:,-1]]
-	#BasicModelCompare_Draw(trainData, testData, modelName, DIR_RESULT)
-
-	modelName   = ['GMM', 'linear SVM', 'NN', 'linear Perceptron']
+	modelName   = ['linear SVM', 'NN', 'linear perceptron', 'GMM']
+	trainData = np.c_[cfModel.trainData[:,0:2], cfModel.trainData[:,-1]]
+	testData  = np.c_[cfModel.testData[:,0:2], cfModel.testData[:,-1]]
+	BasicModelCompare_Draw(trainData, testData, modelName, DIR_RESULT)
+	
+	
+	modelName   = ['GMM', 'linear SVM', 'NN', 'linear Perceptron', 'AdaBoost']
 	BasicModelCompare(cfModel, modelName, DIR_RESULT)
 	BasicModelAnalysis(cfModel.trainData, cfModel.testData, DIR_RESULT)
 
 	# feature analysis.
 	FeatureAnalysisBasedData(cfModel, DIR_RESULT)
+	
 
 	[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM')
 	[testRst, acc] = FeatureReduction_sklearn(cfModel)

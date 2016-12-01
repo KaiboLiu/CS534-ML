@@ -69,10 +69,10 @@ class ClassModel:
 		scaler = StandardScaler()
 		scaler.fit(self.trainData[:,0:-1])
 
-		self.norTrainData         = self.trainData
+		self.norTrainData         = np.copy(self.trainData)
 		self.norTrainData[:,0:-1] = scaler.transform(self.trainData[:,0:-1])
 
-		self.norTestData          = self.testData
+		self.norTestData          = np.copy(self.testData)
 		self.norTestData[:,0:-1]  = scaler.transform(self.testData[:,0:-1])
 		'''
 		del self.norTrainData[:]
@@ -91,10 +91,10 @@ def featureNormalize(trainData, testData):
 	scaler = StandardScaler()
 	scaler.fit(trainData[:,0:-1])
 
-	norTrainData         = trainData
+	norTrainData         = np.copy(trainData)
 	norTrainData[:,0:-1] = scaler.transform(trainData[:,0:-1])
 
-	norTestData          = testData
+	norTestData          = np.copy(testData)
 	norTestData[:,0:-1]  = scaler.transform(testData[:,0:-1])
 	return norTrainData, norTestData
 
@@ -136,7 +136,7 @@ def gmm_classify(testData, modelBag, feaSt = 0, feaEnd = -1):
 	accuracy = 0
 	for row in testData:
 		bestScore = -np.infty
-		bestLabel = None
+		bestLabel = 1
 		for k in range(classNum):
 			score = modelBag[k].score(row[feaSt: feaEnd].reshape(1,-1)) # how score looks like?
 			if(score > bestScore):
