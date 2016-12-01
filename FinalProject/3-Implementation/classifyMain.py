@@ -107,6 +107,7 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 		print 'need more data in training set. \n'
 		return
 
+
 	h = .02
 	trX_min, trX_max = trainData[:, 0].min() - 0.5, trainData[:, 0].max() + 0.5
 	trY_min, trY_max = trainData[:, 1].min() - 0.5, trainData[:, 1].max() + 0.5
@@ -149,7 +150,7 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 			Z = model.predict(allData)
 		else: # gmm
 			[Z, acc, mat] = cf.TrainAndClassify(trainData, np.c_[xx.ravel(), yy.ravel()], 'GMM')
-	
+
 		Z = Z.reshape(xx.shape)
 		plt.contourf(xx, yy, Z, cmap=cm, alpha=.4)
 	plt.savefig(saveDir+'basicModelDraw.png')
@@ -200,6 +201,7 @@ def FeatureAnalysisBasedData(cfModel, saveDir):
 	#plt.show()
 	plt.close()
     #--------------------------------
+    #--------------------------------
 
 
 def FeatureReduction_PCA(cfModel, eigenThr, modelName):
@@ -242,44 +244,60 @@ def FeatureReduction_sklearn(cfModel):
 	testX  = cfModel.testData[:,:-1]
 	testY  = cfModel.testData[:,-1]
 
-
-	[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_lda(trainX, trainY, testX, testY)
+	'''
+	[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_lda(trainX, trainY, testX)
 	new_trainData = np.c_[new_trainX, trainY]
 	new_testData  = np.c_[new_testX, testY]
 
 	[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
-	print "\nsklearn test result:\n", "accuracy: ", accuracy
-
+	print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
 	'''
+
 	accuraceList = []
-
-	L = np.arange(0.5,1.01,0.1)
-	for i in range(len(L)):
-		print L[i]
-		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_var(trainX, trainY, testX, testY, L[i])
+	X = []
+	R = np.linspace(0, 1, 10)
+	for i in R:
+		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_var(trainX, trainY, testX, i)
 		new_trainData = np.c_[new_trainX, trainY]
 		new_testData  = np.c_[new_testX, testY]
-
 		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
 		accuraceList.append(round(accuracy* float(100)/cfModel.testLen,3))
-		print "\nsklearn test result:\n", "accuracy: ", accuracy
-	plt.plot(accuraceList)
-	plt.show()
+		X.append(feaNum)
+		print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+	plt.figure()
+	X = np.array(X)
+	sIdx = X.argsort()
+	X = X[sIdx]
+	accuraceList = np.array(accuraceList)
+	accuraceList.astype(int)
+	accuraceList = accuraceList[sIdx.tolist()]
+	plt.plot(X, accuraceList, 'r', label='variance')
+	plt.xlabel('number of features')
+	plt.ylabel('accuracy')
 
-	L = np.arange(0.01,100,10)
-	for i in range(len(L)):
-		print L[i]
-		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_L1(trainX, trainY, testX, testY, L[i])
+	accuraceList = []
+	X = []
+	R = np.linspace(0.01, 10000, 10)
+	for i in R:
+		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_L1(trainX, trainY, testX, i)
 		new_trainData = np.c_[new_trainX, trainY]
 		new_testData  = np.c_[new_testX, testY]
-
 		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
 		accuraceList.append(round(accuracy* float(100)/cfModel.testLen,3))
-		print "\nsklearn test result:\n", "accuracy: ", accuracy
+		X.append(feaNum)
+		print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
 
-	plt.plot(accuraceList)
-	'''
-	plt.show()
+	X = np.array(X)
+	sIdx = X.argsort()
+	X = X[sIdx]
+	accuraceList = np.array(accuraceList)
+	accuraceList.astype(int)
+	accuraceList = accuraceList[sIdx.tolist()]
+	plt.figure()
+	plt.plot(X.tolist(), accuraceList.tolist(),'b', label='L1')
+	plt.xlabel('number of features')
+	plt.ylabel('accuracy')
+	#plt.show()
 
 	return testRst, accuracy
 
@@ -301,21 +319,21 @@ def RunMain():
 
 	classLabel = [0, 1] # 0-Chinese, 1-English
 
-	
+
 	# basic model comparison
 	modelName   = ['linear SVM', 'NN', 'linear perceptron', 'GMM']
 	trainData = np.c_[cfModel.trainData[:,0:2], cfModel.trainData[:,-1]]
 	testData  = np.c_[cfModel.testData[:,0:2], cfModel.testData[:,-1]]
 	BasicModelCompare_Draw(trainData, testData, modelName, DIR_RESULT)
-	
-	
+
+
 	modelName   = ['GMM', 'linear SVM', 'NN', 'linear Perceptron', 'AdaBoost']
 	BasicModelCompare(cfModel, modelName, DIR_RESULT)
 	BasicModelAnalysis(cfModel.trainData, cfModel.testData, DIR_RESULT)
 
 	# feature analysis.
 	FeatureAnalysisBasedData(cfModel, DIR_RESULT)
-	
+
 
 	[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM')
 	[testRst, acc] = FeatureReduction_sklearn(cfModel)
