@@ -261,9 +261,9 @@ def FeatureReduction_sklearn(cfModel):
 		new_trainData = np.c_[new_trainX, trainY]
 		new_testData  = np.c_[new_testX, testY]
 		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
-		accuraceList.append(round(accuracy* float(100)/cfModel.testLen,3))
+		accuraceList.append(accuracy)
 		X.append(feaNum)
-		print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+		print "\nsklearn test result:\n", "accuracy: ", accuracy
 	plt.figure()
 	X = np.array(X)
 	sIdx = X.argsort()
@@ -283,9 +283,9 @@ def FeatureReduction_sklearn(cfModel):
 		new_trainData = np.c_[new_trainX, trainY]
 		new_testData  = np.c_[new_testX, testY]
 		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
-		accuraceList.append(round(accuracy* float(100)/cfModel.testLen,3))
+		accuraceList.append(accuracy)
 		X.append(feaNum)
-		print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
+		print "\nsklearn test result:\n", "accuracy: ", accuracy
 
 	X = np.array(X)
 	sIdx = X.argsort()
@@ -338,7 +338,7 @@ def RunMain():
 	[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM')
 	[testRst, acc] = FeatureReduction_sklearn(cfModel)
 
-
+	#plt.show()
 
 if __name__ == "__main__":
 	RunMain()
