@@ -190,13 +190,7 @@ def RunMain():
 
 	print "[Tree-based Feature Selection]"
 	new_trainX, new_testX, featureNum, featureName = feature_selection_tree(trainX, trainY, testX)
-	print featureName
-
 	#important_features_from_tree(trainX, trainY, 10)
-
-
-
-	plt.show()
 
 
 if __name__ == "__main__":

@@ -94,8 +94,6 @@ def BasicModelCompare(cfModel, modelName, saveDir):
 	plt.xlabel("Proportion train")
 	plt.ylabel("Test Accuracy(\%)")
 	plt.savefig(saveDir + 'basicModelCompare.png')
-	# plt.show()
-	plt.close()
 	#-----------------------------
 
 def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
@@ -106,7 +104,6 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 	elif(trainData.shape[0] < 10):
 		print 'need more data in training set. \n'
 		return
-
 
 	h = .02
 	trX_min, trX_max = trainData[:, 0].min() - 0.5, trainData[:, 0].max() + 0.5
@@ -123,11 +120,11 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 	trainSign  = [markerSign[np.int(e)] for e in trainData[:,2]]
 	testSign   = [markerSign[np.int(e)] for e in testData[:,2]]
 
-
 	plt.figure()
 	modelNum = len(modelName)
+
 	for i in range(3):
-		plt.subplot(3, 1, i)
+		plt.subplot(3, 1, i+1)
 		# Plot the training points
 		plt.scatter(trainData[:, 0], trainData[:, 1], c=trainData[:,2], cmap=cm_bright)
 		# and testing points
@@ -154,12 +151,6 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 		Z = Z.reshape(xx.shape)
 		plt.contourf(xx, yy, Z, cmap=cm, alpha=.4)
 	plt.savefig(saveDir+'basicModelDraw.png')
-
-	#plt.show()
-	plt.close()
-
-
-
 
 def FeatureAnalysisBasedData(cfModel, saveDir):
 	feaIdx  = [0, 12, 24, 36, 164, 184, 185, 186, 187, 194, 195, 197, 203, 204]
@@ -198,11 +189,7 @@ def FeatureAnalysisBasedData(cfModel, saveDir):
 
 	plt.tight_layout()
 	plt.savefig(saveDir+'eatureAna_seprate.png')
-	#plt.show()
-	plt.close()
     #--------------------------------
-    #--------------------------------
-
 
 def FeatureReduction_PCA(cfModel, eigenThr, modelName, maxEigenNum):
 	inData    = np.vstack((cfModel.trainData[:,:-1], cfModel.testData[:,:-1]))
@@ -215,6 +202,7 @@ def FeatureReduction_PCA(cfModel, eigenThr, modelName, maxEigenNum):
 	cumRtVar    = S[sortIdx[:]]*float(100)/np.sum(S)
 	cumRtVar    = np.cumsum(cumRtVar)
 	eigenIdx    = maxEigenNum #200 # [i for i in xrange(len(S)) if cumRtVar[i] > eigenThr][0]
+	eigenIdx = eigenIdx.astype(int)
 	feaName     = fr.match_with_features(sortIdx[0:(eigenIdx+1)])
 	#print 'eigen feature name: ', feaName
 
@@ -222,7 +210,6 @@ def FeatureReduction_PCA(cfModel, eigenThr, modelName, maxEigenNum):
 	#print '\n*** PCA: using feature ', sortIdx[0:(eigenIdx+1)]
 	Ureduce            = U[:,sortIdx[0:(eigenIdx+1)]]
 
-	# pdb.set_trace()
 	# classification on projection space
 	trainData_rd  = np.dot(cfModel.trainData[:,:-1], Ureduce) # feature reduce data
 	newTrainData  = np.c_[trainData_rd, cfModel.trainData[:,-1]]
@@ -381,9 +368,10 @@ def RunMain():
 	plt.ylabel('accuracy')
 	plt.legend(loc='lower left')
 	plt.tight_layout()
+	plt.savefig(DIR_RESULT+'featureReu.png')
 
 	plt.show()
-
+	plt.close('all')
 
 if __name__ == "__main__":
 	RunMain()
