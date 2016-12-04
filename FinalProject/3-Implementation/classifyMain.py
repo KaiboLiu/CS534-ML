@@ -204,7 +204,7 @@ def FeatureAnalysisBasedData(cfModel, saveDir):
     #--------------------------------
 
 
-def FeatureReduction_PCA(cfModel, eigenThr, modelName):
+def FeatureReduction_PCA(cfModel, eigenThr, modelName, maxEigenNum):
 	inData    = np.vstack((cfModel.trainData[:,:-1], cfModel.testData[:,:-1]))
 	#inData    = np.array(inData)
 	cov       = np.cov(inData.T)
@@ -214,12 +214,12 @@ def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 	# Q2, how much dimensions are needed to retain at least 80% and 90% of th total variance respectively?
 	cumRtVar    = S[sortIdx[:]]*float(100)/np.sum(S)
 	cumRtVar    = np.cumsum(cumRtVar)
-	eigenIdx    = 200 # [i for i in xrange(len(S)) if cumRtVar[i] > eigenThr][0]
+	eigenIdx    = maxEigenNum #200 # [i for i in xrange(len(S)) if cumRtVar[i] > eigenThr][0]
 	feaName     = fr.match_with_features(sortIdx[0:(eigenIdx+1)])
-	print 'eigen feature name: ', feaName
+	#print 'eigen feature name: ', feaName
 
 	# extract eigen-vectors and do classification
-	print '\n*** PCA: using feature ', sortIdx[0:(eigenIdx+1)]
+	#print '\n*** PCA: using feature ', sortIdx[0:(eigenIdx+1)]
 	Ureduce            = U[:,sortIdx[0:(eigenIdx+1)]]
 
 	# pdb.set_trace()
@@ -234,11 +234,11 @@ def FeatureReduction_PCA(cfModel, eigenThr, modelName):
 	# if use NN, Perception, it's better to do feature normalize first.
 	[newTrainData, newTestData] = cf.featureNormalize(newTrainData, newTestData)
 	[testRst, accuracy, model, testMat] = cf.TrainAndClassify(newTrainData, newTestData, 'NN')
-	print "\nPCA & GMM test result:\n", "accuracy: ", accuracy
+	#print "\nPCA & GMM test result:\n", "accuracy: ", accuracy
 
 	return testRst, accuracy
 
-def FeatureReduction_sklearn(cfModel):
+def FeatureReduction_sklearn(cfModel, modelName):
 	trainX = cfModel.trainData[:,:-1]
 	trainY = cfModel.trainData[:,-1]
 	testX  = cfModel.testData[:,:-1]
@@ -250,7 +250,7 @@ def FeatureReduction_sklearn(cfModel):
 	new_trainData = np.c_[new_trainX.T, trainY]
 	new_testData  = np.c_[new_testX, testY]
 
-	[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
+	[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, modelName)
 	#print "\nsklearn test result:\n", "accuracy: ", accuracy
 	plt.figure()
 	plt.plot(1, accuracy, 'ro', label='LDA')
@@ -258,12 +258,12 @@ def FeatureReduction_sklearn(cfModel):
 	# feature selection with high variance
 	accuraceList = []
 	X = []
-	R = np.linspace(0, 1, 10)
+	R = np.linspace(0, 1, 20)
 	for i in R:
 		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_var(trainX, trainY, testX, i)
 		new_trainData = np.c_[new_trainX, trainY]
 		new_testData  = np.c_[new_testX, testY]
-		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
+		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, modelName)
 		accuraceList.append(accuracy)
 		X.append(feaNum)
 		#print "\nsklearn test result:\n", "accuracy: ", accuracy
@@ -290,12 +290,12 @@ def FeatureReduction_sklearn(cfModel):
 	# feature selection with L1 norm
 	accuraceList = []
 	X = []
-	R = np.linspace(0.0001, 10000, 10)
+	R = np.linspace(0.0001, 10000, 20)
 	for i in R:
 		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_L1(trainX, trainY, testX, i)
 		new_trainData = np.c_[new_trainX, trainY]
 		new_testData  = np.c_[new_testX, testY]
-		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
+		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, modelName)
 		accuraceList.append(accuracy)
 		X.append(feaNum)
 		#print "\nsklearn test result:\n", "accuracy: ", accuracy
@@ -312,12 +312,12 @@ def FeatureReduction_sklearn(cfModel):
 	# feature selection with random forest
 	accuraceList = []
 	X = []
-	R = np.linspace(1, 204, 10)
+	R = np.linspace(1, 204, 20)
 	for i in R:
 		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_tree(trainX, trainY, testX, i)
 		new_trainData = np.c_[new_trainX, trainY]
 		new_testData  = np.c_[new_testX, testY]
-		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
+		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, modelName)
 		accuraceList.append(accuracy)
 		X.append(feaNum)
 		#print "\nsklearn test result:\n", "accuracy: ", accuracy
@@ -330,9 +330,6 @@ def FeatureReduction_sklearn(cfModel):
 	plt.plot(X.tolist(), accuraceList.tolist(),'g', label='Tree')
 	plt.xlabel('number of features')
 	plt.ylabel('accuracy')
-
-	plt.legend()
-	plt.tight_layout()
 
 	return testRst, accuracy
 
@@ -368,10 +365,24 @@ def RunMain():
 	# feature analysis.
 	FeatureAnalysisBasedData(cfModel, DIR_RESULT)
 
-	[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM')
-	[testRst, acc] = FeatureReduction_sklearn(cfModel)
+	[testRst, acc] = FeatureReduction_sklearn(cfModel, 'GMM')
 
-	#plt.show()
+	accuraceList = []
+	X = []
+	R = np.linspace(1, 204, 20)
+	for i in R:
+		[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM', i)
+		accuraceList.append(acc)
+		X.append(i)
+	print X
+	print accuraceList
+	plt.plot(X, accuraceList,'m', label='PCA')
+	plt.xlabel('number of features')
+	plt.ylabel('accuracy')
+	plt.legend(loc='lower left')
+	plt.tight_layout()
+
+	plt.show()
 
 
 if __name__ == "__main__":
