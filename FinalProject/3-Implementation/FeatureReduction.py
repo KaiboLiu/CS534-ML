@@ -43,6 +43,7 @@ def LDA_analysis(trainX, trainY):
     projected_members0 = np.dot(members0, w_norm)
     projected_members1 = np.dot(members1, w_norm)
 
+    '''
     plt.figure(4)
     plt.hist(projected_members0, color='r', alpha=0.5, label='class 0')
     plt.hist(projected_members1, color='b', alpha=0.5, label='class 1')
@@ -50,9 +51,16 @@ def LDA_analysis(trainX, trainY):
     plt.xlabel('projected data values')
     plt.ylabel('frequency')
     plt.legend(loc='upper right')
-    #plt.show()
+    '''
 
     return np.dot(trainX, w_norm), w_norm
+
+def feature_selection_lda(trainX, trainY, testX):
+	new_trainX, w_norm = LDA_analysis(trainX, trainY)
+	new_testX = np.dot(testX, w_norm)
+	new_trainX = new_trainX[np.newaxis, :]
+	featureName = []
+	return new_trainX, new_testX, 1, featureName
 
 def hamming_dist(x1, x2):
 	return np.sum(np.abs(x1-x2))
@@ -139,13 +147,6 @@ def important_features_from_tree(trainX, trainY, rank):
 	       color="r", yerr=std[indices], align="center")
 	plt.xticks(range(trainX.shape[1]), indices)
 	plt.xlim([-1, indices.shape[0]])
-
-def feature_selection_lda(trainX, trainY, testX):
-	new_trainX, w_norm = LDA_analysis(trainX, trainY)
-	new_testX = np.dot(testX, w_norm)
-	new_trainX = new_trainX[np.newaxis, :]
-	featureName = []
-	return new_trainX, new_testX, 1, featureName
 
 def RunMain():
 	[trainX, trainY, testX, testY] = LoadFeature()

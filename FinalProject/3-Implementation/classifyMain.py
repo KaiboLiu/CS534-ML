@@ -244,14 +244,16 @@ def FeatureReduction_sklearn(cfModel):
 	testX  = cfModel.testData[:,:-1]
 	testY  = cfModel.testData[:,-1]
 
-	'''
+
 	[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_lda(trainX, trainY, testX)
-	new_trainData = np.c_[new_trainX, trainY]
+	new_testX = new_testX[:, np.newaxis]
+	new_trainData = np.c_[new_trainX.T, trainY]
 	new_testData  = np.c_[new_testX, testY]
 
 	[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
-	print "\nsklearn test result:\n", "accuracy: ", round(accuracy* float(100)/cfModel.testLen,3)
-	'''
+	print "\nsklearn test result:\n", "accuracy: ", accuracy
+	plt.figure()
+	plt.plot(1, accuracy, 'ro', label='LDA')
 
 	accuraceList = []
 	X = []
@@ -264,7 +266,6 @@ def FeatureReduction_sklearn(cfModel):
 		accuraceList.append(accuracy)
 		X.append(feaNum)
 		print "\nsklearn test result:\n", "accuracy: ", accuracy
-	plt.figure()
 	X = np.array(X)
 	sIdx = X.argsort()
 	X = X[sIdx]
@@ -280,6 +281,7 @@ def FeatureReduction_sklearn(cfModel):
 	R = np.linspace(0.01, 10000, 10)
 	for i in R:
 		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_L1(trainX, trainY, testX, i)
+		print featureName
 		new_trainData = np.c_[new_trainX, trainY]
 		new_testData  = np.c_[new_testX, testY]
 		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
@@ -293,11 +295,13 @@ def FeatureReduction_sklearn(cfModel):
 	accuraceList = np.array(accuraceList)
 	accuraceList.astype(int)
 	accuraceList = accuraceList[sIdx.tolist()]
-	plt.figure()
 	plt.plot(X.tolist(), accuraceList.tolist(),'b', label='L1')
 	plt.xlabel('number of features')
 	plt.ylabel('accuracy')
-	#plt.show()
+
+	plt.legend()
+	plt.tight_layout()
+	plt.show()
 
 	return testRst, accuracy
 
@@ -337,8 +341,6 @@ def RunMain():
 
 	[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM')
 	[testRst, acc] = FeatureReduction_sklearn(cfModel)
-
-	#plt.show()
 
 if __name__ == "__main__":
 	RunMain()
