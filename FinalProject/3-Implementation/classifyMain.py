@@ -244,17 +244,18 @@ def FeatureReduction_sklearn(cfModel):
 	testX  = cfModel.testData[:,:-1]
 	testY  = cfModel.testData[:,-1]
 
-
+	# feature selection with LDA
 	[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_lda(trainX, trainY, testX)
 	new_testX = new_testX[:, np.newaxis]
 	new_trainData = np.c_[new_trainX.T, trainY]
 	new_testData  = np.c_[new_testX, testY]
 
 	[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
-	print "\nsklearn test result:\n", "accuracy: ", accuracy
+	#print "\nsklearn test result:\n", "accuracy: ", accuracy
 	plt.figure()
 	plt.plot(1, accuracy, 'ro', label='LDA')
 
+	# feature selection with high variance
 	accuraceList = []
 	X = []
 	R = np.linspace(0, 1, 10)
@@ -265,30 +266,39 @@ def FeatureReduction_sklearn(cfModel):
 		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
 		accuraceList.append(accuracy)
 		X.append(feaNum)
-		print "\nsklearn test result:\n", "accuracy: ", accuracy
+		#print "\nsklearn test result:\n", "accuracy: ", accuracy
 	X = np.array(X)
 	sIdx = X.argsort()
 	X = X[sIdx]
 	accuraceList = np.array(accuraceList)
 	accuraceList.astype(int)
 	accuraceList = accuraceList[sIdx.tolist()]
-	plt.plot(X, accuraceList, 'r', label='variance')
+
+	d = {}
+	for a, b in zip(X, accuraceList):
+		d.setdefault(a, []).append(b)
+	X = []
+	Y = []
+	for key in d:
+		X.append(key)
+		Y.append(sum(d[key])/len(d[key]))
+
+	plt.plot(X, Y, 'r', label='variance')
 	plt.xlabel('number of features')
 	plt.ylabel('accuracy')
 
+	# feature selection with L1 norm
 	accuraceList = []
 	X = []
-	R = np.linspace(0.01, 10000, 10)
+	R = np.linspace(0.0001, 10000, 10)
 	for i in R:
 		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_L1(trainX, trainY, testX, i)
-		print featureName
 		new_trainData = np.c_[new_trainX, trainY]
 		new_testData  = np.c_[new_testX, testY]
 		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
 		accuraceList.append(accuracy)
 		X.append(feaNum)
-		print "\nsklearn test result:\n", "accuracy: ", accuracy
-
+		#print "\nsklearn test result:\n", "accuracy: ", accuracy
 	X = np.array(X)
 	sIdx = X.argsort()
 	X = X[sIdx]
@@ -299,9 +309,30 @@ def FeatureReduction_sklearn(cfModel):
 	plt.xlabel('number of features')
 	plt.ylabel('accuracy')
 
+	# feature selection with random forest
+	accuraceList = []
+	X = []
+	R = np.linspace(1, 204, 10)
+	for i in R:
+		[new_trainX, new_testX, feaNum, featureName]= fr.feature_selection_tree(trainX, trainY, testX, i)
+		new_trainData = np.c_[new_trainX, trainY]
+		new_testData  = np.c_[new_testX, testY]
+		[testRst, accuracy, model, testMat] = cf.TrainAndClassify(new_trainData, new_testData, 'GMM')
+		accuraceList.append(accuracy)
+		X.append(feaNum)
+		#print "\nsklearn test result:\n", "accuracy: ", accuracy
+	X = np.array(X)
+	sIdx = X.argsort()
+	X = X[sIdx]
+	accuraceList = np.array(accuraceList)
+	accuraceList.astype(int)
+	accuraceList = accuraceList[sIdx.tolist()]
+	plt.plot(X.tolist(), accuraceList.tolist(),'g', label='Tree')
+	plt.xlabel('number of features')
+	plt.ylabel('accuracy')
+
 	plt.legend()
 	plt.tight_layout()
-	plt.show()
 
 	return testRst, accuracy
 
@@ -323,7 +354,6 @@ def RunMain():
 
 	classLabel = [0, 1] # 0-Chinese, 1-English
 
-
 	# basic model comparison
 	modelName   = ['linear SVM', 'NN', 'linear perceptron', 'GMM']
 	trainData = np.c_[cfModel.trainData[:,0:2], cfModel.trainData[:,-1]]
@@ -338,9 +368,11 @@ def RunMain():
 	# feature analysis.
 	FeatureAnalysisBasedData(cfModel, DIR_RESULT)
 
-
 	[testRst, acc] = FeatureReduction_PCA(cfModel, 90, 'GMM')
 	[testRst, acc] = FeatureReduction_sklearn(cfModel)
+
+	#plt.show()
+
 
 if __name__ == "__main__":
 	RunMain()

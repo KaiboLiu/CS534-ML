@@ -111,17 +111,28 @@ def feature_selection_L1(trainX, trainY, testX, c=0.1):
 	new_testX = testX[:,featureIdx]
 	return new_trainX, new_testX, featureNum, featureName
 
-def feature_selection_tree(trainX, trainY, testX):
+def feature_selection_tree(trainX, trainY, testX, rank=10):
 	# Tree-based feature selection
+	rank = np.int(rank)
 	clf = ExtraTreesClassifier()
 	clf = clf.fit(trainX, trainY)
 	clf.feature_importances_
+
+	importances = clf.feature_importances_
+	featureIdx = np.argsort(importances)[::-1][:rank]
+	new_trainX = trainX[:,featureIdx]
+	new_testX = testX[:,featureIdx]
+	featureName, featureIdx = find_vectors(trainX, new_trainX)
+	return new_trainX, new_testX, rank, featureName
+
+	'''
 	model = SelectFromModel(clf, prefit=True)
 	new_trainX = model.transform(trainX)
 	featureNum = new_trainX.shape[1]
 	featureName, featureIdx = find_vectors(trainX, new_trainX)
 	new_testX = testX[:,featureIdx]
 	return new_trainX, new_testX, featureNum, featureName
+	'''
 
 def important_features_from_tree(trainX, trainY, rank):
 	# Build a forest and compute the feature importances
@@ -152,6 +163,8 @@ def RunMain():
 	[trainX, trainY, testX, testY] = LoadFeature()
 	Y = []
 
+	feature_selection_lda(trainX, trainY, testX)
+
 	print "[Variance-based Feature Selection]"
 	X = np.linspace(0, 1, 10)
 	for i in X:
@@ -179,9 +192,9 @@ def RunMain():
 	new_trainX, new_testX, featureNum, featureName = feature_selection_tree(trainX, trainY, testX)
 	print featureName
 
-	important_features_from_tree(trainX, trainY, 10)
+	#important_features_from_tree(trainX, trainY, 10)
 
-	feature_selection_lda(trainX, trainY, testX)
+
 
 	plt.show()
 
