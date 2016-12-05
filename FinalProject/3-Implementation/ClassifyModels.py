@@ -185,7 +185,7 @@ def svm_classify(testData, svmModel, feaSt = 0, feaEnd = -1):
 
 def nn_train(trainData, feaSt = 0, feaEnd = -1):
 	# the varies parameter could be hidden layer info, 
-	clf = MLPClassifier(activation='relu',solver = 'lbfgs', alpha = 1e-5, hidden_layer_sizes = (20, 2), random_state = 1)
+	clf = MLPClassifier(activation='logistic',solver = 'lbfgs', alpha = 1e-5, hidden_layer_sizes = (20,2), random_state = 1)
 	clf.fit(trainData[:,feaSt: feaEnd], trainData[:,-1])
 	'''
 	fig, axes = plt.subplots(4, 1)

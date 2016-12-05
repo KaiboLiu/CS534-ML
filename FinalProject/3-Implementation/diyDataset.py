@@ -40,8 +40,8 @@ def RunCreat():
 	time.clock()
 	t00 = float(time.clock())
 
-	srcDir = './wav/'
-	dstDir = './diyDataset/'
+	srcDir = './Data/'
+	dstDir = './Data/diyDataset/'
 	lang_list= ['cmn','eng','engStory','deu','fra','jpn','rus']
 	#cmn  Chinese(Mandarin),female:500
 	#eng  English,male:500

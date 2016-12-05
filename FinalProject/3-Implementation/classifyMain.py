@@ -50,6 +50,7 @@ def BasicModelAnalysis(trainData, testData, saveDir = './', doSave = 0):
 	        accuracy += 1
 		adaTestMat[result[i], testData[i,-1]] = adaTestMat[result[i], testData[i,-1]]+1
 	adaAcc = round(100*float(accuracy)/n_test,3)
+	print "\n Adaboost Accuracy:", adaAcc, "\n confidence matrix:", adaTestMat
     #print float(match)/n_test,clf.score(testData[:,:-1],testData[:,-1])
 
 	if doSave == 1:
@@ -109,10 +110,10 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 
 
 	h = .02
-	trX_min, trX_max = trainData[:, 0].min() - 0.5, trainData[:, 0].max() + 0.5
-	trY_min, trY_max = trainData[:, 1].min() - 0.5, trainData[:, 1].max() + 0.5
-	teX_min, teX_max = testData[:, 0].min() - 0.5, testData[:, 0].max() + 0.5
-	teY_min, teY_max = testData[:, 1].min() - 0.5, testData[:, 1].max() + 0.5
+	trX_min, trX_max = trainData[:, 0].min() - 0.05, trainData[:, 0].max() + 0.05
+	trY_min, trY_max = trainData[:, 1].min() - 0.05, trainData[:, 1].max() + 0.05
+	teX_min, teX_max = testData[:, 0].min() - 0.05, testData[:, 0].max() + 0.05
+	teY_min, teY_max = testData[:, 1].min() - 0.05, testData[:, 1].max() + 0.05
 	xx, yy = np.meshgrid(np.arange(min(trX_min, teX_min), max(trX_max, teX_max), h),
 	                     np.arange(min(trY_min, teY_min), max(trY_max, teY_max), h))
 	allData = np.c_[xx.ravel(), yy.ravel()]
@@ -136,7 +137,8 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 		plt.ylim(yy.min(), yy.max())
 		plt.xticks(())
 		plt.yticks(())
-		plt.title(modelName[i])
+
+		#plt.title(modelName[i])
 
 		# draw dicision boundary
 		if i == 0: # svm
@@ -153,7 +155,7 @@ def BasicModelCompare_Draw(trainData, testData, modelName, saveDir):
 
 		Z = Z.reshape(xx.shape)
 		plt.contourf(xx, yy, Z, cmap=cm, alpha=.4)
-	plt.savefig(saveDir+'basicModelDraw.png')
+	plt.savefig(saveDir+'basicModelDraw'+str(i)+'.png')
 
 	#plt.show()
 	plt.close()
@@ -352,11 +354,10 @@ def RunMain():
 	classLabel = [0, 1] # 0-Chinese, 1-English
 
 	# basic model comparison
-	modelName   = ['linear SVM', 'NN', 'linear perceptron', 'GMM']
+	modelName   = ['linear SVM', 'Neural Network', 'linear perceptron', 'GMM']
 	trainData = np.c_[cfModel.trainData[:,0:2], cfModel.trainData[:,-1]]
 	testData  = np.c_[cfModel.testData[:,0:2], cfModel.testData[:,-1]]
 	BasicModelCompare_Draw(trainData, testData, modelName, DIR_RESULT)
-
 
 	modelName   = ['GMM', 'linear SVM', 'NN', 'linear Perceptron', 'AdaBoost']
 	BasicModelCompare(cfModel, modelName, DIR_RESULT)
