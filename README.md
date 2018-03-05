@@ -1,5 +1,5 @@
 # machine learning
-![](https://img.shields.io/badge/language-python-orange.svg) . 
+![](https://img.shields.io/badge/language-python-orange.svg)  
 ml assignments
 
 ###Authors:
